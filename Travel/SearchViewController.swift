@@ -6,13 +6,18 @@
 //
 
 import UIKit
+import SnapKit
 
 class SearchViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        // Do any additional setup after loading the view.
+        setupNav()
+    }
+
+    func setupNav() {
+        self.navigationItem.title = "Search"
     }
 
 

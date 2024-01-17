@@ -10,24 +10,28 @@ import UIKit
 class TabBarController: UITabBarController {
 
     lazy var searchVC = SearchViewController()
+    lazy var profileVC = ProfileViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        self.tabBar.standardAppearance.backgroundColor = .gray
+        self.tabBar.tintColor = .black
 
         createTabBarItems()
     }
     
 
     func createTabBarItems() {
-        self.tabBar.standardAppearance.backgroundColor = .gray
-        self.tabBar.tintColor = .black
-        
-        searchVC.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "magnifyingglass"), tag: 0)
-        
+        searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 0)
+
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
+
         let controllerArray = [
-            UINavigationController(rootViewController: searchVC)
+            UINavigationController(rootViewController: searchVC), UINavigationController(rootViewController: profileVC)
         ]
         self.viewControllers = controllerArray
+//        self.setViewControllers(controllerArray, animated: true)
         
     }
     
