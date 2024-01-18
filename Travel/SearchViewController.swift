@@ -8,11 +8,15 @@
 import UIKit
 import SnapKit
 import Alamofire
+import GooglePlaces
 
 class SearchViewController: UIViewController {
 
     var placeApiResult =  [Result]()
+    var photos = [UIImage]()
     lazy var searchResultVC = SearchResultViewController()
+    
+    private var placesClient: GMSPlacesClient!
     
     lazy var searchButton: UIButton = {
         let button = UIButton()
@@ -26,8 +30,9 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-//        getPlaceAPIData()
         if let nav = self.navigationController {
+            searchResultVC.searchResult = self.placeApiResult
+            searchResultVC.photos = self.photos
             nav.pushViewController(searchResultVC, animated: true)
             print("Push SearchResultVC")
         }
@@ -38,13 +43,18 @@ class SearchViewController: UIViewController {
         view.backgroundColor = .white
         setupNav()
         setupUI()
-      
+        
+        placesClient = GMSPlacesClient.shared()
+        
+        getPlaceAPIData()
+
     }
 
     func setupNav() {
         self.navigationItem.title = "Search"
     }
     
+
     func setupUI() {
         view.addSubview(searchButton)
         searchButton.snp.makeConstraints { make in
@@ -78,7 +88,7 @@ class SearchViewController: UIViewController {
                        
                         self.placeApiResult = result.results
                         print(self.placeApiResult.count)
-                        
+                      
                     } catch  {
                         print(response.error as Any)
                     }
@@ -88,7 +98,42 @@ class SearchViewController: UIViewController {
 
     }
 
-    
+//    func preparePhoto(placeID: String) {
+//  
+//        // Specify the place data types to return (in this case, just photos).
+//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt64(UInt(GMSPlaceField.photos.rawValue)))
+//
+//        placesClient?.fetchPlace(fromPlaceID: placeID,
+//                                 placeFields: fields,
+//                                 sessionToken: nil, callback: {
+//          (place: GMSPlace?, error: Error?) in
+//          if let error = error {
+//            print("An error occurred: \(error.localizedDescription)")
+//            return
+//          }
+//          if let place = place {
+//            // Get the metadata for the first photo in the place photo metadata list.
+//            let photoMetadata: GMSPlacePhotoMetadata = place.photos![0]
+//
+//            // Call loadPlacePhoto to display the bitmap and attribution.
+//              self.placesClient?.loadPlacePhoto(photoMetadata, callback: { [self] (photo, error) -> Void in
+//              if let error = error {
+//                // TODO: Handle the error.
+//                print("Error loading photo metadata: \(error.localizedDescription)")
+//                return
+//              } else {
+//                // Display the first image and its attributions.
+////                self.imageView?.image = photo;
+////                self.lblText?.attributedText = photoMetadata.attributions;
+//                  photos.append(photo!)
+//
+// 
+//              }
+//            })
+//          }
+//        })
+//    }
+
     
     
 

@@ -10,7 +10,7 @@ target 'Travel' do
 pod 'SnapKit'
 pod 'Alamofire'
 pod 'SDWebImage'
-
+pod 'GooglePlaces', '8.3.0'
 
   target 'TravelTests' do
     inherit! :search_paths
