@@ -18,11 +18,11 @@ class ProfileViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemGreen.cgColor
-        button.addTarget(self, action: #selector(popToRootVC), for: .touchUpInside)
+        button.addTarget(self, action: #selector(popToLoginVC), for: .touchUpInside)
         return button
     }()
 
-    @objc func popToRootVC() {
+    @objc func popToLoginVC() {
         let userDefaults = UserDefaults.standard
         userDefaults.set(false, forKey: "LoggedIn")
 

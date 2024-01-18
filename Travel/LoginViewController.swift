@@ -7,11 +7,14 @@
 
 import UIKit
 import SnapKit
+import FirebaseAuth
+import Firebase
 
 class LoginViewController: UIViewController {
 
 //    lazy var searchVC = SearchViewController()
     lazy var tabBarVC = TabBarController()
+    lazy var registerVC = RegisterViewController()
 
     lazy var accountTextField: TravelCustomTextField = {
         let textField =  TravelCustomTextField()
@@ -30,6 +33,7 @@ class LoginViewController: UIViewController {
         textField.layer.borderColor = UIColor.systemCyan.cgColor
         return textField
     }()
+    
 
     lazy var loginButton: UIButton = {
         let button = UIButton()
@@ -59,6 +63,24 @@ class LoginViewController: UIViewController {
         }
 
         print("show search vc")
+    }
+    
+    lazy var registerButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Register", for: [])
+        button.setTitleColor(.systemCyan, for: [])
+        button.layer.cornerRadius = 25
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemCyan.cgColor
+        button.addTarget(self, action: #selector(showRegisterVC), for: .touchUpInside)
+        return button
+    }()
+    
+    @objc func showRegisterVC() {
+        if let nav = self.navigationController {
+            nav.pushViewController(registerVC, animated: true)
+            print("Push to RegisterVC")
+        }
     }
 
     override func viewDidLoad() {
@@ -96,17 +118,17 @@ class LoginViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
+        
+        view.addSubview(registerButton)
+        registerButton.snp.makeConstraints { make in
+            make.top.equalTo(loginButton.snp.bottom).offset(20)
+            make.leading.equalToSuperview().offset(30)
+            make.trailing.equalToSuperview().offset(-30)
+            make.height.equalTo(50)
+        }
 
     }
 
-    /*
-    // MARK: - Navigation
+    
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
-}
+} // class end

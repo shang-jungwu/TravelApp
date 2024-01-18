@@ -8,6 +8,8 @@ target 'Travel' do
   # Pods for Travel
 
 pod 'SnapKit'
+pod 'Alamofire'
+pod 'SDWebImage'
 
 
   target 'TravelTests' do

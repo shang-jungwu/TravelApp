@@ -10,7 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    lazy var loginViewController = LoginViewController()
+    lazy var loginVC = LoginViewController()
     var navigationController: UINavigationController!
     var tabBarController = TabBarController()
 
@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.rootViewController = tabBarController
             window?.makeKeyAndVisible()
         } else {
-            navigationController = UINavigationController.init(rootViewController: loginViewController)
+            navigationController = UINavigationController.init(rootViewController: loginVC)
             window?.rootViewController = navigationController
             window?.makeKeyAndVisible()
         }
