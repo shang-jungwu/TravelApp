@@ -58,7 +58,6 @@ class LoginViewController: UIViewController {
         }
         if let windowScene = scene as? UIWindowScene {
             windowScene.keyWindow?.rootViewController = tabBarVC
-
         }
 
         print("show search vc")

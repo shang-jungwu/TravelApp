@@ -8,15 +8,16 @@
 import UIKit
 import SnapKit
 import SDWebImage
-import GooglePlaces
+import Alamofire
+//import GooglePlaces
 
 class SearchResultViewController: UIViewController {
-    
-//    var searchResult = [Result]()
-//    var photos = [UIImage]()
-    
+
     var tripAdvisorPlaceData = [Datum]()
+    var tripAdvisorPhotoData = [PhotoDatum]()
     var travelData = [TravelData]()
+
+    private let fetchApiDataUtility = FetchApiDataUtility()
     
     lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .grouped)
     
@@ -31,8 +32,6 @@ class SearchResultViewController: UIViewController {
         setupResultTableView()
 
 //        placesClient = GMSPlacesClient.shared()
-        
-       
         
     }
     
@@ -68,62 +67,51 @@ class SearchResultViewController: UIViewController {
 //        travelData = travelData.filter { travelData in
 //            travelData.placeData.addressObj.country == "Taiwan"
 //        }
-        
-        resultTableView.reloadData()
+        getPhoto()
+
     }
-    
-//    func foo(completion: @escaping ((Swift.Result<Data, Error>) -> Void)) {
-//        
-//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt64(UInt(GMSPlaceField.photos.rawValue)))
-//
-//        placesClient?.fetchPlace(fromPlaceID: "foo",
-//                                 placeFields: fields,
-//                                 sessionToken: nil, callback: {
-//          (place: GMSPlace?, error: Error?) in
-//          if let error = error {
-//            print("An error occurred: \(error.localizedDescription)")
-//            return
-//          }
-//          if let place = place {
-//            // Get the metadata for the first photo in the place photo metadata list.
-//            let photoMetadata: GMSPlacePhotoMetadata = place.photos![0]
-//
-//            // Call loadPlacePhoto to display the bitmap and attribution.
-//              self.placesClient?.loadPlacePhoto(photoMetadata, callback: { [self] (photo, error) -> Void in
-//              if let error = error {
-//                // TODO: Handle the error.
-//                print("Error loading photo metadata: \(error.localizedDescription)")
-//                  
-//                  completion(.failure(error))
-//                return
-//              } else {
-//                // Display the first image and its attributions.
-//                  self.photos.append(photo!)
-//                  print("photos.count:",photos.count)
-//                  
-//                  let imageData: Data = photo?.pngData() ?? Data()
-//                  completion(.success(imageData))
-//              }
-//            })
-//          }
-//        })
-//    }
-    
-//    func getIPlace() {
-//        foo { result in
-//            switch result {
-//            case .success(let data):
-//                break
-//            case .failure(let error):
-//                break
-//            }
-//        }
-//    }
-    
 
- 
+    func fetchPhoto(completion: @escaping (Result<[PhotoDatum],Error>) -> Void) {
+        for i in 0..<tripAdvisorPlaceData.count {
+            if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: tripAdvisorPlaceData[i].locationID, searchQuery: nil, category: nil, language: "zh-TW") {
 
-}
+                AF.request(url).response { response in
+                    if let data = response.data {
+                        let decoder = JSONDecoder()
+                        do {
+                            let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
+                            completion(.success(decodedData.photoData))
+                        } catch {
+                            if let error = response.error {
+                                completion(.failure(error))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    func getPhoto() {
+        fetchPhoto { result in
+            switch result {
+            case .success(let photoData):
+                self.tripAdvisorPhotoData = photoData
+                for i in 0..<self.tripAdvisorPhotoData.count {
+                    self.travelData[i].photoURL = photoData[i].images.medium.url
+                }
+
+                self.resultTableView.reloadData()
+                print("photoData.count:\(photoData.count)")
+            case .failure(let error):
+                print("error:\(error)")
+            }
+        }
+    }
+
+
+} // class end
 
 extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -134,8 +122,11 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
         guard travelData.indices.contains(index), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
-        
-//        cell.backGroundImageView.image = photos[index]
+
+        if let url = URL(string: travelData[index].photoURL) {
+            cell.backGroundImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
+        }
+
         cell.nameLabel.text = travelData[index].placeData.name
         
         updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
@@ -163,6 +154,7 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 }
 
 extension SearchResultViewController: SearchResultTableViewCellDelegate {
+
     func resultWasSaved(indexPath: IndexPath) {
         let index = indexPath.row
         guard travelData.indices.contains(index) else { return }
@@ -178,7 +170,6 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
         }
         
         resultTableView.reloadData()
-        
     }
     
     

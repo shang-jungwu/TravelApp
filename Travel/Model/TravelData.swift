@@ -10,7 +10,7 @@ import Foundation
 struct TravelData {
     let placeData: Datum
     var isSaved: Bool
-    let photoURL: String
+    var photoURL: String
     
     init(placeData: Datum, isSaved: Bool = false, photoURL: String = "") {
         self.placeData = placeData

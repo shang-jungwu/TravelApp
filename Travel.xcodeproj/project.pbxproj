@@ -25,7 +25,7 @@
 		CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */; };
 		CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */; };
 		CAD722182B58C77E00EF3D7C /* PlaceApiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */; };
-		CAD7221A2B58C8FF00EF3D7C /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* Test.swift */; };
+		CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */; };
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
 		CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */; };
 		CAD722202B592AB400EF3D7C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */; };
@@ -80,7 +80,7 @@
 		CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceApiData.swift; sourceTree = "<group>"; };
-		CAD722192B58C8FF00EF3D7C /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
+		CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchApiDataUtility.swift; sourceTree = "<group>"; };
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
@@ -119,6 +119,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		49536E3D2B5AB0FB0075836E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				CA6DE1382B57D69900F1861B /* TabBarController.swift */,
+				CA6DE10C2B57D5B300F1861B /* SearchViewController.swift */,
+				CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */,
+				CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */,
+				CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */,
+				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
+				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		4977511B2B580B4B0027546F /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -168,14 +182,8 @@
 			children = (
 				CA6DE1082B57D5B300F1861B /* AppDelegate.swift */,
 				CA6DE10A2B57D5B300F1861B /* SceneDelegate.swift */,
-				CA6DE1382B57D69900F1861B /* TabBarController.swift */,
-				CA6DE10C2B57D5B300F1861B /* SearchViewController.swift */,
-				CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */,
-				CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */,
-				CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */,
-				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
-				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
 				49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */,
+				49536E3D2B5AB0FB0075836E /* Controller */,
 				4977511B2B580B4B0027546F /* View */,
 				CAD722162B58C75400EF3D7C /* Model */,
 				CA6DE1112B57D5B300F1861B /* Assets.xcassets */,
@@ -210,7 +218,7 @@
 				CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */,
 				CADDA0BF2B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift */,
 				CADDA0BD2B5A446000F35BF7 /* TravelData.swift */,
-				CAD722192B58C8FF00EF3D7C /* Test.swift */,
+				CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -509,7 +517,7 @@
 				CADDA0BE2B5A446000F35BF7 /* TravelData.swift in Sources */,
 				CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */,
 				CAD722182B58C77E00EF3D7C /* PlaceApiData.swift in Sources */,
-				CAD7221A2B58C8FF00EF3D7C /* Test.swift in Sources */,
+				CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */,
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
@@ -620,7 +628,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -678,7 +686,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -702,7 +710,6 @@
 				INFOPLIST_FILE = Travel/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -731,7 +738,6 @@
 				INFOPLIST_FILE = Travel/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
