@@ -8,9 +8,9 @@
 import Foundation
 import Alamofire
 
-struct apiUtility {
+struct TripAdvisorApiUtility {
     
-   
+    
     
     
     

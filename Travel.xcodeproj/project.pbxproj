@@ -29,6 +29,7 @@
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
 		CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */; };
 		CAD722202B592AB400EF3D7C /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */; };
+		CADDA0BC2B5A206A00F35BF7 /* TripAdvisorApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */; };
 		CB9EA744C2F612D825154E05 /* Pods_TravelTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD045B34D9DD87A1DD45CA10 /* Pods_TravelTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -81,6 +82,7 @@
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
 		CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripAdvisorApi.swift; sourceTree = "<group>"; };
 		F27492EA71AC8C1065B0B486 /* Pods-Travel-TravelUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel-TravelUITests.release.xcconfig"; path = "Target Support Files/Pods-Travel-TravelUITests/Pods-Travel-TravelUITests.release.xcconfig"; sourceTree = "<group>"; };
 		FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Travel_TravelUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -201,6 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */,
+				CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */,
 				CAD722192B58C8FF00EF3D7C /* Test.swift */,
 			);
 			path = Model;
@@ -504,6 +507,7 @@
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
+				CADDA0BC2B5A206A00F35BF7 /* TripAdvisorApi.swift in Sources */,
 				CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */,
 				CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */,
 				CA6DE10B2B57D5B300F1861B /* SceneDelegate.swift in Sources */,
@@ -608,7 +612,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -666,7 +670,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
