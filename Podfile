@@ -11,6 +11,11 @@ pod 'SnapKit'
 pod 'Alamofire'
 pod 'SDWebImage'
 pod 'GooglePlaces', '8.3.0'
+#pod 'FirebaseAnalytics'
+#pod 'FirebaseAuth'
+#pod 'FirebaseFirestore'
+#pod 'FirebaseCrashlytics'
+#pod 'FirebaseDatabase'
 
   target 'TravelTests' do
     inherit! :search_paths

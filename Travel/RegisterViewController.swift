@@ -7,7 +7,7 @@
 
 import UIKit
 import SnapKit
-import FirebaseAuth
+//import FirebaseAuth
 
 
 class RegisterViewController: UIViewController {
