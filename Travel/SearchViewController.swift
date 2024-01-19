@@ -9,11 +9,20 @@ import UIKit
 import SnapKit
 import Alamofire
 import GooglePlaces
+import SPAlert
 
 class SearchViewController: UIViewController {
+    
+    enum FetchDataType: String {
+        case search = "search?"
+        case photo = "photo?"
+    }
 
 //    var placeApiResult =  [Result]()
     var tripAdvisorPlaceData = [Datum]()
+    var tripAdvisorPhotoData = [PhotoDatum]()
+
+    
     var photos = [UIImage]()
     lazy var searchResultVC = SearchResultViewController()
     
@@ -22,7 +31,7 @@ class SearchViewController: UIViewController {
     lazy var searchTextFieldStack = UIStackView()
     lazy var searchQueryTextField = TravelCustomTextField()
     lazy var categoryTextField = TravelCustomTextField()
-    lazy var languageTextField = TravelCustomTextField()
+//    lazy var languageTextField = TravelCustomTextField()
     
     lazy var searchButton: UIButton = {
         let button = UIButton()
@@ -36,18 +45,8 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-        if let query = searchQueryTextField.text, let category = categoryTextField.text {
-            fetchTripAdvisorData(searchQuery: query, category: category, language: "zh-TW")
-
-            
-        }
+        getPlace()
        
-//        if let nav = self.navigationController {
-////            searchResultVC.searchResult = self.placeApiResult
-////            searchResultVC.photos = self.photos
-//            nav.pushViewController(searchResultVC, animated: true)
-//            print("Push SearchResultVC")
-//        }
     }
         
     override func viewDidLoad() {
@@ -56,11 +55,7 @@ class SearchViewController: UIViewController {
         setupNav()
         setupUI()
         
-        placesClient = GMSPlacesClient.shared()
-        
-//        getPlaceAPIData()
-        
-       
+//        placesClient = GMSPlacesClient.shared()
 
     }
 
@@ -88,12 +83,13 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
+        searchQueryTextField.text = "Taipei"
         textFieldSetting(searchQueryTextField, placeholder: "輸入地點", keyboard: .default)
         
         categoryTextField.text = "restaurants"
         textFieldSetting(categoryTextField, placeholder: "輸入類別", keyboard: .default)
-        languageTextField.text = "zh-TW"
-        textFieldSetting(languageTextField, placeholder: "language", keyboard: .default)
+//        languageTextField.text = "zh-TW"
+//        textFieldSetting(languageTextField, placeholder: "language", keyboard: .default)
     }
     
     func setupStackView() {
@@ -104,36 +100,150 @@ class SearchViewController: UIViewController {
         setupTextField()
         searchTextFieldStack.addArrangedSubview(searchQueryTextField)
         searchTextFieldStack.addArrangedSubview(categoryTextField)
-        searchTextFieldStack.addArrangedSubview(languageTextField)
+//        searchTextFieldStack.addArrangedSubview(languageTextField)
     }
     
-    func fetchTripAdvisorData(searchQuery: String, category: String, language: String) {
-        var urlComponents = URLComponents(string: "https://api.content.tripadvisor.com/api/v1/location/search?")!
-        urlComponents.queryItems = [
+    func prepareURL(forWhat: FetchDataType, loactionid: String?, searchQuery: String?, category: String?, language: String?) -> URL? {
+        
+        var urlComponents = URLComponents()
+        
+        switch forWhat {
+        case .search:
+            urlComponents = URLComponents(string: "https://api.content.tripadvisor.com/api/v1/location/\(forWhat.rawValue)")!
+        case .photo:
+            urlComponents = URLComponents(string: "https://api.content.tripadvisor.com/api/v1/location/\(Int(loactionid!)!)/\(forWhat.rawValue)")!
+        }
+       
+        let queryItems = [
             "key":"AF48615F85EB441CB66C36342C521A6A",
             "searchQuery":searchQuery,
             "category":category,
             "language":language
-        ].map({
+        ].filter {
+            $0.value != nil
+        }
+        
+        urlComponents.queryItems = queryItems.map({
             URLQueryItem(name: $0.key, value: $0.value)
         })
         
-        if let url = urlComponents.url {
-            AF.request(url).response { response in
-                if let data = response.data {
-                    let decoder = JSONDecoder()
-                    do {
-                        let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
-                        self.tripAdvisorPlaceData = decodedData.data
-                        print("TripAdvisor",self.tripAdvisorPlaceData)
-                    } catch {
-                        print(response.error as Any)
-                    }
+        return urlComponents.url
+    }
+    
+    func getURLString(searchQuery: String, language: String = "en") -> String {
+        
+        let string = "https://api.content.tripadvisor.com/api/v1/location/search?key=AF48615F85EB441CB66C36342C521A6A&searchQuery=\(searchQuery)&language=\(language)"
+        
+        return string
+    }
+    
+    func fetchTripAdvisorData(completion: @escaping (Result<[Datum],Error>) -> Void) {
+       print("~~~~~~~")
+//        guard searchQueryTextField.text != "", categoryTextField.text != "" else { return }
+        
+        
+        let headers = ["accept": "application/json"]
+
+        let request = NSMutableURLRequest(url: NSURL(string: "https://api.content.tripadvisor.com/api/v1/location/search?key=AF48615F85EB441CB66C36342C521A6A&searchQuery=Taiwan&language=en")! as URL,
+                                                cachePolicy: .useProtocolCachePolicy,
+                                            timeoutInterval: 10.0)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+
+        let session = URLSession.shared
+        let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
+          if (error != nil) {
+            print(error as Any)
+          } else {
+            let httpResponse = response as? HTTPURLResponse
+            print(httpResponse)
+          }
+        })
+
+        dataTask.resume()
+                
+//        if let url = prepareURL(forWhat: .search, loactionid: nil, searchQuery: "Taipei", category: "restaurants", language: "zh-TW")  {
+//            AF.request(url).response { response in
+//                if let data = response.data {
+//                    let decoder = JSONDecoder()
+//                    do {
+//                        let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
+//                        print("~~~~~~~2")
+//
+//                        completion(.success(decodedData.data))
+//                
+//                    } catch {
+//                        if let error = response.error {
+//                            completion(.failure(error))
+//                            
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+    
+    func getPlace() {
+        print("~~~~~~~3")
+        var alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
+        alertView.present(on: self.view)
+        
+        fetchTripAdvisorData { [weak self] result in
+            guard let self = self else { return } // 避免強引用
+            switch result {
+            case .success(let tripAdvisorApiData):
+                self.tripAdvisorPlaceData = tripAdvisorApiData
+                alertView.dismiss()
+               
+                if let nav = self.navigationController {
+                    self.searchResultVC.tripAdvisorPlaceData = self.tripAdvisorPlaceData
+                    nav.pushViewController(self.searchResultVC, animated: true)
+                    print("Push SearchResultVC")
                 }
+                
+            case .failure(let error):
+                alertView = AlertAppleMusic16View(title: nil, subtitle: nil, icon: .error)
+                alertView.present(on: self.view)
+                print("error:\(error)")
             }
         }
     }
     
+    
+        
+    func fetchPhoto(completion: @escaping (Result<[PhotoDatum],Error>) -> Void) {
+        for i in 0..<tripAdvisorPlaceData.count {
+            if let url = prepareURL(forWhat: .photo, loactionid: tripAdvisorPlaceData[i].locationID, searchQuery: nil, category: nil, language: "zh-TW") {
+                
+                AF.request(url).response { response in
+                    if let data = response.data {
+                        let decoder = JSONDecoder()
+                        do {
+                            let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
+                            completion(.success(decodedData.photoData))
+                        } catch {
+                            if let error = response.error {
+                                completion(.failure(error))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    func getPhoto() {
+        fetchPhoto { result in
+            switch result {
+            case .success(let photoData):
+                self.tripAdvisorPhotoData = photoData
+                print("photoData.count:\(photoData.count)")
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
     
 //    func getPlaceAPIData() {
 //        var urlComponents = URLComponents(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?")!

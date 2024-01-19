@@ -9,11 +9,13 @@ import UIKit
 import SnapKit
 
 protocol SearchResultTableViewCellDelegate: AnyObject {
-    
+    func resultWasSaved(indexPath: IndexPath)
 }
 
 class SearchResultTableViewCell: UITableViewCell {
 
+    weak var delegate: SearchResultTableViewCellDelegate?
+    var indexPath: IndexPath?
     
     lazy var backGroundImageView = UIImageView()
     lazy var nameLabel = UILabel()
@@ -28,6 +30,8 @@ class SearchResultTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
     
     
     func setupUI() {
@@ -65,10 +69,19 @@ class SearchResultTableViewCell: UITableViewCell {
     func setupHeartButton() {
         heartButton.backgroundColor = .systemYellow
         heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        heartButton.setImage(UIImage(systemName: "heart"), for: .selected)
+        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
         heartButton.tintColor = .systemGray
         heartButton.isSelected = false
+        heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
     }
+    
+    
+    @objc private func heartDidTap() {
+        guard let delegate = delegate, let indexPath = indexPath else { return }
+        delegate.resultWasSaved(indexPath: indexPath)
+    }
+    
+    
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

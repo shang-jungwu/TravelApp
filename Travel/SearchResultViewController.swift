@@ -16,10 +16,11 @@ class SearchResultViewController: UIViewController {
 //    var photos = [UIImage]()
     
     var tripAdvisorPlaceData = [Datum]()
+    var travelData = [TravelData]()
     
     lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .grouped)
     
-    private var placesClient: GMSPlacesClient!
+//    private var placesClient: GMSPlacesClient!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,7 +30,8 @@ class SearchResultViewController: UIViewController {
         setupUI()
         setupResultTableView()
 
-        placesClient = GMSPlacesClient.shared()
+//        placesClient = GMSPlacesClient.shared()
+        
        
         
     }
@@ -59,7 +61,15 @@ class SearchResultViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        self.resultTableView.reloadData()
+        for datum in tripAdvisorPlaceData {
+            self.travelData.append(TravelData(placeData: datum))
+        }
+        
+//        travelData = travelData.filter { travelData in
+//            travelData.placeData.addressObj.country == "Taiwan"
+//        }
+        
+        resultTableView.reloadData()
     }
     
 //    func foo(completion: @escaping ((Swift.Result<Data, Error>) -> Void)) {
@@ -110,93 +120,29 @@ class SearchResultViewController: UIViewController {
 //        }
 //    }
     
-//    func foo(completion: @escaping ((Data?, Error?) -> Void)) {
-//        
-//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt64(UInt(GMSPlaceField.photos.rawValue)))
-//
-//        placesClient?.fetchPlace(fromPlaceID: "foo",
-//                                 placeFields: fields,
-//                                 sessionToken: nil, callback: {
-//          (place: GMSPlace?, error: Error?) in
-//          if let error = error {
-//            print("An error occurred: \(error.localizedDescription)")
-//            return
-//          }
-//          if let place = place {
-//            // Get the metadata for the first photo in the place photo metadata list.
-//            let photoMetadata: GMSPlacePhotoMetadata = place.photos![0]
-//
-//            // Call loadPlacePhoto to display the bitmap and attribution.
-//              self.placesClient?.loadPlacePhoto(photoMetadata, callback: { [self] (photo, error) -> Void in
-//              if let error = error {
-//                // TODO: Handle the error.
-//                print("Error loading photo metadata: \(error.localizedDescription)")
-//                  completion(nil, error)
-//                return
-//              } else {
-//                // Display the first image and its attributions.
-//                  self.photos.append(photo!)
-//                  print("photos.count:",photos.count)
-//                  
-//                  let imageData: Data? = photo?.pngData()
-//                  completion(imageData, nil)
-//              }
-//            })
-//          }
-//        })
-//    }
-    
-//    func preparePhoto(placeID: String) {
-//        // Specify the place data types to return (in this case, just photos).
-//        let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt64(UInt(GMSPlaceField.photos.rawValue)))
-//
-//        placesClient?.fetchPlace(fromPlaceID: placeID,
-//                                 placeFields: fields,
-//                                 sessionToken: nil, callback: {
-//          (place: GMSPlace?, error: Error?) in
-//          if let error = error {
-//            print("An error occurred: \(error.localizedDescription)")
-//            return
-//          }
-//          if let place = place {
-//            // Get the metadata for the first photo in the place photo metadata list.
-//            let photoMetadata: GMSPlacePhotoMetadata = place.photos![0]
-//
-//            // Call loadPlacePhoto to display the bitmap and attribution.
-//              self.placesClient?.loadPlacePhoto(photoMetadata, callback: { [self] (photo, error) -> Void in
-//              if let error = error {
-//                // TODO: Handle the error.
-//                print("Error loading photo metadata: \(error.localizedDescription)")
-//                return
-//              } else {
-//                // Display the first image and its attributions.
-//                  self.photos.append(photo!)
-//                  print("photos.count:",photos.count)
-//                  
-//                 
-//              }
-//            })
-//          }
-//        })
-//    }
+
+ 
 
 }
 
 extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     
-        tripAdvisorPlaceData.count
+        travelData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
+        guard travelData.indices.contains(index), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
         
 //        cell.backGroundImageView.image = photos[index]
-        cell.nameLabel.text = tripAdvisorPlaceData[index].name
+        cell.nameLabel.text = travelData[index].placeData.name
+        
+        updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
         
         return cell
     }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         1
     }
@@ -204,4 +150,36 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         1
     }
+    
+    
+    private func updateHeartButtonUI(_ cell: SearchResultTableViewCell, placeIsSaved: Bool) {
+        if placeIsSaved {
+            cell.heartButton.isSelected = true
+        } else {
+            cell.heartButton.isSelected = false
+        }
+    }
+    
+}
+
+extension SearchResultViewController: SearchResultTableViewCellDelegate {
+    func resultWasSaved(indexPath: IndexPath) {
+        let index = indexPath.row
+        guard travelData.indices.contains(index) else { return }
+        
+        var placeSavedStatus = travelData[index].isSaved
+        placeSavedStatus = !placeSavedStatus // toggle
+        travelData[index].isSaved = placeSavedStatus // 更新資料
+        
+        if placeSavedStatus == true {
+            print("收藏")
+        } else {
+            print("退出")
+        }
+        
+        resultTableView.reloadData()
+        
+    }
+    
+    
 }
