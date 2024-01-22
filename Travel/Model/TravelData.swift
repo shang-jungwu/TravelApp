@@ -8,11 +8,11 @@
 import Foundation
 
 struct TravelData {
-    let placeData: Datum
+    let placeData: PlaceData
     var isSaved: Bool
     var photoURL: String
     
-    init(placeData: Datum, isSaved: Bool = false, photoURL: String = "") {
+    init(placeData: PlaceData, isSaved: Bool = false, photoURL: String = "") {
         self.placeData = placeData
         self.isSaved = isSaved
         self.photoURL = photoURL

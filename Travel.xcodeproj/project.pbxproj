@@ -24,7 +24,6 @@
 		CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE1382B57D69900F1861B /* TabBarController.swift */; };
 		CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */; };
 		CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */; };
-		CAD722182B58C77E00EF3D7C /* PlaceApiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */; };
 		CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */; };
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
 		CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */; };
@@ -79,7 +78,6 @@
 		CA6DE1382B57D69900F1861B /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
-		CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceApiData.swift; sourceTree = "<group>"; };
 		CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchApiDataUtility.swift; sourceTree = "<group>"; };
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
 		CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultTableViewCell.swift; sourceTree = "<group>"; };
@@ -214,7 +212,6 @@
 		CAD722162B58C75400EF3D7C /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				CAD722172B58C77E00EF3D7C /* PlaceApiData.swift */,
 				CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */,
 				CADDA0BF2B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift */,
 				CADDA0BD2B5A446000F35BF7 /* TravelData.swift */,
@@ -516,7 +513,6 @@
 				CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */,
 				CADDA0BE2B5A446000F35BF7 /* TravelData.swift in Sources */,
 				CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */,
-				CAD722182B58C77E00EF3D7C /* PlaceApiData.swift in Sources */,
 				CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */,
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,

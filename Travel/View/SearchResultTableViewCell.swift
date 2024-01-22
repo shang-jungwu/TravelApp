@@ -31,9 +31,6 @@ class SearchResultTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    
-    
     func setupUI() {
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
@@ -48,14 +45,14 @@ class SearchResultTableViewCell: UITableViewCell {
         heartButton.snp.makeConstraints { make in
             make.top.equalTo(placeImageView.snp.top).offset(10)
             make.trailing.equalTo(placeImageView.snp.trailing).offset(-10)
-            make.width.equalTo(40)
+//            make.width.equalTo(40)
             make.height.equalTo(40)
         }
         setupHeartButton()
         
         contentView.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(placeImageView.snp.bottom)
+            make.top.equalTo(placeImageView.snp.bottom).offset(10)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(-10)
@@ -63,26 +60,32 @@ class SearchResultTableViewCell: UITableViewCell {
         nameLabel.textColor = .black
         nameLabel.backgroundColor = .systemCyan
         nameLabel.textAlignment = .left
-        nameLabel.font = UIFont.systemFont(ofSize: 16)
+        nameLabel.font = UIFont.systemFont(ofSize: 18)
     }
     
     func setupHeartButton() {
-        heartButton.backgroundColor = .systemYellow
+        heartButton.backgroundColor = UIColor.init(white: 1, alpha: 1)
+        heartButton.layer.cornerRadius = 10
+        heartButton.layer.borderWidth = 1
+        heartButton.layer.borderColor = UIColor.white.cgColor
         heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        heartButton.setTitle("加入收藏", for: .normal)
+        heartButton.setTitleColor(.black, for: [])
         heartButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        heartButton.tintColor = .systemGray
+        heartButton.setTitle("已收藏", for: .selected)
+        heartButton.tintColor = .systemRed
         heartButton.isSelected = false
         heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
+        
     }
     
     
     @objc private func heartDidTap() {
         print("heart did tap")
-        guard let delegate = delegate, let indexPath = indexPath else { print("xxxxxx")
+        guard let delegate = delegate, let indexPath = indexPath else { print("xxxRETURNxxx")
             return }
         delegate.resultWasSaved(indexPath: indexPath)
     }
-    
     
     
     override func setSelected(_ selected: Bool, animated: Bool) {

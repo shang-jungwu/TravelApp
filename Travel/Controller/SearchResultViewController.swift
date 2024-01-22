@@ -9,21 +9,17 @@ import UIKit
 import SnapKit
 import SDWebImage
 import Alamofire
-//import GooglePlaces
 
 class SearchResultViewController: UIViewController {
 
-    var tripAdvisorPlaceData = [Datum]()
-    var tripAdvisorPhotoData = [PhotoDatum]()
+    var tripAdvisorPlaceData = [PlaceData]()
+    var tripAdvisorPhotoData = [PhotoData]()
     var travelData = [TravelData]()
     
-    var urlArr = [String]()
-
     private let fetchApiDataUtility = FetchApiDataUtility()
     
     lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .grouped)
     
-//    private var placesClient: GMSPlacesClient!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,20 +28,15 @@ class SearchResultViewController: UIViewController {
         setupNav()
         setupUI()
         setupResultTableView()
-
-//        placesClient = GMSPlacesClient.shared()
         
     }
     
     func setupNav() {
         self.navigationItem.title = "Result"
-        let rightBarItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(photoGet))
-        self.navigationItem.rightBarButtonItem = rightBarItem
+       
     }
     
-    @objc func photoGet() {
-        getPhoto(loactionid: "0")
-    }
+   
 
     func setupUI() {
         view.addSubview(resultTableView)
@@ -63,22 +54,33 @@ class SearchResultViewController: UIViewController {
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
     }
     
+    
 
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        for i in 0..<tripAdvisorPlaceData.count {
-            let datum = tripAdvisorPlaceData[i]
+        for (i,placeData) in tripAdvisorPlaceData.enumerated() {
+            self.travelData.append(TravelData(placeData: placeData))
             
-            self.travelData.append(TravelData(placeData: datum, photoURL: <#T##String#>))
+            // 先停抓照片 節省api扣打
+//            let locationID = placeData.locationID
+//            getPhoto(locationid: locationID) { [weak self] result in
+//                guard let self = self else { return } // 避免強引用
+//                switch result {
+//                case .success(let photo):
+//                    self.travelData[i].photoURL =  photo.images.medium.url
+//                    self.resultTableView.reloadData()
+//                case .failure(let error):
+//                    print(error)
+//                }
+//            }
             
         }
-        
-
+       
     }
 
-    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoDatum],Error>) -> Void) {
+    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
                 
         if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
             
@@ -100,25 +102,12 @@ class SearchResultViewController: UIViewController {
 
     }
 
-    func getPhoto(loactionid: String) {
-        fetchPhoto(loactionid: loactionid) { result in
+    func getPhoto(locationid: String, completion: @escaping ((Result<PhotoData, Error>) -> Void)) {
+        fetchPhoto(loactionid: locationid) { result in
             switch result {
             case .success(let photoData):
-//                self.tripAdvisorPhotoData.append(contentsOf: photoData)
-//                print("self.tripAdvisorPhotoData:\(self.tripAdvisorPhotoData)")
-//                for i in 0..<self.tripAdvisorPhotoData.count {
-//                    self.travelData[i].photoURL = photoData[0].images.medium.url
-//                }
-                
-                self.urlArr.append(photoData[0].images.medium.url)
-                print(self.urlArr)
-                
-//                self.resultTableView.reloadData()
-             
-
+                completion(.success(photoData[0]))
             case .failure(let error):
-                
-                print("photo~~failure~~")
                 print("error:\(error)")
             }
         }
@@ -144,12 +133,16 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
         // SearchResultTableViewCellDelegate
         cell.delegate = self
         cell.indexPath = indexPath
-        /////////////////////////////////////
-        
-        if let url = URL(string:"https://media-cdn.tripadvisor.com/media/photo-f/18/47/b1/1a/signature-beef-noodles.jpg") {
-            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
-        }
 
+        /////////////////////////////////////
+            
+        // 先停抓照片 節省api扣打
+//        if let url = URL(string: travelData[index].photoURL) {
+//            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
+//        }
+        
+        
+        cell.placeImageView.image = UIImage(named: "default_Image")
         cell.nameLabel.text = travelData[index].placeData.name
         
         updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
@@ -169,14 +162,16 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     private func updateHeartButtonUI(_ cell: SearchResultTableViewCell, placeIsSaved: Bool) {
         if placeIsSaved {
             cell.heartButton.isSelected = true
-            cell.heartButton.backgroundColor = .systemBlue
+//            cell.heartButton.backgroundColor = .systemRed
         } else {
             cell.heartButton.isSelected = false
-            cell.heartButton.backgroundColor = .systemYellow
+//            cell.heartButton.backgroundColor = UIColor.init(white: 1, alpha: 0.2)
         }
     }
     
-}
+    
+    
+} // table view ex end
 
 extension SearchResultViewController: SearchResultTableViewCellDelegate {
 
@@ -196,7 +191,7 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
             print("退出")
         }
         
-        resultTableView.reloadData()
+        resultTableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     

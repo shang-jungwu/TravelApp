@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - TripAdvisorPhotoApi
 struct TripAdvisorPhotoApi: Codable {
-    let data: [PhotoDatum]
+    let data: [PhotoData]
 }
 
 // MARK: - PhotoDatum
-struct PhotoDatum: Codable {
+struct PhotoData: Codable {
     let id: Int
     let isBlessed: Bool
     let caption, publishedDate: String

@@ -8,11 +8,11 @@
 import Foundation
 
 struct TripAdvisorApi: Codable {
-    let data: [Datum]
+    let data: [PlaceData]
 }
 
 // MARK: - Datum
-struct Datum: Codable {
+struct PlaceData: Codable {
     let locationID, name: String
     let addressObj: AddressObj
 
