@@ -115,7 +115,6 @@ class SearchViewController: UIViewController {
                         let decoder = JSONDecoder()
                         do {
                             let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
-                            print("decoded~~~~")
                             completion(.success(decodedData.data))
                         } catch {
                             if let error = response.error {
@@ -134,14 +133,15 @@ class SearchViewController: UIViewController {
         fetchTripAdvisorData { [weak self] result in
             guard let self = self else { return } // 避免強引用
             
-            var alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
+            let alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
             alertView.present(on: self.view)
             
             switch result {
             case .success(let tripAdvisorApiData):
                 print("fetch successfully~~~~")
                 self.tripAdvisorPlaceData = tripAdvisorApiData
-                alertView.dismiss()
+                
+                alertView.dismiss() // 成功後關掉 alertView
                
                 if let nav = self.navigationController {
                     self.searchResultVC.tripAdvisorPlaceData = self.tripAdvisorPlaceData
