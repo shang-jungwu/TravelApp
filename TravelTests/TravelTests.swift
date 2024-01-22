@@ -26,5 +26,16 @@ final class TravelTests: XCTestCase {
             // Put the code you want to measure the time of here.
         }
     }
+    
+    
+    
+    func testPhotoApi() {
+        let fetchAPIUtility = FetchApiDataUtility()
+        let input = fetchAPIUtility.prepareURL(forDataType: .photo, loactionid: "123456", searchQuery: nil, category: nil, language: "zh-TW")
+        let answer = URL(string: "https://api.content.tripadvisor.com/api/v1/location/4800782/photos?key=AF48615F85EB441CB66C36342C521A6A&language=en")
+        
+        XCTAssertEqual(input, answer)
+
+    }
 
 }

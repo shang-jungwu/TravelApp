@@ -141,16 +141,14 @@ class SearchViewController: UIViewController {
 //    }
     
     func fetchTripAdvisorData(completion: @escaping (Result<[Datum],Error>) -> Void) {
-       print("~~~~~~~")
 //        guard searchQueryTextField.text != "", categoryTextField.text != "" else { return }
-                
+
         if let url = fetchApiDataUtility.prepareURL(forDataType: .search, loactionid: nil, searchQuery: "Taipei", category: "restaurants", language: "zh-TW")  {
             AF.request(url).response { response in
                 if let data = response.data {
                     let decoder = JSONDecoder()
                     do {
                         let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
-                        print("~~~~~~~2")
                         completion(.success(decodedData.data))
                     } catch {
                         if let error = response.error {
@@ -164,7 +162,6 @@ class SearchViewController: UIViewController {
     }
     
     func getPlace() {
-        print("~~~~~~~3")
         var alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
         alertView.present(on: self.view)
         

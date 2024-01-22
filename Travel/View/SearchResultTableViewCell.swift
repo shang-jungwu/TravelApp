@@ -17,7 +17,7 @@ class SearchResultTableViewCell: UITableViewCell {
     weak var delegate: SearchResultTableViewCellDelegate?
     var indexPath: IndexPath?
     
-    lazy var backGroundImageView = UIImageView()
+    lazy var placeImageView = UIImageView()
     lazy var nameLabel = UILabel()
     lazy var heartButton = UIButton()
     
@@ -35,8 +35,8 @@ class SearchResultTableViewCell: UITableViewCell {
     
     
     func setupUI() {
-        contentView.addSubview(backGroundImageView)
-        backGroundImageView.snp.makeConstraints { make in
+        contentView.addSubview(placeImageView)
+        placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
@@ -46,8 +46,8 @@ class SearchResultTableViewCell: UITableViewCell {
 
         contentView.addSubview(heartButton)
         heartButton.snp.makeConstraints { make in
-            make.top.equalTo(backGroundImageView.snp.top).offset(10)
-            make.trailing.equalTo(backGroundImageView.snp.trailing).offset(-10)
+            make.top.equalTo(placeImageView.snp.top).offset(10)
+            make.trailing.equalTo(placeImageView.snp.trailing).offset(-10)
             make.width.equalTo(40)
             make.height.equalTo(40)
         }
@@ -55,7 +55,7 @@ class SearchResultTableViewCell: UITableViewCell {
         
         contentView.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(backGroundImageView.snp.bottom)
+            make.top.equalTo(placeImageView.snp.bottom)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.bottom.equalToSuperview().offset(-10)
@@ -77,7 +77,9 @@ class SearchResultTableViewCell: UITableViewCell {
     
     
     @objc private func heartDidTap() {
-        guard let delegate = delegate, let indexPath = indexPath else { return }
+        print("heart did tap")
+        guard let delegate = delegate, let indexPath = indexPath else { print("xxxxxx")
+            return }
         delegate.resultWasSaved(indexPath: indexPath)
     }
     

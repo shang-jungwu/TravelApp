@@ -7,23 +7,27 @@
 
 import Foundation
 
+// MARK: - TripAdvisorPhotoApi
 struct TripAdvisorPhotoApi: Codable {
-    let photoData: [PhotoDatum]
+    let data: [PhotoDatum]
 }
 
-// MARK: - Datum
+// MARK: - PhotoDatum
 struct PhotoDatum: Codable {
     let id: Int
+    let isBlessed: Bool
     let caption, publishedDate: String
     let images: Images
+    let album: String
+    let source: Source
     let user: User
 
     enum CodingKeys: String, CodingKey {
         case id
+        case isBlessed = "is_blessed"
         case caption
         case publishedDate = "published_date"
-        case images
-        case user
+        case images, album, source, user
     }
 }
 
@@ -39,7 +43,19 @@ struct Large: Codable {
     let url: String
 }
 
+// MARK: - Source
+struct Source: Codable {
+    let name, localizedName: String
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case localizedName = "localized_name"
+    }
+}
+
 // MARK: - User
 struct User: Codable {
     let username: String
 }
+
+

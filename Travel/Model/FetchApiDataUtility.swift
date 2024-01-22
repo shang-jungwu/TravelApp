@@ -12,7 +12,7 @@ struct FetchApiDataUtility {
 
     enum FetchDataType: String {
         case search = "search?"
-        case photo = "photo?"
+        case photo = "photos?"
     }
     
     func prepareURL(forDataType: FetchDataType, loactionid: String?, searchQuery: String?, category: String?, language: String?) -> URL? {
@@ -41,7 +41,6 @@ struct FetchApiDataUtility {
         urlComponents.queryItems = queryItems.map({ (name,value) in
             URLQueryItem(name: name, value: value)
         })
-
         return urlComponents.url
     }
     

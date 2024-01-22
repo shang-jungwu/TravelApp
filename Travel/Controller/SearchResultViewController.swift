@@ -16,6 +16,8 @@ class SearchResultViewController: UIViewController {
     var tripAdvisorPlaceData = [Datum]()
     var tripAdvisorPhotoData = [PhotoDatum]()
     var travelData = [TravelData]()
+    
+    var urlArr = [String]()
 
     private let fetchApiDataUtility = FetchApiDataUtility()
     
@@ -37,6 +39,12 @@ class SearchResultViewController: UIViewController {
     
     func setupNav() {
         self.navigationItem.title = "Result"
+        let rightBarItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(photoGet))
+        self.navigationItem.rightBarButtonItem = rightBarItem
+    }
+    
+    @objc func photoGet() {
+        getPhoto(loactionid: "0")
     }
 
     func setupUI() {
@@ -60,31 +68,30 @@ class SearchResultViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        for datum in tripAdvisorPlaceData {
-            self.travelData.append(TravelData(placeData: datum))
+        for i in 0..<tripAdvisorPlaceData.count {
+            let datum = tripAdvisorPlaceData[i]
+            
+            self.travelData.append(TravelData(placeData: datum, photoURL: <#T##String#>))
+            
         }
         
-//        travelData = travelData.filter { travelData in
-//            travelData.placeData.addressObj.country == "Taiwan"
-//        }
-        getPhoto()
 
     }
 
-    func fetchPhoto(completion: @escaping (Result<[PhotoDatum],Error>) -> Void) {
-        for i in 0..<tripAdvisorPlaceData.count {
-            if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: tripAdvisorPlaceData[i].locationID, searchQuery: nil, category: nil, language: "zh-TW") {
-
-                AF.request(url).response { response in
-                    if let data = response.data {
-                        let decoder = JSONDecoder()
-                        do {
-                            let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
-                            completion(.success(decodedData.photoData))
-                        } catch {
-                            if let error = response.error {
-                                completion(.failure(error))
-                            }
+    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoDatum],Error>) -> Void) {
+                
+        if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
+            
+            AF.request(url).response { response in
+                if let data = response.data {
+                    let decoder = JSONDecoder()
+                    do {
+                        let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
+                        completion(.success(decodedData.data))
+                    } catch {
+                        if let error = response.error {
+                            print("photo~~API failure~~")
+                            completion(.failure(error))
                         }
                     }
                 }
@@ -93,23 +100,34 @@ class SearchResultViewController: UIViewController {
 
     }
 
-    func getPhoto() {
-        fetchPhoto { result in
+    func getPhoto(loactionid: String) {
+        fetchPhoto(loactionid: loactionid) { result in
             switch result {
             case .success(let photoData):
-                self.tripAdvisorPhotoData = photoData
-                for i in 0..<self.tripAdvisorPhotoData.count {
-                    self.travelData[i].photoURL = photoData[i].images.medium.url
-                }
+//                self.tripAdvisorPhotoData.append(contentsOf: photoData)
+//                print("self.tripAdvisorPhotoData:\(self.tripAdvisorPhotoData)")
+//                for i in 0..<self.tripAdvisorPhotoData.count {
+//                    self.travelData[i].photoURL = photoData[0].images.medium.url
+//                }
+                
+                self.urlArr.append(photoData[0].images.medium.url)
+                print(self.urlArr)
+                
+//                self.resultTableView.reloadData()
+             
 
-                self.resultTableView.reloadData()
-                print("photoData.count:\(photoData.count)")
             case .failure(let error):
+                
+                print("photo~~failure~~")
                 print("error:\(error)")
             }
         }
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        self.resultTableView.reloadData()
+    }
 
 } // class end
 
@@ -122,9 +140,14 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
         guard travelData.indices.contains(index), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
-
-        if let url = URL(string: travelData[index].photoURL) {
-            cell.backGroundImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
+        
+        // SearchResultTableViewCellDelegate
+        cell.delegate = self
+        cell.indexPath = indexPath
+        /////////////////////////////////////
+        
+        if let url = URL(string:"https://media-cdn.tripadvisor.com/media/photo-f/18/47/b1/1a/signature-beef-noodles.jpg") {
+            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
         }
 
         cell.nameLabel.text = travelData[index].placeData.name
@@ -146,8 +169,10 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     private func updateHeartButtonUI(_ cell: SearchResultTableViewCell, placeIsSaved: Bool) {
         if placeIsSaved {
             cell.heartButton.isSelected = true
+            cell.heartButton.backgroundColor = .systemBlue
         } else {
             cell.heartButton.isSelected = false
+            cell.heartButton.backgroundColor = .systemYellow
         }
     }
     
@@ -162,6 +187,8 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
         var placeSavedStatus = travelData[index].isSaved
         placeSavedStatus = !placeSavedStatus // toggle
         travelData[index].isSaved = placeSavedStatus // 更新資料
+        
+        print("travelData[index]:\(travelData[index])")
         
         if placeSavedStatus == true {
             print("收藏")
