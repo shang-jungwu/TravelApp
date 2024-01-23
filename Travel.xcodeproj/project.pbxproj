@@ -23,6 +23,8 @@
 		CA6DE12C2B57D5B300F1861B /* TravelUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE12B2B57D5B300F1861B /* TravelUITestsLaunchTests.swift */; };
 		CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE1382B57D69900F1861B /* TabBarController.swift */; };
 		CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */; };
+		CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */; };
+		CAB014F72B5F6F7B008CCA8A /* DetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F62B5F6F7B008CCA8A /* DetailTableViewCell.swift */; };
 		CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */; };
 		CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */; };
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
@@ -77,6 +79,8 @@
 		CA6DE12B2B57D5B300F1861B /* TravelUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		CA6DE1382B57D69900F1861B /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingUtility.swift; sourceTree = "<group>"; };
+		CAB014F62B5F6F7B008CCA8A /* DetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewCell.swift; sourceTree = "<group>"; };
 		CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchApiDataUtility.swift; sourceTree = "<group>"; };
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
@@ -136,6 +140,7 @@
 			children = (
 				4977511C2B580B970027546F /* TravelCustomTextField.swift */,
 				CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */,
+				CAB014F62B5F6F7B008CCA8A /* DetailTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -180,10 +185,10 @@
 			children = (
 				CA6DE1082B57D5B300F1861B /* AppDelegate.swift */,
 				CA6DE10A2B57D5B300F1861B /* SceneDelegate.swift */,
-				49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */,
 				49536E3D2B5AB0FB0075836E /* Controller */,
 				4977511B2B580B4B0027546F /* View */,
 				CAD722162B58C75400EF3D7C /* Model */,
+				CAB014F52B5F6C32008CCA8A /* Support */,
 				CA6DE1112B57D5B300F1861B /* Assets.xcassets */,
 				CA6DE1132B57D5B300F1861B /* LaunchScreen.storyboard */,
 				497751182B5805F00027546F /* GoogleService-Info.plist */,
@@ -209,13 +214,22 @@
 			path = TravelUITests;
 			sourceTree = "<group>";
 		};
+		CAB014F52B5F6C32008CCA8A /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */,
+				CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */,
+				CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
 		CAD722162B58C75400EF3D7C /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */,
 				CADDA0BF2B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift */,
 				CADDA0BD2B5A446000F35BF7 /* TravelData.swift */,
-				CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -508,6 +522,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAB014F72B5F6F7B008CCA8A /* DetailTableViewCell.swift in Sources */,
+				CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */,
 				CA6DE10D2B57D5B300F1861B /* SearchViewController.swift in Sources */,
 				49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */,
 				CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */,

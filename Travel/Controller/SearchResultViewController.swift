@@ -12,9 +12,10 @@ import Alamofire
 
 class SearchResultViewController: UIViewController {
 
-    var tripAdvisorPlaceData = [PlaceData]()
-    var tripAdvisorPhotoData = [PhotoData]()
+//    var tripAdvisorPlaceData = [PlaceData]()
+//    var tripAdvisorPhotoData = [PhotoData]()
     var travelData = [TravelData]()
+    lazy var detailVC = DetailViewController()
     
     private let fetchApiDataUtility = FetchApiDataUtility()
     
@@ -54,64 +55,38 @@ class SearchResultViewController: UIViewController {
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
     }
     
-    
 
-    
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        for (i,placeData) in tripAdvisorPlaceData.enumerated() {
-            self.travelData.append(TravelData(placeData: placeData))
-            
-            // 先停抓照片 節省api扣打
-//            let locationID = placeData.locationID
-//            getPhoto(locationid: locationID) { [weak self] result in
-//                guard let self = self else { return } // 避免強引用
-//                switch result {
-//                case .success(let photo):
-//                    self.travelData[i].photoURL =  photo.images.medium.url
-//                    self.resultTableView.reloadData()
-//                case .failure(let error):
-//                    print(error)
+//    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
+//                
+//        if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
+//            
+//            AF.request(url).response { response in
+//                if let data = response.data {
+//                    let decoder = JSONDecoder()
+//                    do {
+//                        let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
+//                        completion(.success(decodedData.data))
+//                    } catch {
+//                        if let error = response.error {
+//                            print("photo~~API failure~~")
+//                            completion(.failure(error))
+//                        }
+//                    }
 //                }
 //            }
-            
-        }
-       
-    }
+//        }
+//    }
 
-    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
-                
-        if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
-            
-            AF.request(url).response { response in
-                if let data = response.data {
-                    let decoder = JSONDecoder()
-                    do {
-                        let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
-                        completion(.success(decodedData.data))
-                    } catch {
-                        if let error = response.error {
-                            print("photo~~API failure~~")
-                            completion(.failure(error))
-                        }
-                    }
-                }
-            }
-        }
-
-    }
-
-    func getPhoto(locationid: String, completion: @escaping ((Result<PhotoData, Error>) -> Void)) {
-        fetchPhoto(loactionid: locationid) { result in
-            switch result {
-            case .success(let photoData):
-                completion(.success(photoData[0]))
-            case .failure(let error):
-                print("error:\(error)")
-            }
-        }
-    }
+//    func getPhoto(locationid: String, completion: @escaping ((Result<PhotoData, Error>) -> Void)) {
+//        fetchPhoto(loactionid: locationid) { result in
+//            switch result {
+//            case .success(let photoData):
+//                completion(.success(photoData[0]))
+//            case .failure(let error):
+//                print("error:\(error)")
+//            }
+//        }
+//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -136,13 +111,13 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 
         /////////////////////////////////////
             
-        // 先停抓照片 節省api扣打
+//         先停抓照片
 //        if let url = URL(string: travelData[index].photoURL) {
 //            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
 //        }
         
         
-        cell.placeImageView.image = UIImage(named: "default_Image")
+        cell.placeImageView.image = UIImage(systemName: "fork.knife")
         cell.nameLabel.text = travelData[index].placeData.name
         
         updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
@@ -162,13 +137,18 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     private func updateHeartButtonUI(_ cell: SearchResultTableViewCell, placeIsSaved: Bool) {
         if placeIsSaved {
             cell.heartButton.isSelected = true
-//            cell.heartButton.backgroundColor = .systemRed
+
         } else {
             cell.heartButton.isSelected = false
-//            cell.heartButton.backgroundColor = UIColor.init(white: 1, alpha: 0.2)
+
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let nav = self.navigationController {
+            nav.pushViewController(detailVC, animated: true)
+        }
+    }
     
     
 } // table view ex end

@@ -14,6 +14,7 @@ protocol SearchResultTableViewCellDelegate: AnyObject {
 
 class SearchResultTableViewCell: UITableViewCell {
 
+    let uiSettingUtility = UISettingUtility()
     weak var delegate: SearchResultTableViewCellDelegate?
     var indexPath: IndexPath?
     
@@ -34,28 +35,28 @@ class SearchResultTableViewCell: UITableViewCell {
     func setupUI() {
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-            make.height.equalTo(200)
-            
+            make.top.equalToSuperview().offset(20)
+            make.leading.equalToSuperview()//.offset(10)
+            make.width.equalTo(80)
+            make.height.equalTo(80)
+            make.bottom.equalToSuperview().offset(-20)
         }
-
+        placeImageView.tintColor = .systemGray
+        
         contentView.addSubview(heartButton)
         heartButton.snp.makeConstraints { make in
-            make.top.equalTo(placeImageView.snp.top).offset(10)
-            make.trailing.equalTo(placeImageView.snp.trailing).offset(-10)
-//            make.width.equalTo(40)
+            make.top.equalToSuperview()//.offset(10)
+            make.trailing.equalToSuperview()//.offset(-10)
+            make.width.equalTo(40)
             make.height.equalTo(40)
         }
         setupHeartButton()
         
         contentView.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(placeImageView.snp.bottom).offset(10)
-            make.leading.equalToSuperview()
+            make.centerY.equalTo(placeImageView.snp.centerY)
+            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-10)
         }
         nameLabel.textColor = .black
         nameLabel.backgroundColor = .systemCyan
@@ -64,19 +65,9 @@ class SearchResultTableViewCell: UITableViewCell {
     }
     
     func setupHeartButton() {
-        heartButton.backgroundColor = UIColor.init(white: 1, alpha: 1)
-        heartButton.layer.cornerRadius = 10
-        heartButton.layer.borderWidth = 1
-        heartButton.layer.borderColor = UIColor.white.cgColor
-        heartButton.setImage(UIImage(systemName: "heart"), for: .normal)
-        heartButton.setTitle("加入收藏", for: .normal)
-        heartButton.setTitleColor(.black, for: [])
-        heartButton.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        heartButton.setTitle("已收藏", for: .selected)
-        heartButton.tintColor = .systemRed
+        uiSettingUtility.setupHeartButton(sender: heartButton)
         heartButton.isSelected = false
         heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
-        
     }
     
     
