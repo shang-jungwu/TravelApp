@@ -12,14 +12,12 @@ import Alamofire
 
 class SearchResultViewController: UIViewController {
 
-//    var tripAdvisorPlaceData = [PlaceData]()
-//    var tripAdvisorPhotoData = [PhotoData]()
     var travelData = [TravelData]()
     lazy var detailVC = DetailViewController()
     
     private let fetchApiDataUtility = FetchApiDataUtility()
     
-    lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .grouped)
+    lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .insetGrouped)
     
 
     override func viewDidLoad() {
@@ -37,19 +35,18 @@ class SearchResultViewController: UIViewController {
        
     }
     
-   
-
     func setupUI() {
         view.addSubview(resultTableView)
         resultTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
-            make.leading.equalToSuperview().offset(15)
-            make.trailing.equalToSuperview().offset(-15)
+            make.leading.equalToSuperview()//.offset(15)
+            make.trailing.equalToSuperview()//.offset(-15)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
         }
     }
     
     func setupResultTableView() {
+        resultTableView.backgroundColor = .systemMint
         resultTableView.delegate = self
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
@@ -145,7 +142,10 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let index = indexPath.row
         if let nav = self.navigationController {
+            detailVC.placeInfoData = self.travelData
+            detailVC.dataIndex = index
             nav.pushViewController(detailVC, animated: true)
         }
     }
@@ -155,7 +155,7 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 
 extension SearchResultViewController: SearchResultTableViewCellDelegate {
 
-    func resultWasSaved(indexPath: IndexPath) {
+    func placeWasSaved(indexPath: IndexPath) {
         let index = indexPath.row
         guard travelData.indices.contains(index) else { return }
         

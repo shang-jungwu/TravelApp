@@ -76,12 +76,12 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
-        searchQueryTextField.text = "新竹市"
+        searchQueryTextField.text = "新竹"
         textFieldSetting(searchQueryTextField, placeholder: "輸入地點", keyboard: .default)
         
         categoryTextField.text = "restaurants"
         textFieldSetting(categoryTextField, placeholder: "搜尋類別", keyboard: .default)
-        languageTextField.text = "zh-TW"
+        languageTextField.text = "en"
         textFieldSetting(languageTextField, placeholder: "顯示語言", keyboard: .default)
     }
     
