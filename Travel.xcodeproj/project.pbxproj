@@ -25,6 +25,7 @@
 		CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */; };
 		CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */; };
 		CAB014F72B5F6F7B008CCA8A /* DetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F62B5F6F7B008CCA8A /* DetailTableViewCell.swift */; };
+		CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */; };
 		CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */; };
 		CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */; };
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
@@ -81,6 +82,7 @@
 		CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UISettingUtility.swift; sourceTree = "<group>"; };
 		CAB014F62B5F6F7B008CCA8A /* DetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewCell.swift; sourceTree = "<group>"; };
+		CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchApiDataUtility.swift; sourceTree = "<group>"; };
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 				CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */,
 				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
 				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
+				CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -536,6 +539,7 @@
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
 				CADDA0BC2B5A206A00F35BF7 /* TripAdvisorApi.swift in Sources */,
 				CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */,
+				CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */,
 				CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */,
 				CA6DE10B2B57D5B300F1861B /* SceneDelegate.swift in Sources */,
 				CADDA0C02B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift in Sources */,

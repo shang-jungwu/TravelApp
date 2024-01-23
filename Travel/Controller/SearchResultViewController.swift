@@ -108,7 +108,7 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 
         /////////////////////////////////////
             
-//         先停抓照片
+//         停抓照片
 //        if let url = URL(string: travelData[index].photoURL) {
 //            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
 //        }

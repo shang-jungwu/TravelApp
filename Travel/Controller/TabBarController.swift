@@ -12,6 +12,7 @@ class TabBarController: UITabBarController {
     lazy var searchVC = SearchViewController()
     lazy var profileVC = ProfileViewController()
     lazy var detailVC = DetailViewController()
+    lazy var favoriteVC = FavoriteViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,14 +27,15 @@ class TabBarController: UITabBarController {
     func createTabBarItems() {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 0)
 
-        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
+        favoriteVC.tabBarItem = UITabBarItem(title: "Favorite", image: UIImage(systemName: "heart.fill"), tag: 1)
         
-        detailVC.tabBarItem = UITabBarItem(title: "Detail", image: UIImage(systemName: "globe.central.south.asia.fill"), tag: 2)
+        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
 
         let controllerArray = [
-            UINavigationController(rootViewController: searchVC), 
+            UINavigationController(rootViewController: searchVC),
+            UINavigationController(rootViewController: favoriteVC),
             UINavigationController(rootViewController: profileVC),
-            UINavigationController(rootViewController: detailVC),
+           
         ]
         self.viewControllers = controllerArray
 //        self.setViewControllers(controllerArray, animated: true)

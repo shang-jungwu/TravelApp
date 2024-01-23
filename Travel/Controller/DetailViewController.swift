@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import GoogleMaps
+import CoreLocation
 
 class DetailViewController: UIViewController {
 
@@ -42,7 +43,7 @@ class DetailViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         detailTableView.reloadData()
-        print(placeInfoData)
+//        print(placeInfoData)
     }
     
     
@@ -127,14 +128,6 @@ class DetailViewController: UIViewController {
         
     }
     
-
-    
-    
-    func convertAddressToLatLong(address: String) -> (CGFloat,CGFloat) {
-        
-        return(0,0)
-    }
-    
   
 
 }
@@ -144,7 +137,6 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         3
-        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -152,10 +144,13 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
         
         let index = indexPath.row
         let contentPart = ContentPart.allCases[index]
+        let placeInfo = placeInfoData[dataIndex]
+        
         switch contentPart {
         case .image:
             cell.placeImageView.isHidden = false
             cell.fakeMapView.isHidden = true
+            cell.mapView.isHidden = true
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
             cell.placeImageView.image = UIImage(systemName: "fork.knife")
@@ -166,24 +161,29 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.indexPath = indexPath
 
             /////////////////////////////////////
-            let placeInfo = placeInfoData[dataIndex]
+            
             
             cell.placeImageView.isHidden = true
             cell.fakeMapView.isHidden = true
+            cell.mapView.isHidden = true
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
             
             cell.nameLabel.text = placeInfo.placeData.name
             cell.addressLabel.text = placeInfo.placeData.addressObj.addressString
+            cell.phoneLabel.text = "PhoneNum: Get With Location Details API"
             cell.heartButton.isSelected = placeInfo.isSaved
          
             updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
+            
         case .map:
             cell.placeImageView.isHidden = true
-            cell.fakeMapView.isHidden = false
+            cell.mapView.isHidden = false
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
             cell.fakeMapView.image = UIImage(systemName: "map")
+           
+            cell.getCoordinate(address: placeInfo.placeData.addressObj.addressString, title: placeInfo.placeData.name, snippet: nil)
         }
                 
         return cell
