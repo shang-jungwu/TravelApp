@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import SPAlert
 //import FirebaseAuth
 
 
 class RegisterViewController: UIViewController {
+
+    let uiSettingUtility = UISettingUtility()
 
     lazy var userNameTextField = TravelCustomTextField()
     lazy var accountTextField = TravelCustomTextField()
@@ -43,6 +46,8 @@ class RegisterViewController: UIViewController {
         
         setupNav()
         setupUI()
+        setupTextField()
+        setupDobStackView()
     }
 
     func setupNav() {
@@ -60,8 +65,7 @@ class RegisterViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
-        textFieldSetting(userNameTextField, placeholder: "user name", keyboard: .default)
-        
+
         view.addSubview(accountTextField)
         accountTextField.snp.makeConstraints { make in
             make.top.equalTo(userNameTextField.snp.bottom).offset(20)
@@ -69,8 +73,7 @@ class RegisterViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
-        textFieldSetting(accountTextField, placeholder: "account", keyboard: .emailAddress)
-        
+
         view.addSubview(passwordTextField)
         passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(accountTextField.snp.bottom).offset(20)
@@ -78,8 +81,7 @@ class RegisterViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
-        textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default)
-        
+
         view.addSubview(pwdDoubleCheckTextField)
         pwdDoubleCheckTextField.snp.makeConstraints { make in
             make.top.equalTo(passwordTextField.snp.bottom).offset(20)
@@ -87,8 +89,7 @@ class RegisterViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
-        textFieldSetting(pwdDoubleCheckTextField, placeholder: "password doble check", keyboard: .default)
-        
+
         view.addSubview(dobStackView)
         dobStackView.snp.makeConstraints { make in
             make.top.equalTo(pwdDoubleCheckTextField.snp.bottom).offset(20)
@@ -96,7 +97,6 @@ class RegisterViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)
         }
-        setupDobStackView()
         
         view.addSubview(registerButton)
         registerButton.snp.makeConstraints { make in
@@ -114,15 +114,14 @@ class RegisterViewController: UIViewController {
         dobStackView.spacing = 10
         
         dobStackView.addArrangedSubview(yearTextField)
-        textFieldSetting(yearTextField, placeholder: "year", keyboard: .numberPad)
         dobStackView.addArrangedSubview(monthTextField)
-        textFieldSetting(monthTextField, placeholder: "month", keyboard: .numberPad)
         dobStackView.addArrangedSubview(dayTextField)
-        textFieldSetting(dayTextField, placeholder: "day", keyboard: .numberPad)
     }
     
     @objc func returnRegisterResult() {
         if let name = userNameTextField.text, let account = accountTextField.text, let pwd = passwordTextField.text, let pwdDoubleCheck = pwdDoubleCheckTextField.text {
+
+            // 之後改用spalert做？
             if name != "", account != "", pwd != "", pwdDoubleCheck != "" {
                 if pwd != pwdDoubleCheck {
                     showAlert(title: "註冊失敗", message: "兩次密碼不一致", status: false)
@@ -161,12 +160,14 @@ class RegisterViewController: UIViewController {
     
     
     
-    func textFieldSetting(_ sender: TravelCustomTextField, placeholder: String, keyboard: UIKeyboardType) {
-        sender.placeholder = placeholder
-        sender.layer.cornerRadius = 15
-        sender.layer.borderWidth = 2
-        sender.layer.borderColor = UIColor.systemCyan.cgColor
-        sender.keyboardType = keyboard
+    func setupTextField() {
+        uiSettingUtility.textFieldSetting(userNameTextField, placeholder: "user name", keyboard: .default)
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .emailAddress)
+        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default)
+        uiSettingUtility.textFieldSetting(pwdDoubleCheckTextField, placeholder: "password doble check", keyboard: .default)
+        uiSettingUtility.textFieldSetting(yearTextField, placeholder: "year", keyboard: .numberPad)
+        uiSettingUtility.textFieldSetting(monthTextField, placeholder: "month", keyboard: .numberPad)
+        uiSettingUtility.textFieldSetting(dayTextField, placeholder: "day", keyboard: .numberPad)
     }
     
 

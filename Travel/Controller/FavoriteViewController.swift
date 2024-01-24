@@ -10,7 +10,7 @@ import SnapKit
 
 class FavoriteViewController: UIViewController {
     
-    lazy var favoriteTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .insetGrouped)
+    lazy var favoriteTableView = UITableView(frame: .zero, style: .insetGrouped)
 
     override func viewDidLoad() {
         super.viewDidLoad()

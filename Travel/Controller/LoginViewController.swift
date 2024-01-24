@@ -15,23 +15,33 @@ class LoginViewController: UIViewController {
     lazy var tabBarVC = TabBarController()
     lazy var registerVC = RegisterViewController()
 
-    lazy var accountTextField: TravelCustomTextField = {
-        let textField =  TravelCustomTextField()
-        textField.placeholder = "account"
-        textField.layer.cornerRadius = 15
-        textField.layer.borderWidth = 2
-        textField.layer.borderColor = UIColor.systemCyan.cgColor
-        return textField
-    }()
+    let uiSettingUtility = UISettingUtility()
 
-    lazy var passwordTextField: TravelCustomTextField = {
-        let textField =  TravelCustomTextField()
-        textField.placeholder = "password"
-        textField.layer.cornerRadius = 15
-        textField.layer.borderWidth = 2
-        textField.layer.borderColor = UIColor.systemCyan.cgColor
-        return textField
-    }()
+    lazy var accountTextField: TravelCustomTextField = .init(frame: .zero)
+//    {
+//        let textField =  TravelCustomTextField()
+//        textField.placeholder = "account"
+//        textField.layer.cornerRadius = 15
+//        textField.layer.borderWidth = 2
+//        textField.layer.borderColor = UIColor.systemCyan.cgColor
+//        return textField
+//    }()
+
+    lazy var passwordTextField: TravelCustomTextField = TravelCustomTextField()
+//    {
+//        let textField =  TravelCustomTextField()
+//        textField.placeholder = "password"
+//        textField.layer.cornerRadius = 15
+//        textField.layer.borderWidth = 2
+//        textField.layer.borderColor = UIColor.systemCyan.cgColor
+//        return textField
+//    }()
+
+    func setupTextField() {
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .default)
+        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default)
+
+    }
     
 
     lazy var loginButton: UIButton = {
