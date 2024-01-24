@@ -42,7 +42,7 @@ class SearchResultTableViewCell: UITableViewCell {
             make.height.equalTo(80)
             make.bottom.equalToSuperview().offset(-10)
         }
-        placeImageView.tintColor = .systemGray
+        uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
         
         contentView.addSubview(heartButton)
         heartButton.snp.makeConstraints { make in
@@ -66,9 +66,6 @@ class SearchResultTableViewCell: UITableViewCell {
     
     func setupHeartButton() {
         uiSettingUtility.setupHeartButton(sender: heartButton)
-
-        heartButton.backgroundColor = .black
-
         heartButton.isSelected = false
         heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
     }

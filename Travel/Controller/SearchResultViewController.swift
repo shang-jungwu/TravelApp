@@ -12,18 +12,13 @@ import Alamofire
 
 class SearchResultViewController: UIViewController {
     
-//    var yelpData = [YelpApiData]()
     var travelData = [TravelData]()
     lazy var detailVC = DetailViewController()
     
-    private let fetchApiDataUtility = FetchApiDataUtility()
+    lazy var resultTableView = UITableView(frame: .zero, style: .insetGrouped)
     
-    lazy var resultTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 1, height: 1), style: .insetGrouped)
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
         view.backgroundColor = .white
         setupNav()
         setupUI()
@@ -52,39 +47,6 @@ class SearchResultViewController: UIViewController {
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
     }
-    
-
-//    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
-//                
-//        if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
-//            
-//            AF.request(url).response { response in
-//                if let data = response.data {
-//                    let decoder = JSONDecoder()
-//                    do {
-//                        let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
-//                        completion(.success(decodedData.data))
-//                    } catch {
-//                        if let error = response.error {
-//                            print("photo~~API failure~~")
-//                            completion(.failure(error))
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-
-//    func getPhoto(locationid: String, completion: @escaping ((Result<PhotoData, Error>) -> Void)) {
-//        fetchPhoto(loactionid: locationid) { result in
-//            switch result {
-//            case .success(let photoData):
-//                completion(.success(photoData[0]))
-//            case .failure(let error):
-//                print("error:\(error)")
-//            }
-//        }
-//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -95,32 +57,28 @@ class SearchResultViewController: UIViewController {
 
 extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        yelpData[section].businesses.count
-        travelData[0].placeData.count
+
+        travelData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
-        guard travelData.indices.contains(0), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
-//        guard yelpData.indices.contains(0), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
-        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell, travelData.indices.contains(0) else {
+            return UITableViewCell()
+        }
+
         // SearchResultTableViewCellDelegate
         cell.delegate = self
         cell.indexPath = indexPath
-
         /////////////////////////////////////
-            
-//         停抓照片
-//        if let url = URL(string: travelData[index].photoURL) {
-//            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
-//        }
         
-//        let yelp = yelpData[0].businesses[index]
+        if let url = URL(string: travelData[index].placeData.imageURL) {
+            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
+        }
         
-        cell.placeImageView.image = UIImage(systemName: "fork.knife")
-        cell.nameLabel.text = travelData[0].placeData[index].name
+        cell.nameLabel.text = travelData[index].placeData.name
         
-//        updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
+        updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
         
         return cell
     }
@@ -147,8 +105,10 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         if let nav = self.navigationController {
+            // passing data
             detailVC.placeInfoData = self.travelData
-            detailVC.dataIndex = index
+            detailVC.dataIndex = index // 被點擊的那一格index
+            
             nav.pushViewController(detailVC, animated: true)
         }
     }

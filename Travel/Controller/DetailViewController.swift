@@ -19,14 +19,12 @@ class DetailViewController: UIViewController {
     }
     
     let uiSettingUtility = UISettingUtility()
-    
-//    var yelpData = [Business]()
-    var placeInfoData = [TravelData]()
-    var dataIndex = 0
-    
-    lazy var detailTableView = UITableView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), style: .grouped)
-    
 
+    var placeInfoData = [TravelData]() // 整筆api data
+    var dataIndex = 0 // 要顯示的資料 aka 前一頁被點擊的那筆
+    
+    lazy var detailTableView = UITableView(frame: .zero, style: .grouped)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
@@ -34,7 +32,6 @@ class DetailViewController: UIViewController {
         setupUI()
         setupTableView()
         
-       
     }
     
     func setupNav() {
@@ -42,12 +39,11 @@ class DetailViewController: UIViewController {
     }
 
    
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        print("placeInfoData[dataIndex]:",placeInfoData[dataIndex])
+        print("placeInfo:",placeInfoData[dataIndex].placeData)
         detailTableView.reloadData()
-//        print(placeInfoData)
+
     }
     
     
@@ -59,67 +55,6 @@ class DetailViewController: UIViewController {
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-//        view.addSubview(placeImageView)
-//        placeImageView.snp.makeConstraints { make in
-//            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.height.equalTo(200)
-//        }
-//        placeImageView.tintColor = .systemGray
-//        placeImageView.layer.borderWidth = 0.5
-//        placeImageView.layer.cornerRadius = 15
-//        placeImageView.layer.borderColor = UIColor.systemGray.cgColor
-//        placeImageView.contentMode = .scaleAspectFit
-//
-//        view.addSubview(nameLabel)
-//        nameLabel.snp.makeConstraints { make in
-//            make.top.equalTo(placeImageView.snp.bottom).offset(20)
-//            make.leading.equalToSuperview().offset(20)
-//        }
-//        
-//        view.addSubview(heartButton)
-//        heartButton.snp.makeConstraints { make in
-//            make.centerY.equalTo(nameLabel.snp.centerY)
-//            make.trailing.equalToSuperview()
-//            make.width.equalTo(40)
-//            make.height.equalTo(heartButton.snp.width)
-//        }
-//        
-//        view.addSubview(addressLabel)
-//        addressLabel.snp.makeConstraints { make in
-//            make.top.equalTo(nameLabel.snp.bottom).offset(20)
-//            make.leading.equalToSuperview().offset(20)
-//        }
-//        
-//        view.addSubview(phoneLabel)
-//        phoneLabel.snp.makeConstraints { make in
-//            make.top.equalTo(addressLabel.snp.bottom).offset(20)
-//            make.leading.equalToSuperview().offset(20)
-//        }
-        
-    
-//        setupMapView()
-//        view.addSubview(mapView)
-//        mapView.snp.makeConstraints { make in
-//            make.top.equalTo(phoneLabel.snp.bottom).offset(10)
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.height.equalTo(200)
-//        }
-        
-//        view.addSubview(fakeMapView)
-//        fakeMapView.tintColor = .systemGray
-//        fakeMapView.layer.borderWidth = 0.5
-//        fakeMapView.layer.cornerRadius = 15
-//        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
-//        fakeMapView.contentMode = .scaleAspectFit
-//        fakeMapView.snp.makeConstraints { make in
-//            make.top.equalTo(phoneLabel.snp.bottom).offset(40)
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.height.equalTo(200)
-//        }
        
     }
     
@@ -144,53 +79,52 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, placeInfoData.indices.contains(dataIndex) else { return UITableViewCell() }
-//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, yelpData.indices.contains(0) else { return UITableViewCell() }
-        
         let index = indexPath.row
-        let contentPart = ContentPart.allCases[index]
-        let placeInfo = placeInfoData[dataIndex]
-
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, placeInfoData.indices.contains(0) else { return UITableViewCell() }
         
+        let contentPart = ContentPart.allCases[index]
+        let placeInfo = placeInfoData[dataIndex] // 整個api資料被點到的那一格
+
         switch contentPart {
         case .image:
             cell.placeImageView.isHidden = false
-            cell.fakeMapView.isHidden = true
             cell.mapView.isHidden = true
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
-            cell.placeImageView.image = UIImage(systemName: "fork.knife")
+            if let url = URL(string: placeInfo.placeData.imageURL) {
+                cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
+            }
+            
+//            cell.placeImageView.image = UIImage(systemName: "fork.knife")
             
         case .info:
             // SearchResultTableViewCellDelegate
             cell.delegate = self
             cell.indexPath = indexPath
-
             /////////////////////////////////////
             
-            
             cell.placeImageView.isHidden = true
-            cell.fakeMapView.isHidden = true
             cell.mapView.isHidden = true
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
             
+            cell.nameLabel.text = placeInfo.placeData.name
             
-            cell.nameLabel.text = placeInfo.placeData[index].name
-            cell.addressLabel.text = placeInfo.placeData[index].location.displayAddress[0]
-//            cell.phoneLabel.text = "PhoneNum: Get With Location Details API"
-//            cell.heartButton.isSelected = placeInfo.isSaved
-//         
-//            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
+            let fullAddress = placeInfo.placeData.location.displayAddress.reduce("", +)
+            cell.addressLabel.text = fullAddress
+            cell.phoneLabel.text = placeInfo.placeData.phone
+            cell.heartButton.isSelected = placeInfo.isSaved
+
+            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
             
         case .map:
             cell.placeImageView.isHidden = true
             cell.mapView.isHidden = false
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
-            cell.fakeMapView.image = UIImage(systemName: "map")
+                      
+            cell.setupMapView(lat: placeInfo.placeData.coordinates.latitude, lon: placeInfo.placeData.coordinates.longitude, zoom: 16.0, title: placeInfo.placeData.name, snippet: nil)
            
-//            cell.getCoordinate(address: placeInfo.placeData.addressObj.addressString, title: placeInfo.placeData.name, snippet: nil)
         }
                 
         return cell
@@ -203,46 +137,18 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.heartButton.isSelected = false
         }
     }
-    
-//    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//        let header = UIView()
-//    
-//        var nameLabel = UILabel()
-//        var heartButton = UIButton(type: .system)
-//        
-//        header.addSubview(nameLabel)
-//        nameLabel.snp.makeConstraints { make in
-//            make.centerY.equalToSuperview()
-//            make.leading.equalToSuperview().offset(20)
-//        }
-//        nameLabel.text = placeInfoData[section].placeData.name
-//        
-//        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 25, fontWeight: .bold, color: .white, alignment: .left, numOfLines: 1)
-//
-//        header.addSubview(heartButton)
-//        heartButton.snp.makeConstraints { make in
-//            make.centerY.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.width.equalTo(40)
-//            make.height.equalTo(heartButton.snp.width)
-//        }
-//        uiSettingUtility.setupHeartButton(sender: heartButton)
-//        heartButton.isSelected = placeInfoData[section].isSaved
-//        heartButton.addTarget(self, action: #selector(placeWasSaved), for: .touchUpInside)
-//        header.backgroundColor = .systemBlue
-//        return header
-//    }
 
 
-}
+} // ex tableview end
 
 extension DetailViewController: DetailTableViewCellDelegate {
     func placeWasSaved(indexPath: IndexPath) {
-        guard placeInfoData.indices.contains(0) else { return }
+        let index = indexPath.row
+        guard placeInfoData.indices.contains(index) else { return }
         
-        var placeSavedStatus = placeInfoData[0].isSaved
+        var placeSavedStatus = placeInfoData[index].isSaved
         placeSavedStatus = !placeSavedStatus // toggle
-        placeInfoData[0].isSaved = placeSavedStatus // 更新資料
+        placeInfoData[index].isSaved = placeSavedStatus // 更新資料
     
         
         if placeSavedStatus == true {

@@ -8,13 +8,13 @@
 import Foundation
 
 struct TravelData {
-    let placeData: [Business]//PlaceData
+    let placeData: Business//PlaceData
     var isSaved: Bool
-    var photoURL: String
+//    var photoURL: String // yelp offers imageURL
     
-    init(placeData: [Business], isSaved: Bool = false, photoURL: String = "") {
+    init(placeData: Business, isSaved: Bool = false) {
         self.placeData = placeData
         self.isSaved = isSaved
-        self.photoURL = photoURL
+//        self.photoURL = photoURL
     }
 }

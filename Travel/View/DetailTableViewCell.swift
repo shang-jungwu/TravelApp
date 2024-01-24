@@ -15,19 +15,16 @@ protocol DetailTableViewCellDelegate: AnyObject {
 class DetailTableViewCell: UITableViewCell {
 
     lazy var placeImageView = UIImageView()
-    
-    
     lazy var infoStack = UIStackView()
     lazy var nameLabel = UILabel()
     lazy var heartButton = UIButton(type: .custom)
     lazy var addressLabel = UILabel()
     lazy var phoneLabel = UILabel()
-    
-    
-    lazy var fakeMapView = UIImageView()
+
+//    lazy var fakeMapView = UIImageView()
     
     lazy var mapView = GMSMapView()
-    let uiSettingUtility = UISettingUtility()
+    private let uiSettingUtility = UISettingUtility()
     
     var delegate: DetailTableViewCellDelegate?
     var indexPath: IndexPath?
@@ -36,8 +33,6 @@ class DetailTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupStackView()
         setupUI()
-       
-      
     }
     
     required init?(coder: NSCoder) {
@@ -46,8 +41,7 @@ class DetailTableViewCell: UITableViewCell {
     
     func setupStackView() {
         infoStack.axis = .vertical
-        infoStack.distribution = .equalSpacing
-        infoStack.spacing = 15
+        infoStack.distribution = .fillEqually
         
         infoStack.addArrangedSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
@@ -80,11 +74,7 @@ class DetailTableViewCell: UITableViewCell {
             make.height.equalTo(200)
             make.bottom.equalToSuperview().offset(-10)
         }
-        placeImageView.tintColor = .systemGray
-        placeImageView.layer.borderWidth = 0.5
-        placeImageView.layer.borderColor = UIColor.systemGray.cgColor
-        placeImageView.contentMode = .scaleAspectFit
-
+        uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 0)
       
         contentView.addSubview(infoStack)
         infoStack.snp.makeConstraints { make in
@@ -92,9 +82,7 @@ class DetailTableViewCell: UITableViewCell {
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-40)
             make.bottom.equalToSuperview().offset(-10)
-            
         }
-        infoStack.backgroundColor = .systemMint
         
         contentView.addSubview(heartButton)
         heartButton.snp.makeConstraints { make in
@@ -103,34 +91,24 @@ class DetailTableViewCell: UITableViewCell {
             make.width.equalTo(40)
             make.height.equalTo(heartButton.snp.width)
         }
-
-//        setupMapView()
-//        contentView.addSubview(mapView)
-//        mapView.snp.makeConstraints { make in
+        
+//        contentView.addSubview(fakeMapView)
+//        fakeMapView.tintColor = .systemGray
+//        fakeMapView.layer.borderWidth = 0.5
+//        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
+//        fakeMapView.contentMode = .scaleAspectFit
+//        fakeMapView.snp.makeConstraints { make in
 //            make.top.equalToSuperview().offset(10)
 //            make.leading.equalToSuperview()
 //            make.trailing.equalToSuperview()
 //            make.height.equalTo(200)
 //            make.bottom.equalToSuperview().offset(-10)
 //        }
-        
-        contentView.addSubview(fakeMapView)
-        fakeMapView.tintColor = .systemGray
-        fakeMapView.layer.borderWidth = 0.5
-        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
-        fakeMapView.contentMode = .scaleAspectFit
-        fakeMapView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-            make.height.equalTo(200)
-            make.bottom.equalToSuperview().offset(-10)
-        }
-        fakeMapView.isHidden = true
+//        fakeMapView.isHidden = true
        
     }
     
-    func setupMapView(lat: Double, lon: Double, zoom: Float, title: String, snippet: String) {
+    func setupMapView(lat: Double, lon: Double, zoom: Float, title: String, snippet: String?) {
         let options = GMSMapViewOptions()
         options.camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: zoom)
         mapView = GMSMapView.init(options: options)
@@ -141,7 +119,7 @@ class DetailTableViewCell: UITableViewCell {
         marker.snippet = snippet
         marker.map = mapView
         
-        //設定好再addSubview
+        //設定好再addSubview，否則會顯示預設地圖
         contentView.addSubview(mapView)
         mapView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -153,36 +131,36 @@ class DetailTableViewCell: UITableViewCell {
         mapView.isHidden = false
 
     }
+    // MARK: - Yelp API already offers coordinates
+//    func convertAddressToPlacemark(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
+//        let geoCoder = CLGeocoder()
+//        geoCoder.geocodeAddressString(address) { (placeMarks, error) in
+//            if error == nil {
+//                let placeMark = placeMarks?.first
+//                if let location = placeMark?.location {
+//                    completion(location.coordinate, nil)
+//                    return
+//                }
+//            }
+//            completion(kCLLocationCoordinate2DInvalid, error)
+//        }
+//    }
     
-    func convertAddressToPlacemark(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
-        let geoCoder = CLGeocoder()
-        geoCoder.geocodeAddressString(address) { (placeMarks, error) in
-            if error == nil {
-                let placeMark = placeMarks?.first
-                if let location = placeMark?.location {
-                    completion(location.coordinate, nil)
-                    return
-                }
-            }
-            completion(kCLLocationCoordinate2DInvalid, error)
-        }
-    }
-    
-    func getCoordinate(address: String, title: String, snippet: String?) {
-        convertAddressToPlacemark(address: address) { location, error in
-            if error == nil {
-                print("lat:", location.latitude, "lon:", location.longitude)
-                self.setupMapView(lat: location.latitude, lon: location.longitude, zoom: 16.0, title: title, snippet: snippet ?? "")
-                self.mapView.isHidden = false
-                self.fakeMapView.isHidden = true
-            } else {
-                print("Fail to get coordinates~~~", error ?? "")
-                print(address)
-                self.mapView.isHidden = true
-                self.fakeMapView.isHidden = false
-            }
-        }
-    }
+//    func getCoordinate(address: String, title: String, snippet: String?) {
+//        convertAddressToPlacemark(address: address) { location, error in
+//            if error == nil {
+//                print("lat:", location.latitude, "lon:", location.longitude)
+//                self.setupMapView(lat: location.latitude, lon: location.longitude, zoom: 16.0, title: title, snippet: snippet ?? "")
+//                self.mapView.isHidden = false
+//                self.fakeMapView.isHidden = true
+//            } else {
+//                print("Fail to get coordinates~~~", error ?? "")
+//                print(address)
+//                self.mapView.isHidden = true
+//                self.fakeMapView.isHidden = false
+//            }
+//        }
+//    }
     
     func setupLabel() {
         nameLabel.text = "name"

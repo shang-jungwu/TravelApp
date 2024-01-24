@@ -16,7 +16,7 @@ class SearchViewController: UIViewController {
     var travelData = [TravelData]()
     var yelpData = [YelpApiData]()
     
-    private let fetchApiDataUtility = FetchApiDataUtility()
+    private let uiSettingUtility = UISettingUtility()
     
     lazy var searchResultVC = SearchResultViewController()
         
@@ -37,11 +37,6 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-//        getPlace() { [weak self] in
-//            guard let self = self else { return }
-//            // task finished, print data to examine
-//            print("count: \(self.travelData.count)")
-//        }
        getYelpData()
     }
     
@@ -78,12 +73,12 @@ class SearchViewController: UIViewController {
     }
     func setupTextField() {
         searchQueryTextField.text = "新竹"
-        textFieldSetting(searchQueryTextField, placeholder: "輸入地點", keyboard: .default)
+        uiSettingUtility.textFieldSetting(searchQueryTextField, placeholder: "輸入地點", keyboard: .default)
         
         categoryTextField.text = "restaurants"
-        textFieldSetting(categoryTextField, placeholder: "搜尋類別", keyboard: .default)
+        uiSettingUtility.textFieldSetting(categoryTextField, placeholder: "搜尋類別", keyboard: .default)
         languageTextField.text = "en"
-        textFieldSetting(languageTextField, placeholder: "顯示語言", keyboard: .default)
+        uiSettingUtility.textFieldSetting(languageTextField, placeholder: "顯示語言", keyboard: .default)
     }
     
     func setupStackView() {
@@ -123,14 +118,11 @@ class SearchViewController: UIViewController {
                     print("data:\(data)")
                     let decoder = JSONDecoder()
                     do {
-                        print("here~~~1")
                         let decodedData = try decoder.decode(YelpApiData.self, from: data)
 
                         completion(.success(decodedData.businesses))
-
                     } catch {
                         if let error = response.error {
-                            print("here~~~2")
                             completion(.failure(error))
                         }
                     }
@@ -149,11 +141,11 @@ class SearchViewController: UIViewController {
             
             switch result {
             case .success(let data):
-                print("here~~~4")
                 alertView.dismiss() // 成功後關掉 alertView
                 
-                self.travelData.append(TravelData(placeData: data))
-                print("self.yelpData:\(self.yelpData)")
+                for bussiness in data {
+                    self.travelData.append(TravelData(placeData: bussiness))
+                }
                
                 if let nav = self.navigationController {
                     // passing data
@@ -162,142 +154,12 @@ class SearchViewController: UIViewController {
                 }
                 
             case .failure(let error):
-                print("here~~~5")
                 print("Error:\(error)")
             }
         }
     }
         
-  
-//    func fetchTripAdvisorData(completion: @escaping (Result<[PlaceData],Error>) -> Void) {
-//        guard searchQueryTextField.text != "", categoryTextField.text != "", languageTextField.text != "" else {
-//            AlertKitAPI.present(title: "搜尋欄位不可為空", subtitle: nil, icon: .error, style: .iOS16AppleMusic, haptic: .warning)
-//            return
-//        }
-//        
-//        if let searhQuery = searchQueryTextField.text, let category = categoryTextField.text, let language = languageTextField.text {
-//            if let url = fetchApiDataUtility.prepareURL(forDataType: .search, loactionid: nil, searchQuery: searhQuery, category: category, language: language)  {
-//                
-//                AF.request(url).response { response in
-//                    if let data = response.data {
-//                        let decoder = JSONDecoder()
-//                        do {
-//                            let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
-//                            completion(.success(decodedData.data))
-//                        } catch {
-//                            if let error = response.error {
-//                                print("fail to decode~~~~")
-//                                completion(.failure(error))
-//
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    
-//    func getPlace(completion: @escaping (() -> Void)) {
-//        fetchTripAdvisorData { [weak self] result in
-//            guard let self = self else { return } // 避免強引用
-//            
-//            let alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
-//            alertView.present(on: self.view)
-//            
-//            switch result {
-//            case .success(let tripAdvisorApiData):
-//                alertView.dismiss() // 成功後關掉 alertView
-//                print("fetch successfully~~~~")
-//                
-//                self.tripAdvisorPlaceData = tripAdvisorApiData
-//                for data in tripAdvisorApiData {
-//                    self.travelData.append(TravelData(placeData: data))
-//                }
-//                
-//                if let nav = self.navigationController {
-////                    self.searchResultVC.travelData = self.travelData
-//                    print("push searchResultVC~~~~")
-//                    nav.pushViewController(searchResultVC, animated: true)
-//                }
-//                
-////                var counter = 0
-////                for (i,placeData) in tripAdvisorPlaceData.enumerated() {
-////                    self.travelData.append(TravelData(placeData: placeData))
-//                    // 先停抓照片 節省api扣打
-////                    let locationID = placeData.locationID
-////                    getPhoto(locationid: locationID) { [weak self] result in
-////                        guard let self = self else { return } // 避免強引用
-////                        
-////                        counter += 1
-////                        switch result {
-////                        case .success(let photo):
-////                            self.travelData[i].photoURL =  photo.images.small.url
-////                            
-////                            print("get photo success")
-////                            
-////                            if counter == self.tripAdvisorPlaceData.count {
-////                                // success
-////                                completion()
-////                            }
-//////                            self.resultTableView.reloadData()
-////                        case .failure(let error):
-////                            print(error)
-////                        }
-////                    }
-////                }
-//                
-//            case .failure(let error):
-//                print("fetch unsuccessfully~~~~")
-//                print("error:\(error)")
-//            }
-//        }
-//    }
 
-//    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
-//                
-//        if let url = fetchApiDataUtility.prepareURL(forDataType: .photo, loactionid: loactionid, searchQuery: nil, category: nil, language: "zh-TW") {
-//            
-//            AF.request(url).response { response in
-//                if let data = response.data {
-//                    let decoder = JSONDecoder()
-//                    do {
-//                        let decodedData = try decoder.decode(TripAdvisorPhotoApi.self, from: data)
-//                        completion(.success(decodedData.data))
-//                    } catch {
-//                        if let error = response.error {
-//                            print("photo~~API failure~~")
-//                            completion(.failure(error))
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-    
-    
-//    func getPhoto(locationid: String, completion: @escaping ((Result<PhotoData, Error>) -> Void)) {
-//            fetchPhoto(loactionid: locationid) { result in
-//                switch result {
-//                case .success(let photoData):
-//                    completion(.success(photoData[0]))
-//                    
-//                case .failure(let error):
-//                    print("error:\(error)")
-//                }
-//            }
-//    }
-    
-    
-    func textFieldSetting(_ sender: TravelCustomTextField, placeholder: String, keyboard: UIKeyboardType) {
-        sender.placeholder = placeholder
-        sender.layer.cornerRadius = 15
-        sender.layer.borderWidth = 2
-        sender.layer.borderColor = UIColor.systemCyan.cgColor
-        sender.keyboardType = keyboard
-        sender.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
-    }
     
     
 
