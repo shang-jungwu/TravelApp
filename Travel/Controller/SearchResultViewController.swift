@@ -52,6 +52,7 @@ class SearchResultViewController: UIViewController {
         super.viewWillAppear(true)
         self.resultTableView.reloadData()
     }
+    
 
 } // class end
 

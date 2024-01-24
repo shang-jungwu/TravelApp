@@ -45,6 +45,7 @@ class DetailViewController: UIViewController {
         detailTableView.reloadData()
 
     }
+
     
     
     func setupUI() {
@@ -88,15 +89,13 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
         switch contentPart {
         case .image:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
-            cell.fakeMapView.isHidden = true
+
             cell.placeImageView.isHidden = false
-//            cell.mapView.isHidden = true
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
             if let url = URL(string: placeInfo.placeData.imageURL) {
                 cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
             }
-            
             return cell
             
         case .info:
@@ -106,14 +105,11 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.delegate = self
             cell.indexPath = indexPath
             /////////////////////////////////////
-            cell.fakeMapView.isHidden = true
+
             cell.placeImageView.isHidden = true
-//            cell.mapView.isHidden = true
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
-            
             cell.nameLabel.text = placeInfo.placeData.name
-            
             let fullAddress = placeInfo.placeData.location.displayAddress.reduce("", +)
             cell.addressLabel.text = fullAddress
             cell.phoneLabel.text = placeInfo.placeData.phone
@@ -121,10 +117,11 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
 
             updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
             return cell
+            
         case .map:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "MapViewTableViewCell", for: indexPath) as? MapViewTableViewCell else { return UITableViewCell() }
 
-            cell.setupMapView(lat: placeInfo.placeData.coordinates.latitude, lon: placeInfo.placeData.coordinates.longitude, zoom: 16.0, title: placeInfo.placeData.name, snippet: nil)
+            cell.setupMapView(lat: placeInfo.placeData.coordinates.latitude!, lon: placeInfo.placeData.coordinates.longitude!, zoom: 16.0, title: placeInfo.placeData.name, snippet: nil)
             
            return cell
         }

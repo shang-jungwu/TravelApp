@@ -14,7 +14,7 @@ class SearchViewController: UIViewController {
 
     var tripAdvisorPlaceData = [PlaceData]()
     var travelData = [TravelData]()
-    var yelpData = [YelpApiData]()
+//    var yelpData = [YelpApiData]()
     
     private let uiSettingUtility = UISettingUtility()
     
@@ -37,7 +37,16 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-       getYelpData()
+        // MARK: - 先餵假資料 省API次數
+        //       getYelpData()
+        
+        if let nav = self.navigationController {
+            // passing data
+            searchResultVC.travelData = fakeData
+            nav.pushViewController(searchResultVC, animated: true)
+        }
+        
+
     }
     
     override func viewDidLoad() {
@@ -132,6 +141,11 @@ class SearchViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        travelData.removeAll()
+    }
+    
     func getYelpData() {
         fetchYelpApiData { [weak self] result in
             guard let self = self else { return } // 避免強引用
@@ -150,6 +164,7 @@ class SearchViewController: UIViewController {
                 if let nav = self.navigationController {
                     // passing data
                     searchResultVC.travelData = self.travelData
+                    print("self.travelData:\(self.travelData)")
                     nav.pushViewController(searchResultVC, animated: true)
                 }
                 

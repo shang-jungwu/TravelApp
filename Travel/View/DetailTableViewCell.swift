@@ -6,14 +6,12 @@
 //
 
 import UIKit
-//import GoogleMaps
-import MapKit
 
 protocol DetailTableViewCellDelegate: AnyObject {
     func savePlaceDidTap(indexPath: IndexPath)
 }
 
-class DetailTableViewCell: UITableViewCell, MKMapViewDelegate {
+class DetailTableViewCell: UITableViewCell {
 
     lazy var placeImageView = UIImageView()
     lazy var infoStack = UIStackView()
@@ -22,9 +20,6 @@ class DetailTableViewCell: UITableViewCell, MKMapViewDelegate {
     lazy var addressLabel = UILabel()
     lazy var phoneLabel = UILabel()
 
-    lazy var fakeMapView = UIImageView()
-//    lazy var mkMapView = MKMapView(frame: .zero)
-//    lazy var mapView = GMSMapView()
     private let uiSettingUtility = UISettingUtility()
     
     var delegate: DetailTableViewCellDelegate?
@@ -93,39 +88,10 @@ class DetailTableViewCell: UITableViewCell, MKMapViewDelegate {
             make.height.equalTo(heartButton.snp.width)
         }
         
-        contentView.addSubview(fakeMapView)
-        fakeMapView.tintColor = .systemGray
-        fakeMapView.layer.borderWidth = 0.5
-        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
-        fakeMapView.contentMode = .scaleAspectFit
-        fakeMapView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-            make.height.equalTo(200)
-            make.bottom.equalToSuperview().offset(-10)
-        }
-        fakeMapView.isHidden = true
        
     }
     
-    
-//    func setupMapView(lat: Double, lon: Double, zoom: Float, title: String, snippet: String?, completion: @escaping(() -> Void)) {
-//        // 設定地圖座標
-//        let options = GMSMapViewOptions()
-//        options.camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: zoom)
-//        mapView = GMSMapView.init(options: options)
-//
-//        // 加入標記
-//        let marker = GMSMarker()
-//        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-//        marker.title = title
-//        marker.snippet = snippet
-//        marker.map = mapView
-//        
-//       completion()
-//
-//    }
+
     // MARK: - Yelp API already offers coordinates
 //    func convertAddressToPlacemark(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
 //        let geoCoder = CLGeocoder()
@@ -183,14 +149,11 @@ class DetailTableViewCell: UITableViewCell, MKMapViewDelegate {
         delegate.savePlaceDidTap(indexPath: indexPath)
     }
     
-    
-    
-    
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         self.selectionStyle = .none
-        // Configure the view for the selected state
     }
 
 }
