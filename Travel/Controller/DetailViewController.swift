@@ -20,6 +20,7 @@ class DetailViewController: UIViewController {
     
     let uiSettingUtility = UISettingUtility()
     
+//    var yelpData = [Business]()
     var placeInfoData = [TravelData]()
     var dataIndex = 0
     
@@ -143,11 +144,13 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, placeInfoData.indices.contains(0) else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, placeInfoData.indices.contains(dataIndex) else { return UITableViewCell() }
+//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, yelpData.indices.contains(0) else { return UITableViewCell() }
         
         let index = indexPath.row
         let contentPart = ContentPart.allCases[index]
         let placeInfo = placeInfoData[dataIndex]
+
         
         switch contentPart {
         case .image:
@@ -172,12 +175,13 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
             
-            cell.nameLabel.text = placeInfo.placeData.name
-            cell.addressLabel.text = placeInfo.placeData.addressObj.addressString
-            cell.phoneLabel.text = "PhoneNum: Get With Location Details API"
-            cell.heartButton.isSelected = placeInfo.isSaved
-         
-            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
+            
+            cell.nameLabel.text = placeInfo.placeData[index].name
+            cell.addressLabel.text = placeInfo.placeData[index].location.displayAddress[0]
+//            cell.phoneLabel.text = "PhoneNum: Get With Location Details API"
+//            cell.heartButton.isSelected = placeInfo.isSaved
+//         
+//            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
             
         case .map:
             cell.placeImageView.isHidden = true
@@ -186,7 +190,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.heartButton.isHidden = true
             cell.fakeMapView.image = UIImage(systemName: "map")
            
-            cell.getCoordinate(address: placeInfo.placeData.addressObj.addressString, title: placeInfo.placeData.name, snippet: nil)
+//            cell.getCoordinate(address: placeInfo.placeData.addressObj.addressString, title: placeInfo.placeData.name, snippet: nil)
         }
                 
         return cell

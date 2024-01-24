@@ -97,57 +97,67 @@ class SearchViewController: UIViewController {
         searchTextFieldStack.addArrangedSubview(languageTextField)
     }
     
-    func fetchYelpApiData(completion: @escaping((Result<YelpApiData,Error>) -> Void)) {
+    func fetchYelpApiData(completion: @escaping((Result<[Business],Error>) -> Void)) {
         
-        let headers: HTTPHeaders = [
-            "accept": "application/json",
-            "Authorization": "Bearer 5bP0Nd3XrOHvq6Jy3RBDLkF6PgtlmeeU3LaO-MQ-_py2jYKLoPHXIeGvuBtfgOfHC0xsQ_GR-_jEsFl1K17i_oeAgPfwLkcvNnTjTXSud_DH-hBrNZBYv2EJ3XewZXYx"
-        ]
+        guard searchQueryTextField.text != "", categoryTextField.text != "" else {
+            AlertKitAPI.present(title: "搜尋欄位不可為空", subtitle: nil, icon: .error, style: .iOS16AppleMusic, haptic: .warning)
+            return
+        }
+        
+        if let location = searchQueryTextField.text, let term = categoryTextField.text {
+            let headers: HTTPHeaders = [
+                "accept": "application/json",
+                "Authorization": "Bearer 5bP0Nd3XrOHvq6Jy3RBDLkF6PgtlmeeU3LaO-MQ-_py2jYKLoPHXIeGvuBtfgOfHC0xsQ_GR-_jEsFl1K17i_oeAgPfwLkcvNnTjTXSud_DH-hBrNZBYv2EJ3XewZXYx"
+            ]
 
-        let url = "https://api.yelp.com/v3/businesses/search"
-        let parameters: Parameters = [
-            "location": "新竹",
-            "term": "restaurants",
-            "sort_by": "best_match",
-            "limit": 20
-        ]
+            let url = "https://api.yelp.com/v3/businesses/search"
+            let parameters: Parameters = [
+                "location": location,
+                "term": term,
+                "sort_by": "best_match",
+                "limit": 20
+            ]
 
-        AF.request(url, method: .get, parameters: parameters, headers: headers).response { response in
-            if let data = response.data {
-                print("data:\(data)")
-                let decoder = JSONDecoder()
-                do {
-                    print("here~~~1")
-                    let decodedData = try decoder.decode(YelpApiData.self, from: data)
+            AF.request(url, method: .get, parameters: parameters, headers: headers).response { response in
+                if let data = response.data {
+                    print("data:\(data)")
+                    let decoder = JSONDecoder()
+                    do {
+                        print("here~~~1")
+                        let decodedData = try decoder.decode(YelpApiData.self, from: data)
 
-                    completion(.success(decodedData))
+                        completion(.success(decodedData.businesses))
 
-                } catch {
-                    if let error = response.error {
-                        print("here~~~2")
-                        completion(.failure(error))
+                    } catch {
+                        if let error = response.error {
+                            print("here~~~2")
+                            completion(.failure(error))
+                        }
                     }
                 }
             }
         }
         
-       
     }
     
     func getYelpData() {
-        print("here~~~3")
         fetchYelpApiData { [weak self] result in
             guard let self = self else { return } // 避免強引用
+            
+            let alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
+            alertView.present(on: self.view)
+            
             switch result {
-                
             case .success(let data):
                 print("here~~~4")
-                self.yelpData.append(data)
+                alertView.dismiss() // 成功後關掉 alertView
+                
+                self.travelData.append(TravelData(placeData: data))
                 print("self.yelpData:\(self.yelpData)")
                
                 if let nav = self.navigationController {
                     // passing data
-                    searchResultVC.yelpData = self.yelpData
+                    searchResultVC.travelData = self.travelData
                     nav.pushViewController(searchResultVC, animated: true)
                 }
                 
@@ -159,89 +169,89 @@ class SearchViewController: UIViewController {
     }
         
   
-    func fetchTripAdvisorData(completion: @escaping (Result<[PlaceData],Error>) -> Void) {
-        guard searchQueryTextField.text != "", categoryTextField.text != "", languageTextField.text != "" else {
-            AlertKitAPI.present(title: "搜尋欄位不可為空", subtitle: nil, icon: .error, style: .iOS16AppleMusic, haptic: .warning)
-            return
-        }
-        
-        if let searhQuery = searchQueryTextField.text, let category = categoryTextField.text, let language = languageTextField.text {
-            if let url = fetchApiDataUtility.prepareURL(forDataType: .search, loactionid: nil, searchQuery: searhQuery, category: category, language: language)  {
-                
-                AF.request(url).response { response in
-                    if let data = response.data {
-                        let decoder = JSONDecoder()
-                        do {
-                            let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
-                            completion(.success(decodedData.data))
-                        } catch {
-                            if let error = response.error {
-                                print("fail to decode~~~~")
-                                completion(.failure(error))
-
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    func getPlace(completion: @escaping (() -> Void)) {
-        fetchTripAdvisorData { [weak self] result in
-            guard let self = self else { return } // 避免強引用
-            
-            let alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
-            alertView.present(on: self.view)
-            
-            switch result {
-            case .success(let tripAdvisorApiData):
-                alertView.dismiss() // 成功後關掉 alertView
-                print("fetch successfully~~~~")
-                
-                self.tripAdvisorPlaceData = tripAdvisorApiData
-                for data in tripAdvisorApiData {
-                    self.travelData.append(TravelData(placeData: data))
-                }
-                
-                if let nav = self.navigationController {
-//                    self.searchResultVC.travelData = self.travelData
-                    print("push searchResultVC~~~~")
-                    nav.pushViewController(searchResultVC, animated: true)
-                }
-                
-//                var counter = 0
-//                for (i,placeData) in tripAdvisorPlaceData.enumerated() {
-//                    self.travelData.append(TravelData(placeData: placeData))
-                    // 先停抓照片 節省api扣打
-//                    let locationID = placeData.locationID
-//                    getPhoto(locationid: locationID) { [weak self] result in
-//                        guard let self = self else { return } // 避免強引用
-//                        
-//                        counter += 1
-//                        switch result {
-//                        case .success(let photo):
-//                            self.travelData[i].photoURL =  photo.images.small.url
-//                            
-//                            print("get photo success")
-//                            
-//                            if counter == self.tripAdvisorPlaceData.count {
-//                                // success
-//                                completion()
+//    func fetchTripAdvisorData(completion: @escaping (Result<[PlaceData],Error>) -> Void) {
+//        guard searchQueryTextField.text != "", categoryTextField.text != "", languageTextField.text != "" else {
+//            AlertKitAPI.present(title: "搜尋欄位不可為空", subtitle: nil, icon: .error, style: .iOS16AppleMusic, haptic: .warning)
+//            return
+//        }
+//        
+//        if let searhQuery = searchQueryTextField.text, let category = categoryTextField.text, let language = languageTextField.text {
+//            if let url = fetchApiDataUtility.prepareURL(forDataType: .search, loactionid: nil, searchQuery: searhQuery, category: category, language: language)  {
+//                
+//                AF.request(url).response { response in
+//                    if let data = response.data {
+//                        let decoder = JSONDecoder()
+//                        do {
+//                            let decodedData = try decoder.decode(TripAdvisorApi.self, from: data)
+//                            completion(.success(decodedData.data))
+//                        } catch {
+//                            if let error = response.error {
+//                                print("fail to decode~~~~")
+//                                completion(.failure(error))
+//
 //                            }
-////                            self.resultTableView.reloadData()
-//                        case .failure(let error):
-//                            print(error)
 //                        }
 //                    }
 //                }
-                
-            case .failure(let error):
-                print("fetch unsuccessfully~~~~")
-                print("error:\(error)")
-            }
-        }
-    }
+//            }
+//        }
+//    }
+//    
+//    func getPlace(completion: @escaping (() -> Void)) {
+//        fetchTripAdvisorData { [weak self] result in
+//            guard let self = self else { return } // 避免強引用
+//            
+//            let alertView = AlertAppleMusic16View(title: "Searching~~~", subtitle: nil, icon: .spinnerLarge)
+//            alertView.present(on: self.view)
+//            
+//            switch result {
+//            case .success(let tripAdvisorApiData):
+//                alertView.dismiss() // 成功後關掉 alertView
+//                print("fetch successfully~~~~")
+//                
+//                self.tripAdvisorPlaceData = tripAdvisorApiData
+//                for data in tripAdvisorApiData {
+//                    self.travelData.append(TravelData(placeData: data))
+//                }
+//                
+//                if let nav = self.navigationController {
+////                    self.searchResultVC.travelData = self.travelData
+//                    print("push searchResultVC~~~~")
+//                    nav.pushViewController(searchResultVC, animated: true)
+//                }
+//                
+////                var counter = 0
+////                for (i,placeData) in tripAdvisorPlaceData.enumerated() {
+////                    self.travelData.append(TravelData(placeData: placeData))
+//                    // 先停抓照片 節省api扣打
+////                    let locationID = placeData.locationID
+////                    getPhoto(locationid: locationID) { [weak self] result in
+////                        guard let self = self else { return } // 避免強引用
+////                        
+////                        counter += 1
+////                        switch result {
+////                        case .success(let photo):
+////                            self.travelData[i].photoURL =  photo.images.small.url
+////                            
+////                            print("get photo success")
+////                            
+////                            if counter == self.tripAdvisorPlaceData.count {
+////                                // success
+////                                completion()
+////                            }
+//////                            self.resultTableView.reloadData()
+////                        case .failure(let error):
+////                            print(error)
+////                        }
+////                    }
+////                }
+//                
+//            case .failure(let error):
+//                print("fetch unsuccessfully~~~~")
+//                print("error:\(error)")
+//            }
+//        }
+//    }
 
 //    func fetchPhoto(loactionid: String, completion: @escaping (Result<[PhotoData],Error>) -> Void) {
 //                

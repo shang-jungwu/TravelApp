@@ -12,8 +12,8 @@ import Alamofire
 
 class SearchResultViewController: UIViewController {
     
-    var yelpData = [YelpApiData]()
-//    var travelData = [TravelData]()
+//    var yelpData = [YelpApiData]()
+    var travelData = [TravelData]()
     lazy var detailVC = DetailViewController()
     
     private let fetchApiDataUtility = FetchApiDataUtility()
@@ -95,14 +95,14 @@ class SearchResultViewController: UIViewController {
 
 extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        yelpData[section].businesses.count
-//        travelData.count
+//        yelpData[section].businesses.count
+        travelData[0].placeData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
-//        guard travelData.indices.contains(index), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
-        guard yelpData.indices.contains(0), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
+        guard travelData.indices.contains(0), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
+//        guard yelpData.indices.contains(0), let cell = tableView.dequeueReusableCell(withIdentifier: "SearchResultTableViewCell", for: indexPath) as? SearchResultTableViewCell else { return UITableViewCell() }
         
         // SearchResultTableViewCellDelegate
         cell.delegate = self
@@ -115,10 +115,10 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 //            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "default_Image"))
 //        }
         
-        let yelp = yelpData[0].businesses[index]
+//        let yelp = yelpData[0].businesses[index]
         
         cell.placeImageView.image = UIImage(systemName: "fork.knife")
-        cell.nameLabel.text = yelp.name//travelData[index].placeData.name
+        cell.nameLabel.text = travelData[0].placeData[index].name
         
 //        updateHeartButtonUI(cell, placeIsSaved: travelData[index].isSaved)
         
@@ -147,7 +147,7 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         if let nav = self.navigationController {
-//            detailVC.placeInfoData = self.travelData
+            detailVC.placeInfoData = self.travelData
             detailVC.dataIndex = index
             nav.pushViewController(detailVC, animated: true)
         }
@@ -159,20 +159,20 @@ extension SearchResultViewController: UITableViewDelegate, UITableViewDataSource
 extension SearchResultViewController: SearchResultTableViewCellDelegate {
 
     func placeWasSaved(indexPath: IndexPath) {
-//        let index = indexPath.row
-//        guard travelData.indices.contains(index) else { return }
-//        
-//        var placeSavedStatus = travelData[index].isSaved
-//        placeSavedStatus = !placeSavedStatus // toggle
-//        travelData[index].isSaved = placeSavedStatus // 更新資料
-//        
-//        print("travelData[index]:\(travelData[index])")
-//        
-//        if placeSavedStatus == true {
-//            print("收藏")
-//        } else {
-//            print("退出")
-//        }
+        let index = indexPath.row
+        guard travelData.indices.contains(index) else { return }
+        
+        var placeSavedStatus = travelData[index].isSaved
+        placeSavedStatus = !placeSavedStatus // toggle
+        travelData[index].isSaved = placeSavedStatus // 更新資料
+        
+        print("travelData[index]:\(travelData[index])")
+        
+        if placeSavedStatus == true {
+            print("收藏")
+        } else {
+            print("退出")
+        }
         
         resultTableView.reloadRows(at: [indexPath], with: .automatic)
     }
