@@ -33,15 +33,18 @@ class DetailViewController: UIViewController {
         setupUI()
         setupTableView()
         
-        
+       
     }
     
     func setupNav() {
         self.navigationItem.title = "Detail"
     }
 
+   
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        print("placeInfoData[dataIndex]:",placeInfoData[dataIndex])
         detailTableView.reloadData()
 //        print(placeInfoData)
     }

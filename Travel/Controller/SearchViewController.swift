@@ -14,6 +14,7 @@ class SearchViewController: UIViewController {
 
     var tripAdvisorPlaceData = [PlaceData]()
     var travelData = [TravelData]()
+    var yelpData = [YelpApiData]()
     
     private let fetchApiDataUtility = FetchApiDataUtility()
     
@@ -36,12 +37,12 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-        getPlace() { [weak self] in
-            guard let self = self else { return }
-            // task finished, print data to examine
-            print("count: \(self.travelData.count)")
-        }
-       
+//        getPlace() { [weak self] in
+//            guard let self = self else { return }
+//            // task finished, print data to examine
+//            print("count: \(self.travelData.count)")
+//        }
+       getYelpData()
     }
     
     override func viewDidLoad() {
@@ -95,6 +96,67 @@ class SearchViewController: UIViewController {
         searchTextFieldStack.addArrangedSubview(categoryTextField)
         searchTextFieldStack.addArrangedSubview(languageTextField)
     }
+    
+    func fetchYelpApiData(completion: @escaping((Result<YelpApiData,Error>) -> Void)) {
+        
+        let headers: HTTPHeaders = [
+            "accept": "application/json",
+            "Authorization": "Bearer 5bP0Nd3XrOHvq6Jy3RBDLkF6PgtlmeeU3LaO-MQ-_py2jYKLoPHXIeGvuBtfgOfHC0xsQ_GR-_jEsFl1K17i_oeAgPfwLkcvNnTjTXSud_DH-hBrNZBYv2EJ3XewZXYx"
+        ]
+
+        let url = "https://api.yelp.com/v3/businesses/search"
+        let parameters: Parameters = [
+            "location": "新竹",
+            "term": "restaurants",
+            "sort_by": "best_match",
+            "limit": 20
+        ]
+
+        AF.request(url, method: .get, parameters: parameters, headers: headers).response { response in
+            if let data = response.data {
+                print("data:\(data)")
+                let decoder = JSONDecoder()
+                do {
+                    print("here~~~1")
+                    let decodedData = try decoder.decode(YelpApiData.self, from: data)
+
+                    completion(.success(decodedData))
+
+                } catch {
+                    if let error = response.error {
+                        print("here~~~2")
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+        
+       
+    }
+    
+    func getYelpData() {
+        print("here~~~3")
+        fetchYelpApiData { [weak self] result in
+            guard let self = self else { return } // 避免強引用
+            switch result {
+                
+            case .success(let data):
+                print("here~~~4")
+                self.yelpData.append(data)
+                print("self.yelpData:\(self.yelpData)")
+               
+                if let nav = self.navigationController {
+                    // passing data
+                    searchResultVC.yelpData = self.yelpData
+                    nav.pushViewController(searchResultVC, animated: true)
+                }
+                
+            case .failure(let error):
+                print("here~~~5")
+                print("Error:\(error)")
+            }
+        }
+    }
         
   
     func fetchTripAdvisorData(completion: @escaping (Result<[PlaceData],Error>) -> Void) {
@@ -143,7 +205,7 @@ class SearchViewController: UIViewController {
                 }
                 
                 if let nav = self.navigationController {
-                    self.searchResultVC.travelData = self.travelData
+//                    self.searchResultVC.travelData = self.travelData
                     print("push searchResultVC~~~~")
                     nav.pushViewController(searchResultVC, animated: true)
                 }

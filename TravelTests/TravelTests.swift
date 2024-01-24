@@ -7,6 +7,7 @@
 
 import XCTest
 @testable import Travel
+import MapKit
 
 final class TravelTests: XCTestCase {
 
@@ -36,6 +37,14 @@ final class TravelTests: XCTestCase {
         
         XCTAssertEqual(input, answer)
 
+    }
+    
+    func testConvertAddress() {
+        let uis = UISettingUtility()
+        let output = uis.getCoordinates()
+        XCTAssertEqual(output, nil)
+      
+        
     }
 
 }

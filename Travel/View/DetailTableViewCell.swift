@@ -26,7 +26,7 @@ class DetailTableViewCell: UITableViewCell {
     
     lazy var fakeMapView = UIImageView()
     
-    var mapView = GMSMapView()
+    lazy var mapView = GMSMapView()
     let uiSettingUtility = UISettingUtility()
     
     var delegate: DetailTableViewCellDelegate?
@@ -141,6 +141,7 @@ class DetailTableViewCell: UITableViewCell {
         marker.snippet = snippet
         marker.map = mapView
         
+        //設定好再addSubview
         contentView.addSubview(mapView)
         mapView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -153,7 +154,7 @@ class DetailTableViewCell: UITableViewCell {
 
     }
     
-    func convertAddressToCoordinates(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
+    func convertAddressToPlacemark(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
         let geoCoder = CLGeocoder()
         geoCoder.geocodeAddressString(address) { (placeMarks, error) in
             if error == nil {
@@ -168,7 +169,7 @@ class DetailTableViewCell: UITableViewCell {
     }
     
     func getCoordinate(address: String, title: String, snippet: String?) {
-        convertAddressToCoordinates(address: address) { location, error in
+        convertAddressToPlacemark(address: address) { location, error in
             if error == nil {
                 print("lat:", location.latitude, "lon:", location.longitude)
                 self.setupMapView(lat: location.latitude, lon: location.longitude, zoom: 16.0, title: title, snippet: snippet ?? "")
