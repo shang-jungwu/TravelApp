@@ -161,13 +161,13 @@ class RegisterViewController: UIViewController {
     
     
     func setupTextField() {
-        uiSettingUtility.textFieldSetting(userNameTextField, placeholder: "user name", keyboard: .default)
-        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .emailAddress)
-        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default)
-        uiSettingUtility.textFieldSetting(pwdDoubleCheckTextField, placeholder: "password doble check", keyboard: .default)
-        uiSettingUtility.textFieldSetting(yearTextField, placeholder: "year", keyboard: .numberPad)
-        uiSettingUtility.textFieldSetting(monthTextField, placeholder: "month", keyboard: .numberPad)
-        uiSettingUtility.textFieldSetting(dayTextField, placeholder: "day", keyboard: .numberPad)
+        uiSettingUtility.textFieldSetting(userNameTextField, placeholder: "user name", keyboard: .default, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .emailAddress, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(pwdDoubleCheckTextField, placeholder: "password doble check", keyboard: .default, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(yearTextField, placeholder: "year", keyboard: .numberPad, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(monthTextField, placeholder: "month", keyboard: .numberPad, autoCapitalize: .none)
+        uiSettingUtility.textFieldSetting(dayTextField, placeholder: "day", keyboard: .numberPad, autoCapitalize: .none)
     }
     
 

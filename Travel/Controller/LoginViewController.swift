@@ -38,8 +38,9 @@ class LoginViewController: UIViewController {
 //    }()
 
     func setupTextField() {
-        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .default)
-        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default)
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .default, autoCapitalize: .none)
+
+        uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
 
     }
     

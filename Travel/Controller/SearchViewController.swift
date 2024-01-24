@@ -82,12 +82,12 @@ class SearchViewController: UIViewController {
     }
     func setupTextField() {
         locationTextField.text = "新竹"
-        uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default)
+        uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default, autoCapitalize: .none)
         
         termTextField.text = "restaurants"
-        uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default)
+        uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default, autoCapitalize: .none)
         resultCountTextField.text = "20"
-        uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示語言", keyboard: .default)
+        uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示筆數", keyboard: .numberPad, autoCapitalize: .none)
     }
     
     func setupStackView() {
@@ -163,9 +163,9 @@ class SearchViewController: UIViewController {
                
                 if let nav = self.navigationController {
                     // passing data
-                    searchResultVC.travelData = self.travelData
+                    self.searchResultVC.travelData = self.travelData
                     print("self.travelData:\(self.travelData)")
-                    nav.pushViewController(searchResultVC, animated: true)
+                    nav.pushViewController(self.searchResultVC, animated: true)
                 }
                 
             case .failure(let error):

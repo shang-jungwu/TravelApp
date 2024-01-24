@@ -19,12 +19,13 @@ struct UISettingUtility {
         label.numberOfLines = numOfLines
     }
     
-    func textFieldSetting(_ sender: TravelCustomTextField, placeholder: String, keyboard: UIKeyboardType) {
+    func textFieldSetting(_ sender: TravelCustomTextField, placeholder: String, keyboard: UIKeyboardType, autoCapitalize: UITextAutocapitalizationType) {
         sender.placeholder = placeholder
         sender.layer.cornerRadius = 15
         sender.layer.borderWidth = 2
         sender.layer.borderColor = UIColor.systemCyan.cgColor
         sender.keyboardType = keyboard
+        sender.autocapitalizationType = autoCapitalize
         sender.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
