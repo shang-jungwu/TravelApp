@@ -7,7 +7,7 @@
 
 import UIKit
 import SnapKit
-import GoogleMaps
+//import GoogleMaps
 import CoreLocation
 
 class DetailViewController: UIViewController {
@@ -64,7 +64,7 @@ class DetailViewController: UIViewController {
         detailTableView.dataSource = self
         detailTableView.register(DetailTableViewCell.self, forCellReuseIdentifier: "DetailTableViewCell")
         detailTableView.backgroundColor = .systemYellow
-        
+        detailTableView.register(MapViewTableViewCell.self, forCellReuseIdentifier: "MapViewTableViewCell")
     }
     
   
@@ -80,31 +80,35 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell, placeInfoData.indices.contains(0) else { return UITableViewCell() }
+        guard placeInfoData.indices.contains(0) else { return UITableViewCell() }
         
         let contentPart = ContentPart.allCases[index]
         let placeInfo = placeInfoData[dataIndex] // 整個api資料被點到的那一格
 
         switch contentPart {
         case .image:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
+            cell.fakeMapView.isHidden = true
             cell.placeImageView.isHidden = false
-            cell.mapView.isHidden = true
+//            cell.mapView.isHidden = true
             cell.infoStack.isHidden = true
             cell.heartButton.isHidden = true
             if let url = URL(string: placeInfo.placeData.imageURL) {
                 cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
             }
             
-//            cell.placeImageView.image = UIImage(systemName: "fork.knife")
+            return cell
             
         case .info:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
+            
             // SearchResultTableViewCellDelegate
             cell.delegate = self
             cell.indexPath = indexPath
             /////////////////////////////////////
-            
+            cell.fakeMapView.isHidden = true
             cell.placeImageView.isHidden = true
-            cell.mapView.isHidden = true
+//            cell.mapView.isHidden = true
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
             
@@ -116,18 +120,16 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.heartButton.isSelected = placeInfo.isSaved
 
             updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
-            
+            return cell
         case .map:
-            cell.placeImageView.isHidden = true
-            cell.mapView.isHidden = false
-            cell.infoStack.isHidden = true
-            cell.heartButton.isHidden = true
-                      
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MapViewTableViewCell", for: indexPath) as? MapViewTableViewCell else { return UITableViewCell() }
+
             cell.setupMapView(lat: placeInfo.placeData.coordinates.latitude, lon: placeInfo.placeData.coordinates.longitude, zoom: 16.0, title: placeInfo.placeData.name, snippet: nil)
-           
+            
+           return cell
         }
                 
-        return cell
+
     }
     
     private func updateHeartButtonUI(_ cell: DetailTableViewCell, placeIsSaved: Bool) {
@@ -142,7 +144,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
 } // ex tableview end
 
 extension DetailViewController: DetailTableViewCellDelegate {
-    func placeWasSaved(indexPath: IndexPath) {
+    func savePlaceDidTap(indexPath: IndexPath) {
         let index = indexPath.row
         guard placeInfoData.indices.contains(index) else { return }
         

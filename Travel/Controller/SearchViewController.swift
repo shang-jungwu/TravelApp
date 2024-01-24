@@ -21,9 +21,9 @@ class SearchViewController: UIViewController {
     lazy var searchResultVC = SearchResultViewController()
         
     lazy var searchTextFieldStack = UIStackView()
-    lazy var searchQueryTextField = TravelCustomTextField()
-    lazy var categoryTextField = TravelCustomTextField()
-    lazy var languageTextField = TravelCustomTextField()
+    lazy var locationTextField = TravelCustomTextField()
+    lazy var termTextField = TravelCustomTextField()
+    lazy var resultCountTextField = TravelCustomTextField()
     
     lazy var searchButton: UIButton = {
         let button = UIButton()
@@ -72,13 +72,13 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
-        searchQueryTextField.text = "新竹"
-        uiSettingUtility.textFieldSetting(searchQueryTextField, placeholder: "輸入地點", keyboard: .default)
+        locationTextField.text = "新竹"
+        uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default)
         
-        categoryTextField.text = "restaurants"
-        uiSettingUtility.textFieldSetting(categoryTextField, placeholder: "搜尋類別", keyboard: .default)
-        languageTextField.text = "en"
-        uiSettingUtility.textFieldSetting(languageTextField, placeholder: "顯示語言", keyboard: .default)
+        termTextField.text = "restaurants"
+        uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default)
+        resultCountTextField.text = "20"
+        uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示語言", keyboard: .default)
     }
     
     func setupStackView() {
@@ -87,19 +87,19 @@ class SearchViewController: UIViewController {
         searchTextFieldStack.spacing = 20
         
         setupTextField()
-        searchTextFieldStack.addArrangedSubview(searchQueryTextField)
-        searchTextFieldStack.addArrangedSubview(categoryTextField)
-        searchTextFieldStack.addArrangedSubview(languageTextField)
+        searchTextFieldStack.addArrangedSubview(locationTextField)
+        searchTextFieldStack.addArrangedSubview(termTextField)
+        searchTextFieldStack.addArrangedSubview(resultCountTextField)
     }
     
     func fetchYelpApiData(completion: @escaping((Result<[Business],Error>) -> Void)) {
         
-        guard searchQueryTextField.text != "", categoryTextField.text != "" else {
+        guard locationTextField.text != "", termTextField.text != "" else {
             AlertKitAPI.present(title: "搜尋欄位不可為空", subtitle: nil, icon: .error, style: .iOS16AppleMusic, haptic: .warning)
             return
         }
         
-        if let location = searchQueryTextField.text, let term = categoryTextField.text {
+        if let location = locationTextField.text, let term = termTextField.text {
             let headers: HTTPHeaders = [
                 "accept": "application/json",
                 "Authorization": "Bearer 5bP0Nd3XrOHvq6Jy3RBDLkF6PgtlmeeU3LaO-MQ-_py2jYKLoPHXIeGvuBtfgOfHC0xsQ_GR-_jEsFl1K17i_oeAgPfwLkcvNnTjTXSud_DH-hBrNZBYv2EJ3XewZXYx"

@@ -6,13 +6,14 @@
 //
 
 import UIKit
-import GoogleMaps
+//import GoogleMaps
+import MapKit
 
 protocol DetailTableViewCellDelegate: AnyObject {
-    func placeWasSaved(indexPath: IndexPath)
+    func savePlaceDidTap(indexPath: IndexPath)
 }
 
-class DetailTableViewCell: UITableViewCell {
+class DetailTableViewCell: UITableViewCell, MKMapViewDelegate {
 
     lazy var placeImageView = UIImageView()
     lazy var infoStack = UIStackView()
@@ -21,9 +22,9 @@ class DetailTableViewCell: UITableViewCell {
     lazy var addressLabel = UILabel()
     lazy var phoneLabel = UILabel()
 
-//    lazy var fakeMapView = UIImageView()
-    
-    lazy var mapView = GMSMapView()
+    lazy var fakeMapView = UIImageView()
+//    lazy var mkMapView = MKMapView(frame: .zero)
+//    lazy var mapView = GMSMapView()
     private let uiSettingUtility = UISettingUtility()
     
     var delegate: DetailTableViewCellDelegate?
@@ -92,45 +93,39 @@ class DetailTableViewCell: UITableViewCell {
             make.height.equalTo(heartButton.snp.width)
         }
         
-//        contentView.addSubview(fakeMapView)
-//        fakeMapView.tintColor = .systemGray
-//        fakeMapView.layer.borderWidth = 0.5
-//        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
-//        fakeMapView.contentMode = .scaleAspectFit
-//        fakeMapView.snp.makeConstraints { make in
-//            make.top.equalToSuperview().offset(10)
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//            make.height.equalTo(200)
-//            make.bottom.equalToSuperview().offset(-10)
-//        }
-//        fakeMapView.isHidden = true
-       
-    }
-    
-    func setupMapView(lat: Double, lon: Double, zoom: Float, title: String, snippet: String?) {
-        let options = GMSMapViewOptions()
-        options.camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: zoom)
-        mapView = GMSMapView.init(options: options)
-
-        let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
-        marker.title = title
-        marker.snippet = snippet
-        marker.map = mapView
-        
-        //設定好再addSubview，否則會顯示預設地圖
-        contentView.addSubview(mapView)
-        mapView.snp.makeConstraints { make in
+        contentView.addSubview(fakeMapView)
+        fakeMapView.tintColor = .systemGray
+        fakeMapView.layer.borderWidth = 0.5
+        fakeMapView.layer.borderColor = UIColor.systemGray.cgColor
+        fakeMapView.contentMode = .scaleAspectFit
+        fakeMapView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.height.equalTo(200)
             make.bottom.equalToSuperview().offset(-10)
         }
-        mapView.isHidden = false
-
+        fakeMapView.isHidden = true
+       
     }
+    
+    
+//    func setupMapView(lat: Double, lon: Double, zoom: Float, title: String, snippet: String?, completion: @escaping(() -> Void)) {
+//        // 設定地圖座標
+//        let options = GMSMapViewOptions()
+//        options.camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: zoom)
+//        mapView = GMSMapView.init(options: options)
+//
+//        // 加入標記
+//        let marker = GMSMarker()
+//        marker.position = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+//        marker.title = title
+//        marker.snippet = snippet
+//        marker.map = mapView
+//        
+//       completion()
+//
+//    }
     // MARK: - Yelp API already offers coordinates
 //    func convertAddressToPlacemark(address: String, completion: @escaping (CLLocationCoordinate2D,Error?) -> Void) {
 //        let geoCoder = CLGeocoder()
@@ -185,7 +180,7 @@ class DetailTableViewCell: UITableViewCell {
         print("heart did tap")
         guard let delegate = delegate, let indexPath = indexPath else { print("xxxRETURNxxx")
             return }
-        delegate.placeWasSaved(indexPath: indexPath)
+        delegate.savePlaceDidTap(indexPath: indexPath)
     }
     
     
