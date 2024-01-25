@@ -15,13 +15,23 @@ class DetailTableViewCell: UITableViewCell {
 
     lazy var placeImageView = UIImageView()
     lazy var infoStack = UIStackView()
+    
+    lazy var nameStackView = UIStackView()
     lazy var aliasLabel = UILabel()
     lazy var nameLabel = UILabel()
-    lazy var ratingLabel = UILabel()
+    
+    lazy var ratingView = UIView()
+//    lazy var ratingStackView = UIStackView()
+    lazy var ratingImageView = UIImageView()
+    lazy var yelpLogoButton = UIButton(type: .custom)
+    lazy var blankView = UIView()
+    
+    lazy var priceLabel = UILabel()
     lazy var categoryLabel = UILabel()
-    lazy var heartButton = UIButton(type: .custom)
     lazy var addressLabel = UILabel()
     lazy var phoneLabel = UILabel()
+    
+    lazy var heartButton = UIButton(type: .custom)
 
     private let uiSettingUtility = UISettingUtility()
     
@@ -38,33 +48,52 @@ class DetailTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func setupRatingView() {
+        ratingView.addSubview(categoryLabel)
+        categoryLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalToSuperview()
+        }
+        
+        ratingView.addSubview(priceLabel)
+        priceLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(categoryLabel.snp.trailing).offset(11)
+        }
+        ratingView.addSubview(ratingImageView)
+        ratingImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.leading.equalTo(priceLabel.snp.trailing).offset(15)
+            make.height.equalTo(30)
+        }
+        ratingImageView.contentMode = .scaleAspectFit
+        ratingView.addSubview(yelpLogoButton)
+        yelpLogoButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.equalTo(ratingImageView.snp.trailing).offset(10)
+            make.width.equalTo(60)
+            make.height.equalTo(60)
+            make.bottom.equalToSuperview()
+        }
+        yelpLogoButton.setImage(UIImage(named: "yelp_logo_cmyk"), for: [])
+        yelpLogoButton.imageView?.contentMode = .scaleAspectFit
+    }
+    
     func setupStackView() {
+        nameStackView.axis = .vertical
+        nameStackView.distribution = .fill
+        nameStackView.spacing = 3
+        nameStackView.addArrangedSubview(nameLabel)
+        nameStackView.addArrangedSubview(aliasLabel)
+        nameStackView.addArrangedSubview(ratingView)
+      
         infoStack.axis = .vertical
         infoStack.distribution = .equalSpacing
         
-        infoStack.addArrangedSubview(nameLabel)
-        nameLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-50)
-        }
-        
-        infoStack.addArrangedSubview(aliasLabel)
-        aliasLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-50)
-        }
-        
-        infoStack.addArrangedSubview(ratingLabel)
-        ratingLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-50)
-        }
-        
-        infoStack.addArrangedSubview(categoryLabel)
-        categoryLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview().offset(-50)
-        }
+
+        infoStack.addArrangedSubview(nameStackView)
+        setupRatingView()
+
         
         infoStack.addArrangedSubview(addressLabel)
         addressLabel.snp.makeConstraints { make in
@@ -157,8 +186,8 @@ class DetailTableViewCell: UITableViewCell {
         phoneLabel.text = "phone"
         uiSettingUtility.labelSettings(label: phoneLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
         
-        ratingLabel.text = "rating"
-        uiSettingUtility.labelSettings(label: ratingLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
+        priceLabel.text = "price$$$$$"
+        uiSettingUtility.labelSettings(label: priceLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
         
         categoryLabel.text = "Category"
         uiSettingUtility.labelSettings(label: categoryLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)

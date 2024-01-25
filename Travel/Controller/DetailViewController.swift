@@ -118,8 +118,15 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             
             cell.nameLabel.text = placeInfo.placeData.name
             cell.aliasLabel.text = placeInfo.placeData.alias
-            cell.ratingLabel.text = "rating: \(placeInfo.placeData.rating)"
-            cell.categoryLabel.text = "Category: \(placeInfo.placeData.categories[0].title)"
+            let rating = placeInfo.placeData.rating.description.replacingOccurrences(of: ".", with: "")
+            cell.ratingImageView.image = UIImage(named: "Review_Ribbon_small_16_\(rating)")
+            if let price = placeInfo.placeData.price {
+                cell.priceLabel.text = "\(price)"
+            } else {
+                cell.priceLabel.text = "Free"
+            }
+           
+            cell.categoryLabel.text = "\(placeInfo.placeData.categories[0].title)"
             let fullAddress = placeInfo.placeData.location.displayAddress.reduce("", +)
             cell.addressLabel.text = fullAddress
             cell.phoneLabel.text = placeInfo.placeData.displayPhone
