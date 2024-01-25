@@ -23,6 +23,7 @@ class DetailViewController: UIViewController {
     var placeInfoData = [TravelData]() // 整筆api data
     var dataIndex = 0 // 要顯示的資料 aka 前一頁被點擊的那筆
     
+    lazy var heartButton = UIButton(type: .custom)
     lazy var detailTableView = UITableView(frame: .zero, style: .grouped)
     
     override func viewDidLoad() {
@@ -47,7 +48,10 @@ class DetailViewController: UIViewController {
 
     }
 
-    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+//        uiSettingUtility.setupHeartButton(sender: heartButton, backgroundColor: .white, borderColor: UIColor.systemOrange.cgColor, borderWidth: 1, cornerRadius: 20)
+    }
     
     func setupUI() {
         view.addSubview(detailTableView)
@@ -104,18 +108,17 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.delegate = self
             cell.indexPath = indexPath
             /////////////////////////////////////
-            
-            cell.nameLabel.text = placeInfo.placeData.name
+
             cell.aliasLabel.text = placeInfo.placeData.alias
             let rating = placeInfo.placeData.rating.description.replacingOccurrences(of: ".", with: "")
             cell.ratingImageView.image = UIImage(named: "Review_Ribbon_small_16_\(rating)")
             if let price = placeInfo.placeData.price {
                 cell.priceLabel.text = "\(price)"
             } else {
-                cell.priceLabel.text = "Free"
+                cell.priceLabel.text = ""
             }
             if let reviewCount = placeInfo.placeData.reviewCount {
-                cell.reviewCountLabel.text = "\(reviewCount) reviews on"
+                cell.reviewCountLabel.text = "(\(placeInfo.placeData.rating)) \(reviewCount) reviews on"
             }
             
             cell.categoryLabel.text = "\(placeInfo.placeData.categories[0].title)"
@@ -123,7 +126,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.addressLabel.text = fullAddress
             cell.phoneLabel.text = placeInfo.placeData.displayPhone
 
-            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
+//            updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
             
             return cell
             
@@ -139,15 +142,15 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
 
     }
     
-    private func updateHeartButtonUI(_ cell: InfoTableViewCell, placeIsSaved: Bool) {
-        if placeIsSaved {
-            cell.heartButton.isSelected = true
-            print("現在是收藏狀態")
-        } else {
-            cell.heartButton.isSelected = false
-            print("未收藏")
-        }
-    }
+//    private func updateHeartButtonUI(_ cell: InfoTableViewCell, placeIsSaved: Bool) {
+//        if placeIsSaved {
+//            cell.heartButton.isSelected = true
+//            print("現在是收藏狀態")
+//        } else {
+//            cell.heartButton.isSelected = false
+//            print("未收藏")
+//        }
+//    }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
@@ -162,9 +165,37 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             make.trailing.equalToSuperview().offset(-50)
             make.bottom.equalToSuperview().offset(-10)
         }
-        header.backgroundColor = .systemTeal
+        
+        
+        header.addSubview(heartButton)
+        heartButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-10)
+            make.width.equalTo(40)
+            make.height.equalTo(heartButton.snp.width)
+        }
+       
+        heartButton.isSelected = self.placeInfoData[self.dataIndex].isSaved
+        heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
+        uiSettingUtility.setupHeartButton(sender: heartButton, backgroundColor: .white, borderColor: UIColor.systemOrange.cgColor, borderWidth: 1, cornerRadius: 20)
+        
+//        header.backgroundColor = .systemTeal
         return header
     }
+    
+    @objc private func heartDidTap(sender: UIButton) {
+        sender.isSelected = !sender.isSelected
+        self.placeInfoData[self.dataIndex].isSaved = sender.isSelected
+        
+        if sender.isSelected == true {
+            print("收藏")
+        } else {
+            print("退追")
+        }
+        
+
+    }
+    
     
 //    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 //        60

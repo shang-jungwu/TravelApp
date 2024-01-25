@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TravelData {
+struct TravelData: Codable {
     let placeData: Business//PlaceData
     var isSaved: Bool
 //    var photoURL: String // yelp offers imageURL

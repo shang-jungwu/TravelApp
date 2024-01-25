@@ -41,8 +41,8 @@ class MapViewTableViewCell: UITableViewCell {
         self.contentView.addSubview(mapView)
         mapView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().offset(-10)
             make.bottom.equalToSuperview().offset(-10)
             make.height.equalTo(300)
         }

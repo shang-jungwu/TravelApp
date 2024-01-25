@@ -40,11 +40,13 @@ struct UISettingUtility {
         sender.clipsToBounds = true
     }
     
-    func setupHeartButton(sender: UIButton) {
-
+    func setupHeartButton(sender: UIButton, backgroundColor: UIColor, borderColor: CGColor, borderWidth: CGFloat, cornerRadius: CGFloat) {
         sender.setImage(UIImage(systemName: "heart"), for: .normal)
         sender.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-
+        sender.backgroundColor = backgroundColor
+        sender.layer.borderColor = borderColor
+        sender.layer.borderWidth = borderWidth
+        sender.layer.cornerRadius = cornerRadius
         sender.tintColor = .systemOrange
     }
     

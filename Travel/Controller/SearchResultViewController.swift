@@ -15,6 +15,10 @@ class SearchResultViewController: UIViewController {
     var travelData = [TravelData]()
     lazy var detailVC = DetailViewController()
     
+    let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+    
     lazy var resultTableView = UITableView(frame: .zero, style: .insetGrouped)
     
     override func viewDidLoad() {
@@ -127,12 +131,44 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
         placeSavedStatus = !placeSavedStatus // toggle
         travelData[index].isSaved = placeSavedStatus // 更新資料
         
-        print("travelData[index]:\(travelData[index])")
+//        print("travelData[index]:\(travelData[index])")
+        
+        let place = travelData[index]
         
         if placeSavedStatus == true {
             print("收藏")
+            if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
+                print("here1")
+                if var favoriteList = try?  decoder.decode([TravelData].self, from: currentFavoriteList) {
+                    print("here2")
+                    favoriteList.append(place)
+                    print("favoriteList:\(favoriteList)")
+                    
+                    if let newFavoriteList = try? encoder.encode(favoriteList) {
+                        defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
+                       
+                    }
+                    
+                }
+            }
         } else {
             print("退出")
+            if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
+                if var favoriteList = try?  decoder.decode([TravelData].self, from: currentFavoriteList) {
+                    
+                    for (i,item) in favoriteList.enumerated() {
+                        if item.placeData.name == place.placeData.name {
+                            favoriteList.remove(at: i)
+                            print("favoriteList:\(favoriteList)")
+                        }
+                    }
+                    
+                    if let newFavoriteList = try? encoder.encode(favoriteList) {
+                        defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
+                    }
+                    
+                }
+            }
         }
         
         resultTableView.reloadRows(at: [indexPath], with: .automatic)

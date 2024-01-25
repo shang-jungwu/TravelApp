@@ -65,7 +65,8 @@ class SearchResultTableViewCell: UITableViewCell {
     }
     
     func setupHeartButton() {
-        uiSettingUtility.setupHeartButton(sender: heartButton)
+        uiSettingUtility.setupHeartButton(sender: heartButton, backgroundColor: .white, borderColor: UIColor.white.cgColor, borderWidth: 0, cornerRadius: 0)
+
         heartButton.isSelected = false
         heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
     }

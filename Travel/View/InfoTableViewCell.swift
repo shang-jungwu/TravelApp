@@ -20,7 +20,7 @@ class InfoTableViewCell: UITableViewCell {
     
     lazy var infoStackView = UIStackView()
     
-    lazy var nameAreaView = UIView()
+    lazy var aliasCategoryPriceView = UIView()
     lazy var aliasLabel = UILabel()
 //    lazy var nameLabel = UILabel()
     
@@ -32,10 +32,12 @@ class InfoTableViewCell: UITableViewCell {
     lazy var yelpLogoButton = UIButton(type: .custom)
 
     lazy var otherInfoView = UIView()
+    lazy var pinImageView = UIImageView(image: UIImage(systemName: "mappin.and.ellipse"))
     lazy var addressLabel = UILabel()
+    lazy var phoneImageView = UIImageView(image: UIImage(systemName: "phone"))
     lazy var phoneLabel = UILabel()
     
-    lazy var heartButton = UIButton(type: .custom)
+//    lazy var heartButton = UIButton(type: .custom)
 
     private let uiSettingUtility = UISettingUtility()
     
@@ -53,10 +55,12 @@ class InfoTableViewCell: UITableViewCell {
     
     func setupInfoStack() {
         infoStackView.axis = .vertical
-        infoStackView.distribution = .equalSpacing
+        infoStackView.distribution = .fill
+
+//        infoStackView.backgroundColor = .systemCyan
         
-        infoStackView.addArrangedSubview(nameAreaView)
-        setupNameAreaView()
+        infoStackView.addArrangedSubview(aliasCategoryPriceView)
+        setupAliasAreaView()
         infoStackView.addArrangedSubview(ratingView)
         setupRatingView()
         infoStackView.addArrangedSubview(otherInfoView)
@@ -64,22 +68,12 @@ class InfoTableViewCell: UITableViewCell {
     }
     
     func setupRatingView() {
-        ratingView.backgroundColor = .systemMint
-        ratingView.addSubview(categoryLabel)
-        categoryLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview()
-        }
-        
-        ratingView.addSubview(priceLabel)
-        priceLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(categoryLabel.snp.trailing).offset(10)
-        }
+//        ratingView.backgroundColor = .systemMint
+      
         ratingView.addSubview(ratingImageView)
         ratingImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalTo(priceLabel.snp.trailing).offset(15)
+            make.leading.equalToSuperview()//.offset(15)
             make.height.equalTo(30)
         }
         ratingImageView.contentMode = .scaleAspectFit
@@ -111,39 +105,62 @@ class InfoTableViewCell: UITableViewCell {
     }
     
     func setupOtherInfoView() {
-        otherInfoView.backgroundColor = .systemYellow
-        
-        otherInfoView.addSubview(addressLabel)
-        addressLabel.snp.makeConstraints { make in
+//        otherInfoView.backgroundColor = .systemYellow
+        otherInfoView.addSubview(pinImageView)
+        pinImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()//.offset(10)
             make.leading.equalToSuperview()
+            make.width.equalTo(20)
+            make.height.equalTo(20)
+        }
+        otherInfoView.addSubview(addressLabel)
+        addressLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.equalTo(pinImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview()
+        }
+        
+        
+        otherInfoView.addSubview(phoneImageView)
+        phoneImageView.snp.makeConstraints { make in
+            make.top.equalTo(addressLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview()
+            make.width.equalTo(20)
+            make.height.equalTo(20)
         }
         
         otherInfoView.addSubview(phoneLabel)
         phoneLabel.snp.makeConstraints { make in
-            make.top.equalTo(addressLabel.snp.bottom).offset(10)
-            make.leading.equalToSuperview()
+            make.top.equalTo(phoneImageView.snp.top)
+            make.leading.equalTo(phoneImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
             
         }
     }
     
-    func setupNameAreaView() {
-        nameAreaView.backgroundColor = .systemCyan
-//        nameAreaView.addSubview(nameLabel)
-//        nameLabel.snp.makeConstraints { make in
-//            make.top.equalToSuperview()
-//            make.leading.equalToSuperview()
-//            make.trailing.equalToSuperview()
-//        }
-        nameAreaView.addSubview(aliasLabel)
+    func setupAliasAreaView() {
+
+        aliasCategoryPriceView.addSubview(aliasLabel)
         aliasLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview()//.offset(3)
+            make.top.equalToSuperview()
             make.leading.equalToSuperview()
             make.bottom.equalToSuperview()
         }
+        
+        aliasCategoryPriceView.addSubview(priceLabel)
+        priceLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview()
+        }
+        
+        aliasCategoryPriceView.addSubview(categoryLabel)
+        categoryLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.trailing.equalTo(priceLabel.snp.leading).offset(-5)
+        }
+        
+       
       
     }
     
@@ -153,28 +170,16 @@ class InfoTableViewCell: UITableViewCell {
         contentView.addSubview(infoStackView)
         infoStackView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-40)
+            make.leading.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().offset(-10)
             make.bottom.equalToSuperview().offset(-10)
         }
         setupInfoStack()
         setupLabel()
-       
-       
-        contentView.addSubview(heartButton)
-        heartButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview()
-            make.width.equalTo(40)
-            make.height.equalTo(heartButton.snp.width)
-        }
-        setupHeartButton()
 
     }
     
     func setupLabel() {
-//        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 24, fontWeight: .bold, color: .black, alignment: .left, numOfLines: 0)
-//        nameLabel.clipsToBounds = true
         
         uiSettingUtility.labelSettings(label: aliasLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
         aliasLabel.clipsToBounds = true
@@ -192,18 +197,18 @@ class InfoTableViewCell: UITableViewCell {
     }
     
     
-    func setupHeartButton() {
-        uiSettingUtility.setupHeartButton(sender: heartButton)
-        heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
-    }
-    
-    
-    @objc private func heartDidTap() {
-        print("heart did tap")
-        guard let delegate = delegate, let indexPath = indexPath else { print("xxxRETURNxxx")
-            return }
-        delegate.savePlaceDidTap(indexPath: indexPath)
-    }
+//    func setupHeartButton() {
+//        uiSettingUtility.setupHeartButton(sender: heartButton)
+//        heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
+//    }
+//    
+//    
+//    @objc private func heartDidTap() {
+//        print("heart did tap")
+//        guard let delegate = delegate, let indexPath = indexPath else { print("xxxRETURNxxx")
+//            return }
+//        delegate.savePlaceDidTap(indexPath: indexPath)
+//    }
     
 
 }
