@@ -15,7 +15,10 @@ class DetailTableViewCell: UITableViewCell {
 
     lazy var placeImageView = UIImageView()
     lazy var infoStack = UIStackView()
+    lazy var aliasLabel = UILabel()
     lazy var nameLabel = UILabel()
+    lazy var ratingLabel = UILabel()
+    lazy var categoryLabel = UILabel()
     lazy var heartButton = UIButton(type: .custom)
     lazy var addressLabel = UILabel()
     lazy var phoneLabel = UILabel()
@@ -37,10 +40,28 @@ class DetailTableViewCell: UITableViewCell {
     
     func setupStackView() {
         infoStack.axis = .vertical
-        infoStack.distribution = .fillEqually
+        infoStack.distribution = .equalSpacing
         
         infoStack.addArrangedSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-50)
+        }
+        
+        infoStack.addArrangedSubview(aliasLabel)
+        aliasLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-50)
+        }
+        
+        infoStack.addArrangedSubview(ratingLabel)
+        ratingLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview().offset(-50)
+        }
+        
+        infoStack.addArrangedSubview(categoryLabel)
+        categoryLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview().offset(-50)
         }
@@ -124,8 +145,11 @@ class DetailTableViewCell: UITableViewCell {
 //    }
     
     func setupLabel() {
-        nameLabel.text = "name"
+        nameLabel.text = "名稱"
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 24, fontWeight: .bold, color: .black, alignment: .left, numOfLines: 0)
+        
+        aliasLabel.text = "別名"
+        uiSettingUtility.labelSettings(label: aliasLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
         
         addressLabel.text = "address"
         uiSettingUtility.labelSettings(label: addressLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
@@ -133,6 +157,11 @@ class DetailTableViewCell: UITableViewCell {
         phoneLabel.text = "phone"
         uiSettingUtility.labelSettings(label: phoneLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
         
+        ratingLabel.text = "rating"
+        uiSettingUtility.labelSettings(label: ratingLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
+        
+        categoryLabel.text = "Category"
+        uiSettingUtility.labelSettings(label: categoryLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
     }
     
     

@@ -32,6 +32,7 @@ class DetailViewController: UIViewController {
         setupUI()
         setupTableView()
         
+        
     }
     
     func setupNav() {
@@ -41,7 +42,7 @@ class DetailViewController: UIViewController {
    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        print("placeInfo:",placeInfoData[dataIndex].placeData)
+        print("placeInfo:",placeInfoData[dataIndex])
         detailTableView.reloadData()
 
     }
@@ -81,7 +82,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let index = indexPath.row
-        guard placeInfoData.indices.contains(0) else { return UITableViewCell() }
+        guard placeInfoData.indices.contains(dataIndex) else { return UITableViewCell() }
         
         let contentPart = ContentPart.allCases[index]
         let placeInfo = placeInfoData[dataIndex] // 整個api資料被點到的那一格
@@ -89,6 +90,10 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
         switch contentPart {
         case .image:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
+            // SearchResultTableViewCellDelegate
+            cell.delegate = self
+            cell.indexPath = indexPath
+            /////////////////////////////////////
 
             cell.placeImageView.isHidden = false
             cell.infoStack.isHidden = true
@@ -96,6 +101,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             if let url = URL(string: placeInfo.placeData.imageURL) {
                 cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
             }
+            
             return cell
             
         case .info:
@@ -109,13 +115,17 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             cell.placeImageView.isHidden = true
             cell.infoStack.isHidden = false
             cell.heartButton.isHidden = false
+            
             cell.nameLabel.text = placeInfo.placeData.name
+            cell.aliasLabel.text = placeInfo.placeData.alias
+            cell.ratingLabel.text = "rating: \(placeInfo.placeData.rating)"
+            cell.categoryLabel.text = "Category: \(placeInfo.placeData.categories[0].title)"
             let fullAddress = placeInfo.placeData.location.displayAddress.reduce("", +)
             cell.addressLabel.text = fullAddress
-            cell.phoneLabel.text = placeInfo.placeData.phone
-            cell.heartButton.isSelected = placeInfo.isSaved
+            cell.phoneLabel.text = placeInfo.placeData.displayPhone
 
             updateHeartButtonUI(cell, placeIsSaved: placeInfo.isSaved)
+            
             return cell
             
         case .map:
@@ -125,15 +135,18 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             
            return cell
         }
-                
+            
+
 
     }
     
     private func updateHeartButtonUI(_ cell: DetailTableViewCell, placeIsSaved: Bool) {
         if placeIsSaved {
             cell.heartButton.isSelected = true
+            print("現在是收藏狀態")
         } else {
             cell.heartButton.isSelected = false
+            print("未收藏")
         }
     }
 
@@ -145,18 +158,21 @@ extension DetailViewController: DetailTableViewCellDelegate {
         let index = indexPath.row
         guard placeInfoData.indices.contains(index) else { return }
         
-        var placeSavedStatus = placeInfoData[index].isSaved
+        var placeSavedStatus = placeInfoData[dataIndex].isSaved
         placeSavedStatus = !placeSavedStatus // toggle
-        placeInfoData[index].isSaved = placeSavedStatus // 更新資料
+        placeInfoData[dataIndex].isSaved = placeSavedStatus // 更新資料
     
         
         if placeSavedStatus == true {
-            print("收藏")
+            print("here收藏")
         } else {
-            print("退出")
+            print("here退出")
         }
         
+        print("placeInfoData[dataIndex]:\(placeInfoData[dataIndex])")
+        
         detailTableView.reloadRows(at: [indexPath], with: .automatic)
+        
     }
     
     

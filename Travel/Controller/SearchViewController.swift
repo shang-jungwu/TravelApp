@@ -37,12 +37,12 @@ class SearchViewController: UIViewController {
     }()
     
     @objc func pushSearchResultVC() {
-        // MARK: - 先餵假資料 省API次數
+        // MARK: - 先餵固定資料 省API次數
         //       getYelpData()
         
         if let nav = self.navigationController {
             // passing data
-            searchResultVC.travelData = fakeData
+            searchResultVC.travelData = hotelData
             nav.pushViewController(searchResultVC, animated: true)
         }
         
@@ -81,10 +81,10 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
-        locationTextField.text = "新竹"
+        locationTextField.text = "暫用固定資料 省API次數"
         uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default, autoCapitalize: .none)
         
-        termTextField.text = "restaurants"
+        termTextField.text = "暫用固定資料 省API次數"
         uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default, autoCapitalize: .none)
         resultCountTextField.text = "20"
         uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示筆數", keyboard: .numberPad, autoCapitalize: .none)
