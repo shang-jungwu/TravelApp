@@ -138,21 +138,24 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
         if placeSavedStatus == true {
             print("收藏")
             if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
-                print("here1")
-                if var favoriteList = try?  decoder.decode([TravelData].self, from: currentFavoriteList) {
-                    print("here2")
+                if var favoriteList = try? decoder.decode([TravelData].self, from: currentFavoriteList) {
                     favoriteList.append(place)
                     print("favoriteList:\(favoriteList)")
                     
                     if let newFavoriteList = try? encoder.encode(favoriteList) {
                         defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
-                       
+                    } else {
+                        print("encode失敗")
                     }
-                    
+                }
+            } else {
+                // defaults無資料時
+                if let newFavoriteList = try? encoder.encode([place].self) {
+                    defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
                 }
             }
         } else {
-            print("退出")
+            print("退追")
             if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
                 if var favoriteList = try?  decoder.decode([TravelData].self, from: currentFavoriteList) {
                     
@@ -168,6 +171,8 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
                     }
                     
                 }
+            } else {
+                print("查無資料")
             }
         }
         
