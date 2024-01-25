@@ -13,6 +13,7 @@ class TabBarController: UITabBarController {
     lazy var profileVC = ProfileViewController()
     lazy var detailVC = DetailViewController()
     lazy var favoriteVC = FavoriteViewController()
+    lazy var scheduleVC = ScheduleViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,12 +29,14 @@ class TabBarController: UITabBarController {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 0)
 
         favoriteVC.tabBarItem = UITabBarItem(title: "Favorite", image: UIImage(systemName: "heart.fill"), tag: 1)
+        scheduleVC.tabBarItem = UITabBarItem(title: "Schedule", image: UIImage(systemName: "book"), tag: 2)
         
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
 
         let controllerArray = [
             UINavigationController(rootViewController: searchVC),
             UINavigationController(rootViewController: favoriteVC),
+            UINavigationController(rootViewController: scheduleVC),
             UINavigationController(rootViewController: profileVC),
            
         ]
@@ -42,14 +45,6 @@ class TabBarController: UITabBarController {
         
     }
     
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+   
 
 }

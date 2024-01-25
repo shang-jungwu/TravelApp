@@ -9,8 +9,11 @@ import UIKit
 import SnapKit
 
 class FavoriteViewController: UIViewController {
-    
+
+    let defaults = UserDefaults.standard
     lazy var favoriteTableView = UITableView(frame: .zero, style: .insetGrouped)
+    var favoriteListData = [TravelData]()
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,6 +21,7 @@ class FavoriteViewController: UIViewController {
         setupNav()
         setupUI()
         setupTableView()
+        getUserFavoriteListData()
     }
     
 
@@ -39,18 +43,62 @@ class FavoriteViewController: UIViewController {
     func setupTableView() {
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
+        favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
+    }
+
+    func getUserFavoriteListData() {
+        let decoder = JSONDecoder()
+
+        if let defaultData = defaults.data(forKey: "UserFavoriteList") {
+            if let decodedData = try? decoder.decode([TravelData].self, from: defaultData) {
+                self.favoriteListData = decodedData
+            } else {
+                print("Fail to decode")
+            }
+
+        }
     }
 
 }
 
 extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1
+        favoriteListData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "FavoriteListTableViewCell", for: indexPath) as? FavoriteListTableViewCell else { return UITableViewCell() }
+
+        return cell
     }
-    
-    
+
+    // 滑動刪除
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        let index = indexPath.row
+        let encoder = JSONEncoder()
+
+        favoriteListData.remove(at: index)
+
+        if let newFavoriteData = try? encoder.encode(favoriteListData.self) {
+            defaults.setValue(newFavoriteData, forKey: "UserFavoriteList")
+        }
+
+        favoriteTableView.deleteRows(at: [indexPath], with: .automatic)
+    }
+
+    // 右側刪除按鈕
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let index = indexPath.row
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [unowned self] (action, view, completionHandler) in
+
+            favoriteListData.remove(at: index)
+            favoriteTableView.deleteRows(at: [indexPath], with: .automatic)
+
+            completionHandler(true) // 告訴vc動作結束了
+        }
+        deleteAction.image = UIImage(systemName: "trash")
+        let config = UISwipeActionsConfiguration(actions: [deleteAction])
+        config.performsFirstActionWithFullSwipe = true // 滑到底直接刪除
+        return config
+    }
 }

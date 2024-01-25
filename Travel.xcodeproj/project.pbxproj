@@ -12,6 +12,10 @@
 		4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977511C2B580B970027546F /* TravelCustomTextField.swift */; };
 		49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */; };
 		49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */; };
+		49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */; };
+		49A5C1D22B62968F003C5BEB /* ScheduleTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */; };
+		49A5C1D42B6296D9003C5BEB /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */; };
+		49A5C1D62B6298BE003C5BEB /* FavoriteListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */; };
 		96EF924BBB9B257A9CD74147 /* Pods_Travel_TravelUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */; };
 		CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE1082B57D5B300F1861B /* AppDelegate.swift */; };
 		CA6DE10B2B57D5B300F1861B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE10A2B57D5B300F1861B /* SceneDelegate.swift */; };
@@ -65,6 +69,10 @@
 		4977511C2B580B970027546F /* TravelCustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelCustomTextField.swift; sourceTree = "<group>"; };
 		49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelThemeColor.swift; sourceTree = "<group>"; };
+		49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
+		49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableHeaderView.swift; sourceTree = "<group>"; };
+		49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
+		49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteListTableViewCell.swift; sourceTree = "<group>"; };
 		60D262207B09658D7F3CD2EB /* Pods-Travel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel.debug.xcconfig"; path = "Target Support Files/Pods-Travel/Pods-Travel.debug.xcconfig"; sourceTree = "<group>"; };
 		68B6476BD36F88D8EB714C9F /* Pods-TravelTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TravelTests.release.xcconfig"; path = "Target Support Files/Pods-TravelTests/Pods-TravelTests.release.xcconfig"; sourceTree = "<group>"; };
 		7B177B20749C55D115F1BFD1 /* Pods-Travel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel.release.xcconfig"; path = "Target Support Files/Pods-Travel/Pods-Travel.release.xcconfig"; sourceTree = "<group>"; };
@@ -134,7 +142,6 @@
 		49536E3D2B5AB0FB0075836E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				CA6DE1382B57D69900F1861B /* TabBarController.swift */,
 				CA6DE10C2B57D5B300F1861B /* SearchViewController.swift */,
 				CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */,
 				CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */,
@@ -142,6 +149,7 @@
 				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
 				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
 				CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */,
+				49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -150,6 +158,9 @@
 			isa = PBXGroup;
 			children = (
 				4977511C2B580B970027546F /* TravelCustomTextField.swift */,
+				49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */,
+				49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */,
+				49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */,
 				CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */,
 				CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */,
 				CABC93052B62349700066F3C /* InfoTableViewCell.swift */,
@@ -198,6 +209,7 @@
 			children = (
 				CA6DE1082B57D5B300F1861B /* AppDelegate.swift */,
 				CA6DE10A2B57D5B300F1861B /* SceneDelegate.swift */,
+				CA6DE1382B57D69900F1861B /* TabBarController.swift */,
 				49536E3D2B5AB0FB0075836E /* Controller */,
 				4977511B2B580B4B0027546F /* View */,
 				CAD722162B58C75400EF3D7C /* Model */,
@@ -540,15 +552,19 @@
 				CAB014F72B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift in Sources */,
 				CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */,
 				CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */,
+				49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */,
 				CA6DE10D2B57D5B300F1861B /* SearchViewController.swift in Sources */,
 				49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */,
 				CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */,
 				CADDA0BE2B5A446000F35BF7 /* TravelData.swift in Sources */,
+				49A5C1D62B6298BE003C5BEB /* FavoriteListTableViewCell.swift in Sources */,
 				CAE4AD4A2B60B15500ED4435 /* YelpApiData.swift in Sources */,
+				49A5C1D22B62968F003C5BEB /* ScheduleTableHeaderView.swift in Sources */,
 				CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */,
 				CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */,
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
 				CAE4AD4C2B610E9900ED4435 /* MapViewTableViewCell.swift in Sources */,
+				49A5C1D42B6296D9003C5BEB /* ScheduleTableViewCell.swift in Sources */,
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
