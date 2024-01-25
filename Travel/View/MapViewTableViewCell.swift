@@ -28,6 +28,7 @@ class MapViewTableViewCell: UITableViewCell {
         // 設定地圖座標
         let options = GMSMapViewOptions()
         options.camera = GMSCameraPosition.camera(withLatitude: lat, longitude: lon, zoom: zoom)
+        options.frame = .zero
         mapView = GMSMapView.init(options: options)
 
         // 加入標記
@@ -39,7 +40,10 @@ class MapViewTableViewCell: UITableViewCell {
 
         self.contentView.addSubview(mapView)
         mapView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
             make.height.equalTo(300)
         }
     }

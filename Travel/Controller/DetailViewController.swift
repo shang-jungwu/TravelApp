@@ -64,8 +64,8 @@ class DetailViewController: UIViewController {
     func setupTableView() {
         detailTableView.delegate = self
         detailTableView.dataSource = self
-        detailTableView.register(DetailTableViewCell.self, forCellReuseIdentifier: "DetailTableViewCell")
-        detailTableView.backgroundColor = .systemYellow
+        detailTableView.register(PlaceImageTableViewCell.self, forCellReuseIdentifier: "PlaceImageTableViewCell")
+        detailTableView.register(InfoTableViewCell.self, forCellReuseIdentifier: "InfoTableViewCell")
         detailTableView.register(MapViewTableViewCell.self, forCellReuseIdentifier: "MapViewTableViewCell")
     }
     
@@ -89,15 +89,8 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
 
         switch contentPart {
         case .image:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
-            // SearchResultTableViewCellDelegate
-            cell.delegate = self
-            cell.indexPath = indexPath
-            /////////////////////////////////////
-
-            cell.placeImageView.isHidden = false
-            cell.infoStack.isHidden = true
-            cell.heartButton.isHidden = true
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "PlaceImageTableViewCell", for: indexPath) as? PlaceImageTableViewCell else { return UITableViewCell() }
+          
             if let url = URL(string: placeInfo.placeData.imageURL) {
                 cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
             }
@@ -105,16 +98,12 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             return cell
             
         case .info:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "DetailTableViewCell", for: indexPath) as? DetailTableViewCell else { return UITableViewCell() }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "InfoTableViewCell", for: indexPath) as? InfoTableViewCell else { return UITableViewCell() }
             
-            // SearchResultTableViewCellDelegate
+            // InfoTableViewCellDelegate
             cell.delegate = self
             cell.indexPath = indexPath
             /////////////////////////////////////
-
-            cell.placeImageView.isHidden = true
-            cell.infoStack.isHidden = false
-            cell.heartButton.isHidden = false
             
             cell.nameLabel.text = placeInfo.placeData.name
             cell.aliasLabel.text = placeInfo.placeData.alias
@@ -125,7 +114,10 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             } else {
                 cell.priceLabel.text = "Free"
             }
-           
+            if let reviewCount = placeInfo.placeData.reviewCount {
+                cell.reviewCountLabel.text = "\(reviewCount) reviews on"
+            }
+            
             cell.categoryLabel.text = "\(placeInfo.placeData.categories[0].title)"
             let fullAddress = placeInfo.placeData.location.displayAddress.reduce("", +)
             cell.addressLabel.text = fullAddress
@@ -147,7 +139,7 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
 
     }
     
-    private func updateHeartButtonUI(_ cell: DetailTableViewCell, placeIsSaved: Bool) {
+    private func updateHeartButtonUI(_ cell: InfoTableViewCell, placeIsSaved: Bool) {
         if placeIsSaved {
             cell.heartButton.isSelected = true
             print("現在是收藏狀態")
@@ -156,11 +148,39 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
             print("未收藏")
         }
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let header = UIView()
+        let titleLabel = UILabel()
+        uiSettingUtility.labelSettings(label: titleLabel, fontSize: 24, fontWeight: .black, color: .black, alignment: .left, numOfLines: 0)
+        titleLabel.text = self.placeInfoData[self.dataIndex].placeData.name
+        header.backgroundColor = .white
+        header.addSubview(titleLabel)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-50)
+            make.bottom.equalToSuperview().offset(-10)
+        }
+        header.backgroundColor = .systemTeal
+        return header
+    }
+    
+//    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//        60
+//    }
 
 
 } // ex tableview end
 
-extension DetailViewController: DetailTableViewCellDelegate {
+extension DetailViewController: InfoTableViewCellDelegate {
+    func viewOnYelp() {
+        if let url = URL(string: placeInfoData[dataIndex].placeData.url) {
+            UIApplication.shared.open(url)
+        }
+    }
+    
+
     func savePlaceDidTap(indexPath: IndexPath) {
         let index = indexPath.row
         guard placeInfoData.indices.contains(index) else { return }

@@ -17,9 +17,9 @@ struct YelpApiData: Codable {
 struct Business: Codable {
     let id, alias, name: String
     let imageURL: String
-//    let isClosed: Bool
+    let isClosed: Bool?
     let url: String
-//    let reviewCount: Int
+    let reviewCount: Int?
     let categories: [Category]
     let rating: Double
     let coordinates: Center
@@ -32,9 +32,9 @@ struct Business: Codable {
     enum CodingKeys: String, CodingKey {
         case id, alias, name
         case imageURL = "image_url"
-//        case isClosed = "is_closed"
+        case isClosed = "is_closed"
         case url
-//        case reviewCount = "review_count"
+        case reviewCount = "review_count"
         case categories, rating, coordinates, location, phone
         case displayPhone = "display_phone"
         case distance, price
@@ -70,12 +70,7 @@ struct Location: Codable {
 }
 
 
-//enum State: String, Codable {
-//    case hsq = "HSQ"
-//    case hsz = "HSZ"
-//    case mia = "MIA"
-//    case tao = "TAO"
-//}
+
 
 // MARK: - Region
 struct Region: Codable {
