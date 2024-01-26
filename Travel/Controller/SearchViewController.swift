@@ -38,13 +38,13 @@ class SearchViewController: UIViewController {
     
     @objc func pushSearchResultVC() {
         // MARK: - 先餵固定資料 省API次數
-//               getYelpData()
+               getYelpData()
         
-        if let nav = self.navigationController {
-            // passing data
-            searchResultVC.travelData = restaurantData
-            nav.pushViewController(searchResultVC, animated: true)
-        }
+//        if let nav = self.navigationController {
+//            // passing data
+//            searchResultVC.travelData = restaurantData
+//            nav.pushViewController(searchResultVC, animated: true)
+//        }
         
 
     }
@@ -90,10 +90,10 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
-        locationTextField.text = "暫用固定資料 省API次數"
+        locationTextField.text = "taipei"//"暫用固定資料 省API次數"
         uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default, autoCapitalize: .none)
         
-        termTextField.text = "暫用固定資料 省API次數"
+        termTextField.text = "restaurant"//"暫用固定資料 省API次數"
         uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default, autoCapitalize: .none)
         resultCountTextField.text = "20"
         uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示筆數", keyboard: .numberPad, autoCapitalize: .none)
@@ -188,4 +188,19 @@ class SearchViewController: UIViewController {
     
 
 }
+
+extension LoginViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+           textField.resignFirstResponder()
+           return true
+       }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       self.view.endEditing(true)
+   }
+
+   
+    
+}
+
 

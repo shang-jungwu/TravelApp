@@ -26,6 +26,7 @@ class PlaceImageTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
+        contentView.backgroundColor = .white
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)

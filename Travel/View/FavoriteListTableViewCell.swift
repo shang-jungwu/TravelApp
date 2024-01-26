@@ -17,6 +17,7 @@ class FavoriteListTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        contentView.backgroundColor = .white
         setupUI()
     }
 
@@ -43,7 +44,7 @@ class FavoriteListTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-10)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
-        nameLabel.backgroundColor = .systemCyan
+//        nameLabel.backgroundColor = .systemCyan
 
     }
 

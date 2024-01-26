@@ -20,7 +20,7 @@ struct UISettingUtility {
     }
     
     func textFieldSetting(_ sender: TravelCustomTextField, placeholder: String, keyboard: UIKeyboardType, autoCapitalize: UITextAutocapitalizationType) {
-        sender.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.systemGray4])
+        sender.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.systemGray])
         sender.layer.cornerRadius = 15
         sender.layer.borderWidth = 2
         sender.layer.borderColor = UIColor.systemRed.cgColor
@@ -54,3 +54,5 @@ struct UISettingUtility {
     
     
 }
+
+
