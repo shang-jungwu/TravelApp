@@ -30,7 +30,8 @@ class ProfileViewController: UIViewController {
             $0.activationState == .foregroundActive
         }
         if let windowScene = scene as? UIWindowScene {
-            windowScene.keyWindow?.rootViewController = loginVC
+            windowScene.keyWindow?.rootViewController = UINavigationController(rootViewController: loginVC)
+            
             if let nav = self.navigationController {
                 nav.popToRootViewController(animated: true)
             }

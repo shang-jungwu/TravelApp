@@ -19,7 +19,7 @@ class SearchViewController: UIViewController {
     private let uiSettingUtility = UISettingUtility()
     
     lazy var searchResultVC = SearchResultViewController()
-        
+    lazy var travelPersonImageView = UIImageView(image: UIImage(named: "stripy-message-sent"))
     lazy var searchTextFieldStack = UIStackView()
     lazy var locationTextField = TravelCustomTextField()
     lazy var termTextField = TravelCustomTextField()
@@ -28,10 +28,10 @@ class SearchViewController: UIViewController {
     lazy var searchButton: UIButton = {
         let button = UIButton()
         button.setTitle("Search", for: [])
-        button.setTitleColor(.systemCyan, for: [])
+        button.setTitleColor(.systemRed, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemCyan.cgColor
+        button.layer.borderColor = UIColor.systemRed.cgColor
         button.addTarget(self, action: #selector(pushSearchResultVC), for: .touchUpInside)
        return button
     }()
@@ -59,6 +59,7 @@ class SearchViewController: UIViewController {
 
     func setupNav() {
         self.navigationItem.title = "Search"
+        self.navigationController?.navigationBar.prefersLargeTitles = false
     }
     
 
@@ -78,6 +79,14 @@ class SearchViewController: UIViewController {
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
             make.height.equalTo(50)
+        }
+        
+        view.addSubview(travelPersonImageView)
+        travelPersonImageView.snp.makeConstraints { make in
+            make.top.equalTo(searchButton.snp.bottom).offset(50)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
         }
     }
     func setupTextField() {

@@ -19,6 +19,9 @@ class DetailViewController: UIViewController {
     }
     
     let uiSettingUtility = UISettingUtility()
+    let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
 
     var placeInfoData = [TravelData]() // 整筆api data
     var dataIndex = 0 // 要顯示的資料 aka 前一頁被點擊的那筆
@@ -71,6 +74,7 @@ class DetailViewController: UIViewController {
         detailTableView.register(PlaceImageTableViewCell.self, forCellReuseIdentifier: "PlaceImageTableViewCell")
         detailTableView.register(InfoTableViewCell.self, forCellReuseIdentifier: "InfoTableViewCell")
         detailTableView.register(MapViewTableViewCell.self, forCellReuseIdentifier: "MapViewTableViewCell")
+        detailTableView.separatorStyle = .none
     }
     
   
@@ -179,18 +183,51 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate{
         heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
         uiSettingUtility.setupHeartButton(sender: heartButton, backgroundColor: .white, borderColor: UIColor.systemOrange.cgColor, borderWidth: 1, cornerRadius: 20)
         
-//        header.backgroundColor = .systemTeal
         return header
     }
     
     @objc private func heartDidTap(sender: UIButton) {
-        sender.isSelected = !sender.isSelected
-        self.placeInfoData[self.dataIndex].isSaved = sender.isSelected
+        sender.isSelected = !sender.isSelected // toggle
+        placeInfoData[dataIndex].isSaved = sender.isSelected // 更新資料
         
+        let place = placeInfoData[dataIndex]
         if sender.isSelected == true {
             print("收藏")
+            if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
+                if var favoriteList = try? decoder.decode([TravelData].self, from: currentFavoriteList) {
+                    favoriteList.append(place)
+                    print("favoriteList:\(favoriteList)")
+                    
+                    if let newFavoriteList = try? encoder.encode(favoriteList) {
+                        defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
+                    } else {
+                        print("encode失敗")
+                    }
+                }
+            } else {
+                // defaults無資料時
+                if let newFavoriteList = try? encoder.encode([place].self) {
+                    defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
+                }
+            }
         } else {
             print("退追")
+            if let currentFavoriteList = defaults.data(forKey: "UserFavoriteList") {
+                if var favoriteList = try?  decoder.decode([TravelData].self, from: currentFavoriteList) {
+                    
+                    for (i,item) in favoriteList.enumerated() {
+                        if item.placeData.name == place.placeData.name {
+                            favoriteList.remove(at: i)
+                            print("favoriteList:\(favoriteList)")
+                        }
+                    }
+                    
+                    if let newFavoriteList = try? encoder.encode(favoriteList) {
+                        defaults.setValue(newFavoriteList, forKey: "UserFavoriteList")
+                    }
+                    
+                }
+            }
         }
         
 

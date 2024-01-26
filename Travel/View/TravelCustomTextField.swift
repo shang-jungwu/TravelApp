@@ -36,8 +36,9 @@ class TravelCustomTextField: UITextField, UITextFieldDelegate {
         self.textAlignment = .left
 //        self.contentScaleFactor = 0.5
         self.backgroundColor = .white
-        self.textColor = .systemGray
+        self.textColor = .black
         self.layer.cornerRadius = 15
+       
         delegate = self
 
    }

@@ -28,10 +28,10 @@ class RegisterViewController: UIViewController {
     lazy var registerButton: UIButton = {
         let button = UIButton()
         button.setTitle("Register", for: [])
-        button.setTitleColor(UIColor.systemGreen, for: [])
+        button.setTitleColor(UIColor.systemOrange, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemGreen.cgColor
+        button.layer.borderColor = UIColor.systemOrange.cgColor
         button.addTarget(self, action: #selector(createNewAccount), for: .touchUpInside)
         return button
     }()
@@ -52,7 +52,7 @@ class RegisterViewController: UIViewController {
 
     func setupNav() {
         self.navigationItem.title = "Register"
-        self.navigationItem.setHidesBackButton(true, animated: false)
+//        self.navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
@@ -100,7 +100,7 @@ class RegisterViewController: UIViewController {
         
         view.addSubview(registerButton)
         registerButton.snp.makeConstraints { make in
-            make.top.equalTo(dobStackView.snp.bottom).offset(50)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
             make.leading.equalToSuperview().offset(30)
             make.trailing.equalToSuperview().offset(-30)
             make.height.equalTo(50)

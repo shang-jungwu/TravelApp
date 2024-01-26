@@ -25,6 +25,7 @@ class ScheduleViewController: UIViewController {
     }
 
     func setupUI() {
+        view.backgroundColor = .white
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -41,7 +42,7 @@ class ScheduleViewController: UIViewController {
         scheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
 
         scheduleTableView.tableHeaderView = tableHeaderView
-        tableHeaderView.backgroundColor = .systemGreen
+        tableHeaderView.backgroundColor = .systemGray4
         tableHeaderView.snp.makeConstraints { make in
             make.top.equalTo(scheduleTableView.snp.top)
             make.centerX.equalTo(scheduleTableView.snp.centerX)
@@ -50,6 +51,7 @@ class ScheduleViewController: UIViewController {
         }
 
         scheduleTableView.tableHeaderView?.layoutIfNeeded()
+        scheduleTableView.backgroundColor = .white
     }
 
 

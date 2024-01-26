@@ -13,6 +13,7 @@ import Alamofire
 class SearchResultViewController: UIViewController {
     
     var travelData = [TravelData]()
+    var favoriteListData = [TravelData]()
     lazy var detailVC = DetailViewController()
     
     let defaults = UserDefaults.standard
@@ -23,7 +24,7 @@ class SearchResultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemOrange
         setupNav()
         setupUI()
         setupResultTableView()
@@ -32,21 +33,21 @@ class SearchResultViewController: UIViewController {
     
     func setupNav() {
         self.navigationItem.title = "Result"
-       
+
     }
     
     func setupUI() {
         view.addSubview(resultTableView)
         resultTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(10)
-            make.leading.equalToSuperview()//.offset(15)
-            make.trailing.equalToSuperview()//.offset(-15)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-10)
         }
     }
     
     func setupResultTableView() {
-        resultTableView.backgroundColor = .systemMint
+        resultTableView.backgroundColor = .systemOrange
         resultTableView.delegate = self
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
@@ -54,9 +55,45 @@ class SearchResultViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        self.resultTableView.reloadData()
+        checkIfPlaceSaved()
+//        resultTableView.reloadData()
     }
     
+    func getUserFavoriteListData(completion: @escaping () -> Void) {
+        let decoder = JSONDecoder()
+
+        if let defaultData = defaults.data(forKey: "UserFavoriteList") {
+            if let decodedData = try? decoder.decode([TravelData].self, from: defaultData) {
+                self.favoriteListData = decodedData
+                completion()
+            } else {
+                print("Fail to decode")
+            }
+
+        }
+    }
+    
+    func checkIfPlaceSaved() {
+        print("check if favorite list already contains place")
+        getUserFavoriteListData {
+            for (i,place) in self.travelData.enumerated() {
+                // 檢查後發現存在於<3的地點isSaved值重設為true
+                if self.favoriteListData.contains(where: { data in
+                    data.placeData.name == place.placeData.name
+                }) {
+                    let index = self.favoriteListData.firstIndex {
+                        $0.placeData.name == place.placeData.name
+                    }
+                    self.travelData[i].isSaved = self.favoriteListData[index!].isSaved
+                    
+                } else {
+                    // 檢查後發現沒在<3的地點isSaved值重設為false
+                    self.travelData[i].isSaved = false
+                }
+                self.resultTableView.reloadData()
+            }
+        }
+    }
 
 } // class end
 
@@ -171,9 +208,7 @@ extension SearchResultViewController: SearchResultTableViewCellDelegate {
                     }
                     
                 }
-            } else {
-                print("查無資料")
-            }
+            } 
         }
         
         resultTableView.reloadRows(at: [indexPath], with: .automatic)

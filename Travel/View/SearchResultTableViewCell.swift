@@ -34,6 +34,7 @@ class SearchResultTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
+        contentView.backgroundColor = .white
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -60,7 +61,7 @@ class SearchResultTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-40)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
-        nameLabel.backgroundColor = .systemCyan
+//        nameLabel.backgroundColor = .systemCyan
 
     }
     

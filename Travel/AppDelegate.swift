@@ -17,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         GMSServices.provideAPIKey("AIzaSyDT0SGfWxNEZZqsISYtMUu8QFBh0F9qSY0")
 //        GMSPlacesClient.provideAPIKey("AIzaSyDT0SGfWxNEZZqsISYtMUu8QFBh0F9qSY0")
         
+        let appearance = UINavigationBarAppearance()
+                    appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.systemRed
+        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().tintColor = .white
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = UINavigationBar.appearance().standardAppearance
+        
         return true
     }
 
