@@ -13,8 +13,13 @@ pod 'SDWebImage'
 pod 'GooglePlaces', '8.3.0'
 pod 'GoogleMaps', '8.3.1'
 pod 'SPAlert'
+
+#待裝
 pod 'SwiftMessages'
 pod 'CVCalendar', '~> 1.7.0'
+pod 'IQKeyboardManagerSwift'
+######
+
 #pod 'FirebaseAnalytics'
 #pod 'FirebaseAuth'
 #pod 'FirebaseFirestore'

@@ -1,31 +1,35 @@
 //
-//  FavoriteListTableViewCell.swift
+//  ScheduleConcourseTableViewCell.swift
 //  Travel
 //
-//  Created by SoniaWu on 2024/1/25.
+//  Created by SoniaWu on 2024/1/28.
 //
 
 import UIKit
+import SnapKit
 
-class FavoriteListTableViewCell: UITableViewCell {
+class ScheduleConcourseTableViewCell: UITableViewCell {
 
     lazy var placeImageView = UIImageView()
     lazy var nameLabel = UILabel()
-    lazy var heartButton = UIButton(type: .custom)
-    
+
     let uiSettingUtility = UISettingUtility()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .white
+        self.accessoryType = .disclosureIndicator
         setupUI()
-    }
 
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+
+
     func setupUI() {
+        contentView.backgroundColor = .white
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -36,22 +40,24 @@ class FavoriteListTableViewCell: UITableViewCell {
         }
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
 
-        
         contentView.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
             make.centerY.equalTo(placeImageView.snp.centerY)
             make.leading.equalTo(placeImageView.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
+            make.trailing.equalToSuperview().offset(-40)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
 //        nameLabel.backgroundColor = .systemCyan
 
     }
 
+
+
+
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
-
 }

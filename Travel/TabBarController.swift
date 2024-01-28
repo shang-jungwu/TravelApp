@@ -13,7 +13,7 @@ class TabBarController: UITabBarController {
     lazy var profileVC = ProfileViewController()
     lazy var detailVC = DetailViewController()
     lazy var favoriteVC = FavoriteViewController()
-    lazy var scheduleVC = ScheduleViewController()
+    lazy var scheduleConcourseVC = ScheduleConcourseViewController()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,14 +29,14 @@ class TabBarController: UITabBarController {
         searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 0)
 
         favoriteVC.tabBarItem = UITabBarItem(title: "Favorite", image: UIImage(systemName: "heart.fill"), tag: 1)
-        scheduleVC.tabBarItem = UITabBarItem(title: "Schedule", image: UIImage(systemName: "book"), tag: 2)
+        scheduleConcourseVC.tabBarItem = UITabBarItem(title: "Schedule", image: UIImage(systemName: "book"), tag: 2)
         
         profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
 
         let controllerArray = [
             UINavigationController(rootViewController: searchVC),
             UINavigationController(rootViewController: favoriteVC),
-            UINavigationController(rootViewController: scheduleVC),
+            UINavigationController(rootViewController: scheduleConcourseVC),
             UINavigationController(rootViewController: profileVC),
            
         ]

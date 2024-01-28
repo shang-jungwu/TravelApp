@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		02921790EBA7D5AFDD859029 /* Pods_Travel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CEED613C4A9D1C7407B6D6 /* Pods_Travel.framework */; };
+		494A362A2B63F7CC00B2895A /* ScheduleConcourseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A36292B63F7CC00B2895A /* ScheduleConcourseViewController.swift */; };
+		494A362C2B63F97700B2895A /* UserSchedules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A362B2B63F97700B2895A /* UserSchedules.swift */; };
+		494A363A2B66667000B2895A /* CreateScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A36392B66667000B2895A /* CreateScheduleViewController.swift */; };
+		494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */; };
+		494A36412B669FBB00B2895A /* DateUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A36402B669FBB00B2895A /* DateUtility.swift */; };
 		497751192B5805F00027546F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 497751182B5805F00027546F /* GoogleService-Info.plist */; };
 		4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977511C2B580B970027546F /* TravelCustomTextField.swift */; };
 		49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */; };
@@ -65,6 +70,11 @@
 /* Begin PBXFileReference section */
 		14CEED613C4A9D1C7407B6D6 /* Pods_Travel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Travel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4660F5E8CA501F86A6FE60C7 /* Pods-Travel-TravelUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel-TravelUITests.debug.xcconfig"; path = "Target Support Files/Pods-Travel-TravelUITests/Pods-Travel-TravelUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		494A36292B63F7CC00B2895A /* ScheduleConcourseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleConcourseViewController.swift; sourceTree = "<group>"; };
+		494A362B2B63F97700B2895A /* UserSchedules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSchedules.swift; sourceTree = "<group>"; };
+		494A36392B66667000B2895A /* CreateScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateScheduleViewController.swift; sourceTree = "<group>"; };
+		494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleConcourseTableViewCell.swift; sourceTree = "<group>"; };
+		494A36402B669FBB00B2895A /* DateUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtility.swift; sourceTree = "<group>"; };
 		497751182B5805F00027546F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4977511C2B580B970027546F /* TravelCustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelCustomTextField.swift; sourceTree = "<group>"; };
 		49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
@@ -139,17 +149,43 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		494A363B2B6666DE00B2895A /* Schedule */ = {
+			isa = PBXGroup;
+			children = (
+				49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */,
+				494A36292B63F7CC00B2895A /* ScheduleConcourseViewController.swift */,
+				494A36392B66667000B2895A /* CreateScheduleViewController.swift */,
+			);
+			path = Schedule;
+			sourceTree = "<group>";
+		};
+		494A363C2B6666FE00B2895A /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */,
+				CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		494A363D2B66671700B2895A /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */,
+				CA6DE10C2B57D5B300F1861B /* SearchViewController.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
 		49536E3D2B5AB0FB0075836E /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				CA6DE10C2B57D5B300F1861B /* SearchViewController.swift */,
-				CA6DE13A2B57DB3000F1861B /* LoginViewController.swift */,
-				CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */,
-				CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */,
+				494A363C2B6666FE00B2895A /* Account */,
+				494A363D2B66671700B2895A /* Search */,
 				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
 				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
 				CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */,
-				49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */,
+				494A363B2B6666DE00B2895A /* Schedule */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -159,6 +195,7 @@
 			children = (
 				4977511C2B580B970027546F /* TravelCustomTextField.swift */,
 				49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */,
+				494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */,
 				49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */,
 				49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */,
 				CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */,
@@ -244,6 +281,7 @@
 			children = (
 				49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */,
 				CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */,
+				494A36402B669FBB00B2895A /* DateUtility.swift */,
 				CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */,
 			);
 			path = Support;
@@ -253,6 +291,7 @@
 			isa = PBXGroup;
 			children = (
 				CADDA0BB2B5A206A00F35BF7 /* TripAdvisorApi.swift */,
+				494A362B2B63F97700B2895A /* UserSchedules.swift */,
 				CAE4AD4D2B61164F00ED4435 /* HotelData.swift */,
 				CADDA0BF2B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift */,
 				CAE4AD492B60B15500ED4435 /* YelpApiData.swift */,
@@ -554,6 +593,8 @@
 				CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */,
 				49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */,
 				CA6DE10D2B57D5B300F1861B /* SearchViewController.swift in Sources */,
+				494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */,
+				494A362A2B63F7CC00B2895A /* ScheduleConcourseViewController.swift in Sources */,
 				49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */,
 				CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */,
 				CADDA0BE2B5A446000F35BF7 /* TravelData.swift in Sources */,
@@ -563,8 +604,10 @@
 				CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */,
 				CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */,
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
+				494A363A2B66667000B2895A /* CreateScheduleViewController.swift in Sources */,
 				CAE4AD4C2B610E9900ED4435 /* MapViewTableViewCell.swift in Sources */,
 				49A5C1D42B6296D9003C5BEB /* ScheduleTableViewCell.swift in Sources */,
+				494A362C2B63F97700B2895A /* UserSchedules.swift in Sources */,
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
@@ -575,6 +618,7 @@
 				CA6DE10B2B57D5B300F1861B /* SceneDelegate.swift in Sources */,
 				CADDA0C02B5A5EBE00F35BF7 /* TripAdvisorPhotoApi.swift in Sources */,
 				CAE4AD4E2B61164F00ED4435 /* HotelData.swift in Sources */,
+				494A36412B669FBB00B2895A /* DateUtility.swift in Sources */,
 				CAD722202B592AB400EF3D7C /* DetailViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

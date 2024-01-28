@@ -2,12 +2,18 @@
 //  ScheduleTableViewCell.swift
 //  Travel
 //
-//  Created by 吳宗祐 on 2024/1/25.
+//  Created by SoniaWu on 2024/1/25.
 //
 
 import UIKit
+import SnapKit
 
 class ScheduleTableViewCell: UITableViewCell {
+    
+    lazy var placeImageView = UIImageView()
+    lazy var nameLabel = UILabel()
+
+    let uiSettingUtility = UISettingUtility()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

@@ -85,12 +85,14 @@ class SearchResultViewController: UIViewController {
                         $0.placeData.name == place.placeData.name
                     }
                     self.travelData[i].isSaved = self.favoriteListData[index!].isSaved
+                    self.resultTableView.reloadData()
                     
                 } else {
                     // 檢查後發現沒在<3的地點isSaved值重設為false
                     self.travelData[i].isSaved = false
+                    self.resultTableView.reloadData()
                 }
-                self.resultTableView.reloadData()
+
             }
         }
     }
