@@ -12,19 +12,17 @@ class FavoriteViewController: UIViewController {
 
     let defaults = UserDefaults.standard
     lazy var detailVC = DetailViewController()
-    lazy var favoriteTableView = UITableView(frame: .zero, style: .insetGrouped)
+    lazy var favoriteTableView = UITableView(frame: .zero, style: .grouped)
     var favoriteListData = [TravelData]()
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemOrange
+        view.backgroundColor = .white
         setupNav()
         setupUI()
         setupTableView()
-        getUserFavoriteListData {
-            self.favoriteTableView.reloadData()
-        }
+
     }
     
 
@@ -36,8 +34,8 @@ class FavoriteViewController: UIViewController {
         view.addSubview(favoriteTableView)
         favoriteTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.leading.equalToSuperview().offset(15)
+            make.trailing.equalToSuperview().offset(-15)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             
         }
@@ -47,15 +45,21 @@ class FavoriteViewController: UIViewController {
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
         favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
-        favoriteTableView.backgroundColor = .systemOrange
+        favoriteTableView.backgroundColor = .white
         favoriteTableView.separatorStyle = .singleLine
+//        favoriteTableView.layer.cornerRadius = 10
+//        favoriteTableView.layer.borderColor = UIColor.green.cgColor
+//        favoriteTableView.layer.borderWidth = 1
+        
     }
     
-    func getUserFavoriteListData(completion: @escaping () -> Void) {
+    
+    func getUserFavoriteListData(completion: () -> Void) {
         let decoder = JSONDecoder()
 
         if let defaultData = defaults.data(forKey: "UserFavoriteList") {
             if let decodedData = try? decoder.decode([TravelData].self, from: defaultData) {
+                // on main thread, no need escaping
                 self.favoriteListData = decodedData
                 completion()
             } else {

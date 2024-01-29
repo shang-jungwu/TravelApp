@@ -36,6 +36,10 @@
 		CAB014F72B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */; };
 		CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */; };
 		CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABC93052B62349700066F3C /* InfoTableViewCell.swift */; };
+		CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */; };
+		CACFBBB92B67720A0086B890 /* CustomPageTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */; };
+		CACFBBBB2B67723F0086B890 /* CustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBBA2B67723F0086B890 /* CustomPageViewController.swift */; };
+		CACFBBBD2B6773AE0086B890 /* UIColor+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBBC2B6773AE0086B890 /* UIColor+extension.swift */; };
 		CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */; };
 		CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */; };
 		CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */; };
@@ -106,6 +110,10 @@
 		CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceImageTableViewCell.swift; sourceTree = "<group>"; };
 		CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CABC93052B62349700066F3C /* InfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
+		CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGroupTabBar.swift; sourceTree = "<group>"; };
+		CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageTabBar.swift; sourceTree = "<group>"; };
+		CACFBBBA2B67723F0086B890 /* CustomPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageViewController.swift; sourceTree = "<group>"; };
+		CACFBBBC2B6773AE0086B890 /* UIColor+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+extension.swift"; sourceTree = "<group>"; };
 		CAD722142B58AF6400EF3D7C /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchApiDataUtility.swift; sourceTree = "<group>"; };
 		CAD7221B2B58E37F00EF3D7C /* SearchResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultViewController.swift; sourceTree = "<group>"; };
@@ -202,6 +210,7 @@
 				CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */,
 				CABC93052B62349700066F3C /* InfoTableViewCell.swift */,
 				CAE4AD4B2B610E9900ED4435 /* MapViewTableViewCell.swift */,
+				CACFBBBE2B6773C90086B890 /* CustomGroupTabBar */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -285,6 +294,17 @@
 				CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */,
 			);
 			path = Support;
+			sourceTree = "<group>";
+		};
+		CACFBBBE2B6773C90086B890 /* CustomGroupTabBar */ = {
+			isa = PBXGroup;
+			children = (
+				CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */,
+				CACFBBBA2B67723F0086B890 /* CustomPageViewController.swift */,
+				CACFBBBC2B6773AE0086B890 /* UIColor+extension.swift */,
+				CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */,
+			);
+			path = CustomGroupTabBar;
 			sourceTree = "<group>";
 		};
 		CAD722162B58C75400EF3D7C /* Model */ = {
@@ -591,7 +611,9 @@
 				CAB014F72B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift in Sources */,
 				CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */,
 				CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */,
+				CACFBBBD2B6773AE0086B890 /* UIColor+extension.swift in Sources */,
 				49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */,
+				CACFBBBB2B67723F0086B890 /* CustomPageViewController.swift in Sources */,
 				CA6DE10D2B57D5B300F1861B /* SearchViewController.swift in Sources */,
 				494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */,
 				494A362A2B63F7CC00B2895A /* ScheduleConcourseViewController.swift in Sources */,
@@ -603,6 +625,7 @@
 				49A5C1D22B62968F003C5BEB /* ScheduleTableHeaderView.swift in Sources */,
 				CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */,
 				CAD7221A2B58C8FF00EF3D7C /* FetchApiDataUtility.swift in Sources */,
+				CACFBBB92B67720A0086B890 /* CustomPageTabBar.swift in Sources */,
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
 				494A363A2B66667000B2895A /* CreateScheduleViewController.swift in Sources */,
 				CAE4AD4C2B610E9900ED4435 /* MapViewTableViewCell.swift in Sources */,
@@ -610,6 +633,7 @@
 				494A362C2B63F97700B2895A /* UserSchedules.swift in Sources */,
 				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
+				CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
 				CADDA0BC2B5A206A00F35BF7 /* TripAdvisorApi.swift in Sources */,
 				CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */,

@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 //import GoogleMaps
-import CoreLocation
+//import CoreLocation
 
 class DetailViewController: UIViewController {
 
@@ -51,10 +51,6 @@ class DetailViewController: UIViewController {
 
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-//        uiSettingUtility.setupHeartButton(sender: heartButton, backgroundColor: .white, borderColor: UIColor.systemOrange.cgColor, borderWidth: 1, cornerRadius: 20)
-    }
     
     func setupUI() {
         view.addSubview(detailTableView)

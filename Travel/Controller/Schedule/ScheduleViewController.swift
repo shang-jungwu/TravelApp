@@ -6,32 +6,61 @@
 //
 
 import UIKit
+import SnapKit
 
 class ScheduleViewController: UIViewController {
 
     var userSchedules = [UserSchedules]()
+//    var scheduleIndex = 0
     lazy var favoriteVC = FavoriteViewController()
+    lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
+    lazy var customTabBar = CustomPageTabBar(tabNames: ["day1","day2","day3","day4"])
     lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
 
     let uiSettingUtility = UISettingUtility()
+    let dateUtility = DateUtility()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
         setupScheduleTableView()
-
+        
     }
 
     func setupUI() {
+        view.addSubview(tableHeaderView)
+        tableHeaderView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.height.equalTo(120)
+        }
+        setupTableHeaderView()
+        
+        view.addSubview(customTabBar)
+        customTabBar.snp.makeConstraints { make in
+            make.top.equalTo(tableHeaderView.snp.bottom)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.height.equalTo(44)
+
+        }
+        
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(customTabBar.snp.bottom)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
+    }
+    
+    func setupCustomTabBar() {
+        customTabBar.delegate = self
+        customTabBar.initialTabButtons()
+        customTabBar.setSelectedTab(index: 0)
     }
 
     func setupScheduleTableView() {
@@ -39,15 +68,15 @@ class ScheduleViewController: UIViewController {
         scheduleTableView.delegate = self
         scheduleTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
 
-        scheduleTableView.tableHeaderView = tableHeaderView
-        tableHeaderView.snp.makeConstraints { make in
-            make.top.equalTo(scheduleTableView)
-            make.centerX.equalTo(scheduleTableView)
-            make.width.equalTo(scheduleTableView)
-            make.height.equalTo(150)
-        }
-        setupTableHeaderView()
-        scheduleTableView.tableHeaderView?.layoutIfNeeded()
+//        scheduleTableView.tableHeaderView = tableHeaderView
+//        tableHeaderView.snp.makeConstraints { make in
+//            make.top.equalTo(scheduleTableView)
+//            make.centerX.equalTo(scheduleTableView)
+//            make.width.equalTo(scheduleTableView)
+//            make.height.equalTo(120)
+//        }
+//        setupTableHeaderView()
+//        scheduleTableView.tableHeaderView?.layoutIfNeeded()
     }
 
     func setupTableHeaderView() {
@@ -56,8 +85,27 @@ class ScheduleViewController: UIViewController {
         tableHeaderView.countStack.isHidden = true
         tableHeaderView.scheduleTitleLabel.text = userSchedules[0].scheduleTitle
         tableHeaderView.destinationLabel.text = userSchedules[0].destination
-//        tableHeaderView.departureDayLabel.text = "D"
-        tableHeaderView.numberOfDaysLabel.text = "\(userSchedules[0].numberOfDays)"
+        let dateStr = dateUtility.convertDateToString(date: userSchedules[0].departureDate)
+        tableHeaderView.departureDayLabel.text = dateStr
+        tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[0].numberOfDays) 天"
+        tableHeaderView.editButton.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
+    }
+    
+    @objc func editScheduleInfo() {
+        createScheduleVC.caller = "schedule"
+        createScheduleVC.scheduleVC = self
+        createScheduleVC.schedultTitleTextField.text = userSchedules[0].scheduleTitle
+        createScheduleVC.numberOfDaysTextField.text = "為期 \(userSchedules[0].numberOfDays) 天"
+        createScheduleVC.destinationTextField.text = userSchedules[0].destination
+        let dateStr = dateUtility.convertDateToString(date: userSchedules[0].departureDate)
+        createScheduleVC.departureDateTextField.text = dateStr
+        
+        
+        let nav = UINavigationController(rootViewController: createScheduleVC)
+        present(nav, animated: true)
+        
+        
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -79,7 +127,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        2
+        userSchedules[0].dayByDaySchedule.count
     }
 
 
@@ -121,4 +169,12 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     }
 
+} // ex table view end
+
+extension ScheduleViewController: CustomPageTabBarDelegate {
+    func clickTab(index: Int) {
+        <#code#>
+    }
+    
+    
 }

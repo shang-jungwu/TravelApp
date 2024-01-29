@@ -9,9 +9,11 @@ import UIKit
 import SnapKit
 
 class ScheduleConcourseTableViewCell: UITableViewCell {
-
+   
     lazy var placeImageView = UIImageView()
-    lazy var nameLabel = UILabel()
+    lazy var infoStackView = UIStackView()
+    lazy var scheduleTitleLabel = UILabel()
+    lazy var dateRangeLabel = UILabel()
 
     let uiSettingUtility = UISettingUtility()
 
@@ -19,14 +21,20 @@ class ScheduleConcourseTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.accessoryType = .disclosureIndicator
         setupUI()
-
+        setupInfoStack()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-
+    func setupInfoStack() {
+        infoStackView.axis = .vertical
+        infoStackView.spacing = 5
+        infoStackView.addArrangedSubview(scheduleTitleLabel)
+        infoStackView.addArrangedSubview(dateRangeLabel)
+        setupLabel()
+    }
 
     func setupUI() {
         contentView.backgroundColor = .white
@@ -40,18 +48,30 @@ class ScheduleConcourseTableViewCell: UITableViewCell {
         }
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
 
-        contentView.addSubview(nameLabel)
-        nameLabel.snp.makeConstraints { make in
+        
+        contentView.addSubview(infoStackView)
+        infoStackView.snp.makeConstraints { make in
             make.centerY.equalTo(placeImageView.snp.centerY)
-            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
+            make.leading.equalTo(placeImageView.snp.trailing).offset(20)
             make.trailing.equalToSuperview().offset(-40)
         }
-        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
+//        contentView.addSubview(scheduleTitleLabel)
+//        scheduleTitleLabel.snp.makeConstraints { make in
+//            make.centerY.equalTo(placeImageView.snp.centerY)
+//            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
+//            make.trailing.equalToSuperview().offset(-40)
+//        }
+       
 //        nameLabel.backgroundColor = .systemCyan
 
     }
 
 
+    func setupLabel() {
+        uiSettingUtility.labelSettings(label: scheduleTitleLabel, fontSize: 18, fontWeight: .bold, color: .black, alignment: .left, numOfLines: 0)
+        uiSettingUtility.labelSettings(label: dateRangeLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
+        dateRangeLabel.text = "date range"
+    }
 
 
 

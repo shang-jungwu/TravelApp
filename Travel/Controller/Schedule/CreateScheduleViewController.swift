@@ -6,12 +6,15 @@
 //
 
 import UIKit
+import SnapKit
 
 class CreateScheduleViewController: UIViewController {
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
 
+    var caller: String = ""
+    weak var scheduleVC: ScheduleViewController!
     weak var concourseVC: ScheduleConcourseViewController!
     lazy var schedultTitleTextField = TravelCustomTextField()
     lazy var destinationTextField = TravelCustomTextField()
@@ -21,7 +24,11 @@ class CreateScheduleViewController: UIViewController {
     lazy var transluctentPickDateButton = UIButton(type: .custom)
     lazy var addScheduleButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Add", for: [])
+        if caller == "schedule" {
+            button.setTitle("Edit", for: [])
+        } else {
+            button.setTitle("Add", for: [])
+        }
         button.setTitleColor(.systemRed, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
@@ -41,7 +48,7 @@ class CreateScheduleViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemCyan
+        view.backgroundColor = .white
         setupNav()
         setupUI()
         setupTextField()
@@ -49,9 +56,24 @@ class CreateScheduleViewController: UIViewController {
     }
 
     func setupNav() {
-        self.navigationItem.title = "創建行程"
+        switch caller {
+        case  "schedule":
+            self.navigationItem.title = "編輯行程資訊"
+           break
+        case "concourse":
+            self.navigationItem.title = "創建行程"
+            schedultTitleTextField.text = ""
+            departureDateTextField.text = ""
+            destinationTextField.text = ""
+            numberOfDaysTextField.text = ""
+        default:
+            print("break")
+            break
+        }
+        
         let rightBarButton = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(dismissVC))
         self.navigationItem.rightBarButtonItem = rightBarButton
+    
     }
 
     @objc func dismissVC() {
@@ -120,9 +142,12 @@ class CreateScheduleViewController: UIViewController {
     }
 
     func setupTextField() {
+//        schedultTitleTextField.text = "fake schedult title"
         uiSettingUtility.textFieldSetting(schedultTitleTextField, placeholder: "輸入行程名稱", keyboard: .default, autoCapitalize: .sentences)
+//        destinationTextField.text = "somewhere"
         uiSettingUtility.textFieldSetting(destinationTextField, placeholder: "輸入目的地", keyboard: .default, autoCapitalize: .sentences)
         uiSettingUtility.textFieldSetting(departureDateTextField, placeholder: "出發日期", keyboard: .default, autoCapitalize: .sentences)
+//        numberOfDaysTextField.text = "1"
         uiSettingUtility.textFieldSetting(numberOfDaysTextField, placeholder: "天數", keyboard: .numberPad, autoCapitalize: .sentences)
 
 
@@ -160,10 +185,20 @@ class CreateScheduleViewController: UIViewController {
    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        schedultTitleTextField.text = ""
-        departureDateTextField.text = ""
-        destinationTextField.text = ""
-        numberOfDaysTextField.text = ""
+        switch caller {
+        case  "schedule":
+           break
+        case "concourse":
+            schedultTitleTextField.text = ""
+            departureDateTextField.text = ""
+            destinationTextField.text = ""
+            numberOfDaysTextField.text = ""
+        default:
+            print("break")
+            break
+            
+        }
+        
     }
 
 

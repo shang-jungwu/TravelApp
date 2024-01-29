@@ -6,14 +6,17 @@
 //
 
 import UIKit
+import SnapKit
 
 class ScheduleConcourseViewController: UIViewController {
+    
 
     lazy var scheduleVC = ScheduleViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
     lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
     var userSchedules = [UserSchedules]()
+    let dateUtility = DateUtility()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,21 +26,25 @@ class ScheduleConcourseViewController: UIViewController {
     }
 
     func setupNav() {
-        self.navigationItem.title = "Schedule"
+        self.navigationItem.title = "已建立的行程"
         let rightBarButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(showCreateScheduleVC))
         self.navigationItem.rightBarButtonItem = rightBarButton
     }
 
     func setupUI() {
+     
         view.addSubview(tableHeaderView)
         tableHeaderView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
-            make.height.equalTo(150)
+            make.height.equalTo(120)
         }
         tableHeaderView.countLabel.text = "\(userSchedules.count)"
         tableHeaderView.scheduleInfoStack.isHidden = true
+        tableHeaderView.editButton.isHidden = true
+        tableHeaderView.userImageView.image = UIImage(systemName: "person.crop.circle.fill")
+        tableHeaderView.userImageView.tintColor = .systemOrange
 
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
@@ -50,6 +57,7 @@ class ScheduleConcourseViewController: UIViewController {
     }
 
     @objc func showCreateScheduleVC() {
+        createScheduleVC.caller = "concourse"
         createScheduleVC.concourseVC = self
         let createScheduleVCNav = UINavigationController.init(rootViewController: createScheduleVC)
         present(createScheduleVCNav, animated: true)
@@ -75,8 +83,13 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleConcourseTableViewCell", for: indexPath) as? ScheduleConcourseTableViewCell else { return UITableViewCell() }
 
-        cell.nameLabel.text = userSchedules[indexPath.section].scheduleTitle
-        cell.placeImageView.image = UIImage(systemName: "globe")
+        cell.scheduleTitleLabel.text = userSchedules[indexPath.section].scheduleTitle
+        cell.placeImageView.image = UIImage(systemName: "globe.central.south.asia")
+        let startDateStr = dateUtility.convertDateToString(date: userSchedules[indexPath.section].departureDate)
+        let endDate = dateUtility.nextSomeDay(startingDate: userSchedules[indexPath.section].departureDate, countOfDays: userSchedules[indexPath.section].numberOfDays)
+        let endDateStr = dateUtility.convertDateToString(date: endDate)
+        
+        cell.dateRangeLabel.text = "\(startDateStr) ~ \(endDateStr)"
 
         return cell
     }
@@ -108,7 +121,8 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
         if let nav = self.navigationController {
-//            scheduleVC.userSchedules = [self.userSchedules[section]]
+   
+            scheduleVC.userSchedules = [self.userSchedules[section]]
             nav.pushViewController(scheduleVC, animated: true)
         }
     }

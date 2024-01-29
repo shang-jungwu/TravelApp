@@ -10,12 +10,13 @@ import UIKit
 class ScheduleTableHeaderView: UIView {
 
     let fullScreenWidth = UIScreen.main.bounds.width
-    lazy var tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: fullScreenWidth, height: 150))
+    lazy var tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: fullScreenWidth, height: 120))
 
     lazy var userImageView = UIImageView()
     lazy var countStack = UIStackView()
     lazy var countLabel = UILabel()
     lazy var countTitleLabel = UILabel()
+    lazy var editButton = UIButton(type: .custom)
 
     lazy var scheduleInfoStack = UIStackView()
     lazy var scheduleTitleLabel = UILabel()
@@ -42,10 +43,10 @@ class ScheduleTableHeaderView: UIView {
         userImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(30)
-            make.width.equalTo(100)
-            make.height.equalTo(100)
+            make.width.equalTo(80)
+            make.height.equalTo(80)
         }
-        setupImageView()
+        uiSettingUtility.setupImageView(sender: userImageView, cornerRadius: 40)
 
         tableHeaderView.addSubview(countStack)
         countStack.snp.makeConstraints { make in
@@ -61,6 +62,15 @@ class ScheduleTableHeaderView: UIView {
             make.leading.equalToSuperview().offset(30)
         }
         setupScheduleInfoStackView()
+        
+        tableHeaderView.addSubview(editButton)
+        editButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()//.offset(10)
+            make.trailing.equalToSuperview()//.offset(-10)
+            make.width.equalTo(40)
+            make.height.equalTo(40)
+        }
+        setupEditButton()
 
     }
 
@@ -74,7 +84,7 @@ class ScheduleTableHeaderView: UIView {
 
     func setupScheduleInfoStackView() {
         scheduleInfoStack.axis = .vertical
-        scheduleInfoStack.spacing = 15
+//        scheduleInfoStack.spacing = 15
 
         scheduleInfoStack.addArrangedSubview(scheduleTitleLabel)
         scheduleInfoStack.addArrangedSubview(destinationLabel)
@@ -82,6 +92,14 @@ class ScheduleTableHeaderView: UIView {
         scheduleInfoStack.addArrangedSubview(numberOfDaysLabel)
         setupLabel()
     }
+    
+    func setupEditButton() {
+        editButton.setImage(UIImage(systemName: "ellipsis"), for: [])
+        editButton.tintColor = .black
+      
+    }
+    
+   
 
 
 
@@ -104,14 +122,6 @@ class ScheduleTableHeaderView: UIView {
 
     }
 
-    func setupImageView() {
-        userImageView.layer.borderWidth = 1
-        userImageView.layer.borderColor = UIColor.systemGray.cgColor
-        userImageView.layer.cornerRadius = 50
-        userImageView.contentMode = .scaleAspectFit
-        userImageView.clipsToBounds =  true
-        userImageView.image = UIImage(systemName: "person")
-    }
 
 
 }

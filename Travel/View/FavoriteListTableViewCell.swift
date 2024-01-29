@@ -18,6 +18,9 @@ class FavoriteListTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .white
+//        contentView.layer.cornerRadius = 10
+//        contentView.layer.borderColor = UIColor.green.cgColor
+//        contentView.layer.borderWidth = 1
         setupUI()
     }
 
@@ -44,7 +47,6 @@ class FavoriteListTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-10)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
-//        nameLabel.backgroundColor = .systemCyan
 
     }
 
