@@ -11,31 +11,63 @@ import SnapKit
 class FavoriteViewController: UIViewController {
 
     let defaults = UserDefaults.standard
+    var caller: String!
+    var calledButtonTag = 0
+    weak var scheduleVC: ScheduleViewController!
     lazy var detailVC = DetailViewController()
+    var tempPlace = [TravelData]()
+    
     lazy var favoriteTableView = UITableView(frame: .zero, style: .grouped)
     var favoriteListData = [TravelData]()
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemYellow
         setupNav()
         setupUI()
         setupTableView()
+        
+        if caller == "ScheduleVC" {
+            self.navigationItem.rightBarButtonItem?.isHidden = false
+            self.favoriteTableView.isEditing = true
+            self.favoriteTableView.allowsMultipleSelectionDuringEditing = true
+        } else {
+            self.favoriteTableView.allowsMultipleSelectionDuringEditing = false
+        }
 
     }
     
 
     func setupNav() {
         self.navigationItem.title = "Favorite"
+        let rightBarButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(addPlaceFromFavorite))
+        self.navigationItem.setRightBarButton(rightBarButton, animated: true)
+        self.navigationItem.rightBarButtonItem?.isHidden = true
+    }
+    
+    @objc func addPlaceFromFavorite() {
+        print("addPlaceFromFavorite")
+        if var selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+            for indexPath in selectedIndexPath {
+                let row = indexPath.row
+                let tmpPlace = favoriteListData[row]
+//                tempPlace.append(favoriteListData[row])
+                scheduleVC.userSchedules[0].dayByDaySchedule[calledButtonTag].places.append(tmpPlace)
+                print("scheduleVC.userSchedules:\(scheduleVC.userSchedules)")
+                scheduleVC.scheduleTableView.reloadData()
+                self.dismiss(animated: true)
+            }
+        }
+            
     }
     
     func setupUI() {
         view.addSubview(favoriteTableView)
         favoriteTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview().offset(15)
-            make.trailing.equalToSuperview().offset(-15)
+            make.leading.equalToSuperview()//.offset(15)
+            make.trailing.equalToSuperview()//.offset(-15)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             
         }
@@ -74,6 +106,7 @@ class FavoriteViewController: UIViewController {
         getUserFavoriteListData {
             self.favoriteTableView.reloadData()
         }
+        tempPlace.removeAll()
     }
     
 } // class end
@@ -98,13 +131,22 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
-        if let nav = self.navigationController {
-            // passing data
-            detailVC.placeInfoData = self.favoriteListData
-            detailVC.dataIndex = index // 被點擊的那一格index
+        
+        if caller == "ScheduleVC" {
+//            var selectedRows = self.favoriteTableView.indexPathsForSelectedRows
+//            print(selectedRows!)
             
-            nav.pushViewController(detailVC, animated: true)
+        } else {
+            if let nav = self.navigationController {
+                // passing data
+                detailVC.placeInfoData = self.favoriteListData
+                detailVC.dataIndex = index // 被點擊的那一格index
+                
+                nav.pushViewController(detailVC, animated: true)
+            }
         }
+        
+       
     }
 
     // 右側刪除按鈕

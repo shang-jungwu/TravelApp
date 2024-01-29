@@ -28,4 +28,8 @@ struct UserSchedules: Codable {
 struct DayByDaySchedule: Codable {
     var date: Date
     var places: [TravelData]
+    init(date: Date, places: [TravelData] = [TravelData]()) {
+        self.date = date
+        self.places = places
+    }
 }

@@ -15,7 +15,9 @@ class ScheduleViewController: UIViewController {
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
-    lazy var customTabBar = CustomPageTabBar(tabNames: ["day1","day2","day3","day4"])
+    var tabNames = [String]()
+    lazy var customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton())
+   
     lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
 
     let uiSettingUtility = UISettingUtility()
@@ -27,6 +29,7 @@ class ScheduleViewController: UIViewController {
         setupUI()
         setupScheduleTableView()
         
+        print("userSchedules:",userSchedules)
     }
 
     func setupUI() {
@@ -39,6 +42,7 @@ class ScheduleViewController: UIViewController {
         }
         setupTableHeaderView()
         
+        setupCustomTabBar()
         view.addSubview(customTabBar)
         customTabBar.snp.makeConstraints { make in
             make.top.equalTo(tableHeaderView.snp.bottom)
@@ -48,6 +52,7 @@ class ScheduleViewController: UIViewController {
 
         }
         
+        
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
             make.top.equalTo(customTabBar.snp.bottom)
@@ -55,11 +60,22 @@ class ScheduleViewController: UIViewController {
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
+
+    }
+    
+    func prepareTabBarButton() -> [String] {
+        var count = 1
+        while tabNames.count < userSchedules[0].numberOfDays {
+            tabNames.append("Day\(count)")
+            count += 1
+        }
+//        tabNames.append("+")
+        return tabNames
     }
     
     func setupCustomTabBar() {
         customTabBar.delegate = self
-        customTabBar.initialTabButtons()
+
         customTabBar.setSelectedTab(index: 0)
     }
 
@@ -67,6 +83,8 @@ class ScheduleViewController: UIViewController {
         scheduleTableView.dataSource = self
         scheduleTableView.delegate = self
         scheduleTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
+//        scheduleTableView.backgroundView = UIImageView(image: UIImage(named: "stripy-message-sent"))
+//        scheduleTableView.backgroundColor = .systemMint
 
 //        scheduleTableView.tableHeaderView = tableHeaderView
 //        tableHeaderView.snp.makeConstraints { make in
@@ -104,35 +122,41 @@ class ScheduleViewController: UIViewController {
         let nav = UINavigationController(rootViewController: createScheduleVC)
         present(nav, animated: true)
         
-        
-        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         setupTableHeaderView()
+        self.scheduleTableView.reloadData()
     }
 
 }
 
 extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        1//userSchedules[section].place.count
+        
+        userSchedules[0].dayByDaySchedule[section].places.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FavoriteListTableViewCell", for: indexPath) as? FavoriteListTableViewCell else { return UITableViewCell() }
-
+        cell.nameLabel.text = userSchedules[0].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.name
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        userSchedules[0].dayByDaySchedule.count
+        userSchedules[0].numberOfDays
     }
 
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let footer = UIView()
+        footer.backgroundColor = .systemMint
+        return footer
+    }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
+        header.backgroundColor = .systemGray
         let titleLabel = UILabel()
         titleLabel.text = "Day - \(section + 1)"
         header.addSubview(titleLabel)
@@ -158,14 +182,18 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     @objc func addPlace(sender: UIButton) {
         print("add place @ day \(sender.tag + 1)")
-        if let nav = favoriteVC.navigationController {
-            if let sheetPresentationController = nav.sheetPresentationController {
-                sheetPresentationController.prefersGrabberVisible = true
-                sheetPresentationController.detents = [.large()]
-                sheetPresentationController.preferredCornerRadius = 10
-            }
-            self.present(nav, animated: true, completion: nil)
+        favoriteVC.caller = "ScheduleVC"
+        favoriteVC.calledButtonTag = sender.tag
+        favoriteVC.scheduleVC = self
+        
+        let nav = UINavigationController(rootViewController: favoriteVC)
+        if let sheetPresentationController = nav.sheetPresentationController {
+            sheetPresentationController.prefersGrabberVisible = true
+            sheetPresentationController.detents = [.large()]
+            sheetPresentationController.preferredCornerRadius = 10
+            
         }
+        self.present(nav, animated: true, completion: nil)
 
     }
 
@@ -173,7 +201,31 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ScheduleViewController: CustomPageTabBarDelegate {
     func clickTab(index: Int) {
-        <#code#>
+        customTabBar.setSelectedTab(index: index)
+
+        
+        var count = userSchedules[0].numberOfDays
+        if index < count {
+            print("滾動到Day\(index+1)")
+            self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+
+        } 
+//        else if index == count {
+//            print("加一天")
+//            count += 1
+//            userSchedules[0].numberOfDays = count
+//            customTabBar.tabNames.removeLast()
+//            customTabBar.tabNames.append("Day\(count)")
+//            customTabBar.tabNames.append("+")
+//            print(customTabBar.tabNames)
+//            customTabBar.initialTabButtons()
+//            customTabBar.initialSeprateLine()
+//            
+//            self.scheduleTableView.reloadData()
+//
+//        }
+
+        customTabBar.initialSeprateLine()
     }
     
     

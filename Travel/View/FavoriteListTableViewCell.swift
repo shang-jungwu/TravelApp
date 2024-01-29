@@ -18,6 +18,7 @@ class FavoriteListTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .white
+        self.accessoryType = .disclosureIndicator
 //        contentView.layer.cornerRadius = 10
 //        contentView.layer.borderColor = UIColor.green.cgColor
 //        contentView.layer.borderWidth = 1
@@ -32,7 +33,7 @@ class FavoriteListTableViewCell: UITableViewCell {
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
-            make.leading.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(15)
             make.width.equalTo(80)
             make.height.equalTo(80)
             make.bottom.equalToSuperview().offset(-10)
@@ -44,7 +45,7 @@ class FavoriteListTableViewCell: UITableViewCell {
         nameLabel.snp.makeConstraints { make in
             make.centerY.equalTo(placeImageView.snp.centerY)
             make.leading.equalTo(placeImageView.snp.trailing).offset(10)
-            make.trailing.equalToSuperview().offset(-10)
+            make.trailing.equalToSuperview().offset(-15)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
 

@@ -24,5 +24,12 @@ struct DateUtility {
         }
         return Date()
     }
+    
+    func nextDay(startingDate: Date) -> Date {
+        if let result = isoCalendar.date(byAdding: .day, value: 1, to: startingDate) {
+            return result
+        }
+        return Date()
+    }
 
 }

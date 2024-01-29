@@ -27,19 +27,26 @@ class CreateScheduleViewController: UIViewController {
         if caller == "schedule" {
             button.setTitle("Edit", for: [])
         } else {
-            button.setTitle("Add", for: [])
+            button.setTitle("創建", for: [])
         }
         button.setTitleColor(.systemRed, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemRed.cgColor
-        button.addTarget(self, action: #selector(addSchedule), for: .touchUpInside)
+        button.addTarget(self, action: #selector(createSchedule), for: .touchUpInside)
         return button
     }()
 
-    @objc func addSchedule() {
-        print("新增行程")
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!) ?? 0, dayByDaySchedule: [DayByDaySchedule]())
+    @objc func createSchedule() {
+        print("創建行程")
+        var dayByday:[DayByDaySchedule] = []
+        var date = datePicker.date
+        while dayByday.count < Int(numberOfDaysTextField.text!)! {
+            dayByday.append(DayByDaySchedule(date: date))
+            date = dateUtility.nextDay(startingDate: date)
+        }
+        
+        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!) ?? 0, dayByDaySchedule: dayByday)
         concourseVC.userSchedules.append(newSchedule)
         concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
         concourseVC.scheduleTableView.reloadData()
@@ -62,10 +69,6 @@ class CreateScheduleViewController: UIViewController {
            break
         case "concourse":
             self.navigationItem.title = "創建行程"
-            schedultTitleTextField.text = ""
-            departureDateTextField.text = ""
-            destinationTextField.text = ""
-            numberOfDaysTextField.text = ""
         default:
             print("break")
             break
@@ -142,14 +145,15 @@ class CreateScheduleViewController: UIViewController {
     }
 
     func setupTextField() {
-//        schedultTitleTextField.text = "fake schedult title"
         uiSettingUtility.textFieldSetting(schedultTitleTextField, placeholder: "輸入行程名稱", keyboard: .default, autoCapitalize: .sentences)
-//        destinationTextField.text = "somewhere"
         uiSettingUtility.textFieldSetting(destinationTextField, placeholder: "輸入目的地", keyboard: .default, autoCapitalize: .sentences)
         uiSettingUtility.textFieldSetting(departureDateTextField, placeholder: "出發日期", keyboard: .default, autoCapitalize: .sentences)
-//        numberOfDaysTextField.text = "1"
         uiSettingUtility.textFieldSetting(numberOfDaysTextField, placeholder: "天數", keyboard: .numberPad, autoCapitalize: .sentences)
 
+        schedultTitleTextField.text = "台南Go"
+        departureDateTextField.text = "2024-01-29"
+        destinationTextField.text = "台南"
+        numberOfDaysTextField.text = "5"
 
 
     }
@@ -189,10 +193,14 @@ class CreateScheduleViewController: UIViewController {
         case  "schedule":
            break
         case "concourse":
-            schedultTitleTextField.text = ""
-            departureDateTextField.text = ""
-            destinationTextField.text = ""
-            numberOfDaysTextField.text = ""
+//            schedultTitleTextField.text = ""
+//            departureDateTextField.text = ""
+//            destinationTextField.text = ""
+//            numberOfDaysTextField.text = ""
+            schedultTitleTextField.text = "台南Go"
+            departureDateTextField.text = "2024-01-29"
+            destinationTextField.text = "台南"
+            numberOfDaysTextField.text = "5"
         default:
             print("break")
             break
