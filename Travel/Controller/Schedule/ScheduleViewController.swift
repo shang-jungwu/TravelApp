@@ -15,7 +15,7 @@ class ScheduleViewController: UIViewController {
     var scheduleIndex = 0
     //
     let defaults = UserDefaults.standard
-    
+    let encoder = JSONEncoder()
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
@@ -121,7 +121,7 @@ class ScheduleViewController: UIViewController {
         createScheduleVC.caller = "schedule"
         createScheduleVC.scheduleVC = self
         
-        // 設定為保留原始資料的狀態
+        // 設定為保留原資料的狀態方便修改
         createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
         createScheduleVC.numberOfDaysTextField.text = "\(userSchedules[scheduleIndex].numberOfDays)"
         createScheduleVC.destinationTextField.text = userSchedules[scheduleIndex].destination
@@ -133,11 +133,23 @@ class ScheduleViewController: UIViewController {
         present(nav, animated: true)
         
     }
+    
+    func saveUserScheduleData() {
+        if let newScheduleData = try? encoder.encode(userSchedules.self) {
+            defaults.set(newScheduleData, forKey: "UserSchedule")
+        }
+        
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         setupTableHeaderView()
  
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
         
     }
 
@@ -216,7 +228,7 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
     func clickTab(index: Int) {
         customTabBar.setSelectedTab(index: index)
 
-        var count = userSchedules[scheduleIndex].numberOfDays
+        let count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
             self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)

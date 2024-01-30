@@ -11,6 +11,9 @@ import SnapKit
 class FavoriteViewController: UIViewController {
 
     let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+    
     var caller: String!
     var calledButtonTag = 0
     weak var scheduleVC: ScheduleViewController!
@@ -54,13 +57,30 @@ class FavoriteViewController: UIViewController {
                 let row = indexPath.row
                 let tmpPlace = favoriteListData[row]
 //                tempPlace.append(favoriteListData[row])
+                
+                // 更新資料
                 scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(tmpPlace)
+                
+            }
+            
+            // 更新資料庫
+            saveUserScheduleData {
                 print("scheduleVC.userSchedules:\(scheduleVC.userSchedules)")
                 scheduleVC.scheduleTableView.reloadData()
                 self.dismiss(animated: true)
             }
+            
         }
             
+    }
+    
+    
+    func saveUserScheduleData(completion: () -> Void) {
+        if let newScheduleData = try? encoder.encode(scheduleVC.userSchedules.self) {
+            defaults.set(newScheduleData, forKey: "UserSchedule")
+            completion()
+        }
+        
     }
     
     func setupUI() {
@@ -80,15 +100,11 @@ class FavoriteViewController: UIViewController {
         favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
         favoriteTableView.backgroundColor = .white
         favoriteTableView.separatorStyle = .singleLine
-//        favoriteTableView.layer.cornerRadius = 10
-//        favoriteTableView.layer.borderColor = UIColor.green.cgColor
-//        favoriteTableView.layer.borderWidth = 1
         
     }
     
     
     func getUserFavoriteListData(completion: () -> Void) {
-        let decoder = JSONDecoder()
 
         if let defaultData = defaults.data(forKey: "UserFavoriteList") {
             if let decodedData = try? decoder.decode([TravelData].self, from: defaultData) {
@@ -128,6 +144,13 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
         cell.nameLabel.text = favoriteListData[index].placeData.name
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if caller == "ScheduleVC" {
+            return "選擇想加入行程的景點(可複選)"
+        }
+        return nil
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

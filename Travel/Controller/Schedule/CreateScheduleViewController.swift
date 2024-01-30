@@ -68,6 +68,7 @@ class CreateScheduleViewController: UIViewController {
         
         // 更新資料庫
         saveUserScheduleData {
+            scheduleVC.scheduleTableView.reloadData()
             scheduleVC.setupTableHeaderView() // 更新header view內容
             self.dismiss(animated: true)
         }

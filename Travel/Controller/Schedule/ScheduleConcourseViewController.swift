@@ -110,7 +110,7 @@ class ScheduleConcourseViewController: UIViewController {
         }
     }
     
-    func checkScheduleDataStatus(completion: () -> Void) {
+    func checkIfScheduleDataChanged(completion: () -> Void) {
         if let defaultData = defaults.data(forKey: "UserSchedule") {
             if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
                 if !decodedData.elementsEqual(self.userSchedules) {
@@ -124,7 +124,7 @@ class ScheduleConcourseViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
 
-        checkScheduleDataStatus {
+        checkIfScheduleDataChanged {
             // show alert and save data
             let alert = UIAlertController(title: "儲存行程", message: nil, preferredStyle: .alert)
             let saveAction = UIAlertAction(title: "OK", style: .default) { action in
