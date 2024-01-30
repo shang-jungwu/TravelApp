@@ -92,7 +92,6 @@ class ScheduleConcourseViewController: UIViewController {
     
     @objc func saveUserScheduleData() {
         
-        
         if let newScheduleData = try? encoder.encode(userSchedules.self) {
             defaults.set(newScheduleData, forKey: "UserSchedule")
         }
@@ -111,22 +110,31 @@ class ScheduleConcourseViewController: UIViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(true)
-        print("will disappear")
-        
+    func checkScheduleDataStatus(completion: () -> Void) {
         if let defaultData = defaults.data(forKey: "UserSchedule") {
             if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
                 if !decodedData.elementsEqual(self.userSchedules) {
                     print("資料改變 please save new data")
+                    completion()
                 }
-            } else {
-                print("Fail to decode")
             }
-            
-        } else {
-            print("UserScheduleData不存在")
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+
+        checkScheduleDataStatus {
+            // show alert and save data
+            let alert = UIAlertController(title: "儲存行程", message: nil, preferredStyle: .alert)
+            let saveAction = UIAlertAction(title: "OK", style: .default) { action in
+                self.saveUserScheduleData()
+            }
+            alert.addAction(saveAction)
+            self.present(alert, animated: true)
+        }
+        
+
     }
     
    
