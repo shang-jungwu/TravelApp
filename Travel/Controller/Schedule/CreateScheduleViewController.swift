@@ -26,14 +26,16 @@ class CreateScheduleViewController: UIViewController {
         let button = UIButton()
         if caller == "schedule" {
             button.setTitle("Edit", for: [])
+            button.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
         } else {
             button.setTitle("創建", for: [])
+            button.addTarget(self, action: #selector(createSchedule), for: .touchUpInside)
         }
         button.setTitleColor(.systemRed, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemRed.cgColor
-        button.addTarget(self, action: #selector(createSchedule), for: .touchUpInside)
+      
         return button
     }()
 
@@ -54,6 +56,36 @@ class CreateScheduleViewController: UIViewController {
         
         self.dismiss(animated: true)
     }
+    
+    @objc func editScheduleInfo() {
+        print("Edit")
+        
+        // 更新資料
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = schedultTitleTextField.text ?? ""
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = destinationTextField.text ?? ""
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = Int(numberOfDaysTextField.text ?? "0")!
+        
+        // 更新資料庫
+        saveUserScheduleData {
+            scheduleVC.setupTableHeaderView() // 更新header view內容
+            self.dismiss(animated: true)
+        }
+        
+    }
+    
+    func saveUserScheduleData(completion: () -> Void) {
+        let defaults = UserDefaults.standard
+        let encoder = JSONEncoder()
+        if let newScheduleData = try? encoder.encode(scheduleVC.userSchedules.self) {
+            defaults.set(newScheduleData, forKey: "UserSchedule")
+            completion()
+        } else {
+            print("Edit encode 失敗")
+        }
+        
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,10 +145,7 @@ class CreateScheduleViewController: UIViewController {
         view.addSubview(transluctentPickDateButton)
         transluctentPickDateButton.snp.makeConstraints { make in
             make.edges.equalTo(departureDateTextField)
-//            make.top.equalTo(destinationTextField.snp.bottom).offset(30)
-//            make.leading.equalToSuperview().offset(20)
-//            make.trailing.equalToSuperview().offset(-20)
-//            make.height.equalTo(50)
+
         }
 
         view.addSubview(numberOfDaysTextField)

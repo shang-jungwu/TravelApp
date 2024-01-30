@@ -120,8 +120,10 @@ class ScheduleViewController: UIViewController {
     @objc func editScheduleInfo() {
         createScheduleVC.caller = "schedule"
         createScheduleVC.scheduleVC = self
+        
+        // 設定為保留原始資料的狀態
         createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
-        createScheduleVC.numberOfDaysTextField.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
+        createScheduleVC.numberOfDaysTextField.text = "\(userSchedules[scheduleIndex].numberOfDays)"
         createScheduleVC.destinationTextField.text = userSchedules[scheduleIndex].destination
         let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
         createScheduleVC.departureDateTextField.text = dateStr
@@ -135,16 +137,10 @@ class ScheduleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         setupTableHeaderView()
-        
-       
+ 
         
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(true)
-    
-        
-    }
     
 }
 
