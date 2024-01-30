@@ -8,8 +8,10 @@
 
 import UIKit
 
+
 /// 自選股用的TabBar
 public class CustomGroupTabBar: CustomPageTabBar {
+
     
     /// 風格物件
     private var style = CMCustomGroupTabBarStyle()
@@ -30,6 +32,8 @@ public class CustomGroupTabBar: CustomPageTabBar {
         
         return bar
     }()
+    
+
     
     /// 用tabNames和風格物件初始化
     public init(tabNames: [String], style: CMCustomGroupTabBarStyle = CMCustomGroupTabBarStyle()) {
@@ -144,10 +148,10 @@ public class CMCustomGroupTabBarStyle{
     public var selectedTabTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     
     /// 未選中的分頁顏色
-    public var unselectedTabColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+    public var unselectedTabColor = #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1) //#colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
     
     /// 未選中的分頁文字顏色
-    public var unselectedTabTextColor = #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
+    public var unselectedTabTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)//#colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
     
     /// 頁籤高度
     public var tabBarHeight: CGFloat = 44

@@ -16,22 +16,28 @@ class ScheduleConcourseViewController: UIViewController {
     lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
     var userSchedules = [UserSchedules]()
     let dateUtility = DateUtility()
+    let defaults = UserDefaults.standard
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNav()
         setupUI()
         setupTableView()
+  
     }
 
     func setupNav() {
         self.navigationItem.title = "已建立的行程"
         let rightBarButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(showCreateScheduleVC))
         self.navigationItem.rightBarButtonItem = rightBarButton
+        
+        let leftBarButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveUserScheduleData))
+        self.navigationItem.leftBarButtonItem = leftBarButton
     }
 
     func setupUI() {
-     
         view.addSubview(tableHeaderView)
         tableHeaderView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
@@ -52,7 +58,6 @@ class ScheduleConcourseViewController: UIViewController {
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-
     }
 
     @objc func showCreateScheduleVC() {
@@ -68,9 +73,65 @@ class ScheduleConcourseViewController: UIViewController {
         scheduleTableView.register(ScheduleConcourseTableViewCell.self, forCellReuseIdentifier: "ScheduleConcourseTableViewCell")
 
     }
+    
+    func getUserScheduleData(completion: () -> Void) {
+        
+        if let defaultData = defaults.data(forKey: "UserSchedule") {
+            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
+                self.userSchedules = decodedData
+                completion()
+            } else {
+                print("Fail to decode")
+            }
+            
+        } else {
+            print("UserScheduleData不存在")
+        }
+    }
+    
+    
+    @objc func saveUserScheduleData() {
+        
+        
+        if let newScheduleData = try? encoder.encode(userSchedules.self) {
+            defaults.set(newScheduleData, forKey: "UserSchedule")
+        }
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        // 取得使用者儲存資料
+        getUserScheduleData {
+            // 更新 header view
+            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
+            // 更新 table view
+            self.scheduleTableView.reloadData()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+        print("will disappear")
+        
+        if let defaultData = defaults.data(forKey: "UserSchedule") {
+            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
+                if !decodedData.elementsEqual(self.userSchedules) {
+                    print("資料改變 please save new data")
+                }
+            } else {
+                print("Fail to decode")
+            }
+            
+        } else {
+            print("UserScheduleData不存在")
+        }
+    }
+    
+   
 
-
-}
+} // class end
 
 extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataSource {
 
@@ -112,7 +173,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footer = UIView()
-        footer.backgroundColor = .systemBlue
+//        footer.backgroundColor = .systemBlue
         return footer
     }
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -136,8 +197,8 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
         if let nav = self.navigationController {
-   
-            scheduleVC.userSchedules = [self.userSchedules[section]]
+            scheduleVC.scheduleIndex = section
+            scheduleVC.userSchedules = self.userSchedules
             nav.pushViewController(scheduleVC, animated: true)
         }
     }

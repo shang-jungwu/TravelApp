@@ -7,7 +7,11 @@
 
 import Foundation
 
-struct UserSchedules: Codable {
+struct UserSchedules: Codable, Equatable {
+    static func == (lhs: UserSchedules, rhs: UserSchedules) -> Bool {
+        return lhs.numberOfDays == rhs.numberOfDays && lhs.departureDate == rhs.departureDate && lhs.scheduleTitle == rhs.scheduleTitle && lhs.destination == rhs.destination
+    }
+    
     
     var scheduleTitle: String
     var destination: String

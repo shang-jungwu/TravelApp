@@ -35,6 +35,7 @@ class FavoriteViewController: UIViewController {
         } else {
             self.favoriteTableView.allowsMultipleSelectionDuringEditing = false
         }
+  
 
     }
     
@@ -48,12 +49,12 @@ class FavoriteViewController: UIViewController {
     
     @objc func addPlaceFromFavorite() {
         print("addPlaceFromFavorite")
-        if var selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+        if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
             for indexPath in selectedIndexPath {
                 let row = indexPath.row
                 let tmpPlace = favoriteListData[row]
 //                tempPlace.append(favoriteListData[row])
-                scheduleVC.userSchedules[0].dayByDaySchedule[calledButtonTag].places.append(tmpPlace)
+                scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(tmpPlace)
                 print("scheduleVC.userSchedules:\(scheduleVC.userSchedules)")
                 scheduleVC.scheduleTableView.reloadData()
                 self.dismiss(animated: true)

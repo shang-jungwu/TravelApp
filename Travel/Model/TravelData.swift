@@ -8,11 +8,13 @@
 import Foundation
 
 struct TravelData: Codable {
-    let placeData: Business//PlaceData
+    let placeData: Business
     var isSaved: Bool
+    var time: Date
     
-    init(placeData: Business, isSaved: Bool = false) {
+    init(placeData: Business, isSaved: Bool = false, time: Date = Date()) {
         self.placeData = placeData
         self.isSaved = isSaved
+        self.time = time
     }
 }

@@ -94,7 +94,7 @@ class ScheduleTableHeaderView: UIView {
     }
     
     func setupEditButton() {
-        editButton.setImage(UIImage(systemName: "ellipsis"), for: [])
+        editButton.setImage(UIImage(systemName: "pencil"), for: [])
         editButton.tintColor = .black
       
     }

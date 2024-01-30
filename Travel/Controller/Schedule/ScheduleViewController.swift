@@ -10,13 +10,17 @@ import SnapKit
 
 class ScheduleViewController: UIViewController {
 
+    // 整包資料 & 要顯示第幾筆的index
     var userSchedules = [UserSchedules]()
-//    var scheduleIndex = 0
+    var scheduleIndex = 0
+    //
+    let defaults = UserDefaults.standard
+    
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
     var tabNames = [String]()
-    lazy var customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton())
+    lazy var customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton(), style: .init())
    
     lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
 
@@ -29,8 +33,24 @@ class ScheduleViewController: UIViewController {
         setupUI()
         setupScheduleTableView()
         
-        print("userSchedules:",userSchedules)
+//        print("userSchedules:",userSchedules)
+        
     }
+    
+//    func getUserScheduleData(completion: () -> Void) {
+//        let decoder = JSONDecoder()
+//        if let defaultData = defaults.data(forKey: "UserSchedule") {
+//            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
+//                self.userSchedules = decodedData
+//                completion()
+//            } else {
+//                print("Fail to decode")
+//            }
+//            
+//        } else {
+//            print("UserScheduleData不存在")
+//        }
+//    }
 
     func setupUI() {
         view.addSubview(tableHeaderView)
@@ -65,7 +85,7 @@ class ScheduleViewController: UIViewController {
     
     func prepareTabBarButton() -> [String] {
         var count = 1
-        while tabNames.count < userSchedules[0].numberOfDays {
+        while tabNames.count < userSchedules[scheduleIndex].numberOfDays {
             tabNames.append("Day\(count)")
             count += 1
         }
@@ -75,47 +95,35 @@ class ScheduleViewController: UIViewController {
     
     func setupCustomTabBar() {
         customTabBar.delegate = self
-
         customTabBar.setSelectedTab(index: 0)
     }
 
     func setupScheduleTableView() {
         scheduleTableView.dataSource = self
         scheduleTableView.delegate = self
-        scheduleTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
-//        scheduleTableView.backgroundView = UIImageView(image: UIImage(named: "stripy-message-sent"))
-//        scheduleTableView.backgroundColor = .systemMint
+        scheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
 
-//        scheduleTableView.tableHeaderView = tableHeaderView
-//        tableHeaderView.snp.makeConstraints { make in
-//            make.top.equalTo(scheduleTableView)
-//            make.centerX.equalTo(scheduleTableView)
-//            make.width.equalTo(scheduleTableView)
-//            make.height.equalTo(120)
-//        }
-//        setupTableHeaderView()
-//        scheduleTableView.tableHeaderView?.layoutIfNeeded()
     }
 
     func setupTableHeaderView() {
         tableHeaderView.backgroundColor = .systemYellow
         tableHeaderView.userImageView.isHidden = true
         tableHeaderView.countStack.isHidden = true
-        tableHeaderView.scheduleTitleLabel.text = userSchedules[0].scheduleTitle
-        tableHeaderView.destinationLabel.text = userSchedules[0].destination
-        let dateStr = dateUtility.convertDateToString(date: userSchedules[0].departureDate)
+        tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
+        tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
+        let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
         tableHeaderView.departureDayLabel.text = dateStr
-        tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[0].numberOfDays) 天"
+        tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
         tableHeaderView.editButton.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
     }
     
     @objc func editScheduleInfo() {
         createScheduleVC.caller = "schedule"
         createScheduleVC.scheduleVC = self
-        createScheduleVC.schedultTitleTextField.text = userSchedules[0].scheduleTitle
-        createScheduleVC.numberOfDaysTextField.text = "為期 \(userSchedules[0].numberOfDays) 天"
-        createScheduleVC.destinationTextField.text = userSchedules[0].destination
-        let dateStr = dateUtility.convertDateToString(date: userSchedules[0].departureDate)
+        createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
+        createScheduleVC.numberOfDaysTextField.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
+        createScheduleVC.destinationTextField.text = userSchedules[scheduleIndex].destination
+        let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
         createScheduleVC.departureDateTextField.text = dateStr
         
         
@@ -127,25 +135,33 @@ class ScheduleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         setupTableHeaderView()
-        self.scheduleTableView.reloadData()
+        
+       
+        
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+    
+        
+    }
+    
 }
 
 extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        userSchedules[0].dayByDaySchedule[section].places.count
+        userSchedules[scheduleIndex].dayByDaySchedule[section].places.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "FavoriteListTableViewCell", for: indexPath) as? FavoriteListTableViewCell else { return UITableViewCell() }
-        cell.nameLabel.text = userSchedules[0].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.name
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else { return UITableViewCell() }
+        cell.nameLabel.text = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.name
         return cell
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        userSchedules[0].numberOfDays
+        userSchedules[scheduleIndex].numberOfDays
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -165,7 +181,8 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             make.leading.equalToSuperview().offset(20)
         }
 
-        let addButton = UIButton(type: .contactAdd)
+        let addButton = UIButton(type: .custom)
+        addButton.setImage(UIImage(systemName: "ellipsis"), for: [])
         addButton.tag = section
         addButton.addTarget(self, action: #selector(addPlace), for: .touchUpInside)
         header.addSubview(addButton)
@@ -203,8 +220,7 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
     func clickTab(index: Int) {
         customTabBar.setSelectedTab(index: index)
 
-        
-        var count = userSchedules[0].numberOfDays
+        var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
             self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
@@ -225,7 +241,7 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
 //
 //        }
 
-        customTabBar.initialSeprateLine()
+//        customTabBar.initialSeprateLine()
     }
     
     

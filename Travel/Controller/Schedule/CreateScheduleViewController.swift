@@ -47,9 +47,11 @@ class CreateScheduleViewController: UIViewController {
         }
         
         let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!) ?? 0, dayByDaySchedule: dayByday)
+        
         concourseVC.userSchedules.append(newSchedule)
         concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
         concourseVC.scheduleTableView.reloadData()
+        
         self.dismiss(animated: true)
     }
 
@@ -150,12 +152,9 @@ class CreateScheduleViewController: UIViewController {
         uiSettingUtility.textFieldSetting(departureDateTextField, placeholder: "出發日期", keyboard: .default, autoCapitalize: .sentences)
         uiSettingUtility.textFieldSetting(numberOfDaysTextField, placeholder: "天數", keyboard: .numberPad, autoCapitalize: .sentences)
 
-        schedultTitleTextField.text = "台南Go"
-        departureDateTextField.text = "2024-01-29"
-        destinationTextField.text = "台南"
-        numberOfDaysTextField.text = "5"
+       
 
-
+       
     }
 
     func setupDatePickerActionSheet() {
@@ -197,10 +196,13 @@ class CreateScheduleViewController: UIViewController {
 //            departureDateTextField.text = ""
 //            destinationTextField.text = ""
 //            numberOfDaysTextField.text = ""
+            
+            // 方便測試
             schedultTitleTextField.text = "台南Go"
-            departureDateTextField.text = "2024-01-29"
+            departureDateTextField.text = "\( dateUtility.convertDateToString(date: Date()))"
             destinationTextField.text = "台南"
-            numberOfDaysTextField.text = "5"
+            numberOfDaysTextField.text = "3"
+            ///
         default:
             print("break")
             break
