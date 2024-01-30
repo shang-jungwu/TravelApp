@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SPAlert
 
 class CreateScheduleViewController: UIViewController {
 
@@ -41,6 +42,10 @@ class CreateScheduleViewController: UIViewController {
 
     @objc func createSchedule() {
         print("創建行程")
+        guard Int(numberOfDaysTextField.text!)! > 0 else {
+            let alertView = AlertAppleMusic16View(title: "天數必須大於0", subtitle: nil, icon: .error)
+            alertView.present(on: self.view)
+            return }
         var dayByday:[DayByDaySchedule] = []
         var date = datePicker.date
         while dayByday.count < Int(numberOfDaysTextField.text!)! {
@@ -48,7 +53,7 @@ class CreateScheduleViewController: UIViewController {
             date = dateUtility.nextDay(startingDate: date)
         }
         
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!) ?? 0, dayByDaySchedule: dayByday)
+        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
         
         concourseVC.userSchedules.append(newSchedule)
         concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
@@ -59,12 +64,34 @@ class CreateScheduleViewController: UIViewController {
     
     @objc func editScheduleInfo() {
         print("Edit")
+        print(scheduleVC.userSchedules[scheduleVC.scheduleIndex])
         
+        let newTitle = schedultTitleTextField.text
+        let newDestination = destinationTextField.text
+        let newDepartureDay = departureDateTextField.text
+        let originNumberOfDays = scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays
+        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        
+        guard newTitle != "", newDestination != "", newDestination != "", newNumberOfDays > 0 else { return }
         // 更新資料
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = schedultTitleTextField.text ?? ""
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = destinationTextField.text ?? ""
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = newTitle!
+        scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = newDestination!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = Int(numberOfDaysTextField.text ?? "0")!
+        
+        if newNumberOfDays != originNumberOfDays {
+            scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = newNumberOfDays
+            
+            // 準備新的dbd陣列
+            var dayByday:[DayByDaySchedule] = []
+            var date = datePicker.date
+            while dayByday.count < newNumberOfDays {
+                dayByday.append(DayByDaySchedule(date: date))
+                date = dateUtility.nextDay(startingDate: date)
+            }
+            
+            scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
+        }
+        
         
         // 更新資料庫
         saveUserScheduleData {

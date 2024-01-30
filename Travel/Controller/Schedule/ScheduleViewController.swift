@@ -134,9 +134,10 @@ class ScheduleViewController: UIViewController {
         
     }
     
-    func saveUserScheduleData() {
+    func saveUserScheduleData(completion: () -> Void) {
         if let newScheduleData = try? encoder.encode(userSchedules.self) {
             defaults.set(newScheduleData, forKey: "UserSchedule")
+            completion()
         }
         
     }
@@ -150,7 +151,9 @@ class ScheduleViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
-        
+        saveUserScheduleData {
+            print("Schedule has been saved")
+        }
     }
 
     
@@ -190,9 +193,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         }
 
         let addButton = UIButton(type: .custom)
-        addButton.setImage(UIImage(systemName: "ellipsis"), for: [])
         addButton.tag = section
-        addButton.addTarget(self, action: #selector(addPlace), for: .touchUpInside)
+        setupMenuButton(sender: addButton)
+        
         header.addSubview(addButton)
         addButton.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -201,27 +204,73 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             make.width.equalTo(30)
             make.bottom.equalToSuperview().offset(-10)
         }
-        addButton.backgroundColor = .systemCyan
+
         return header
     }
 
     @objc func addPlace(sender: UIButton) {
-        print("add place @ day \(sender.tag + 1)")
-        favoriteVC.caller = "ScheduleVC"
-        favoriteVC.calledButtonTag = sender.tag
-        favoriteVC.scheduleVC = self
-        
-        let nav = UINavigationController(rootViewController: favoriteVC)
-        if let sheetPresentationController = nav.sheetPresentationController {
-            sheetPresentationController.prefersGrabberVisible = true
-            sheetPresentationController.detents = [.large()]
-            sheetPresentationController.preferredCornerRadius = 10
-            
-        }
-        self.present(nav, animated: true, completion: nil)
+//        print("add place @ day \(sender.tag + 1)")
+//        favoriteVC.caller = "ScheduleVC"
+//        favoriteVC.calledButtonTag = sender.tag
+//        favoriteVC.scheduleVC = self
+//        
+//        let nav = UINavigationController(rootViewController: favoriteVC)
+//        if let sheetPresentationController = nav.sheetPresentationController {
+//            sheetPresentationController.prefersGrabberVisible = true
+//            sheetPresentationController.detents = [.large()]
+//            sheetPresentationController.preferredCornerRadius = 10
+//            
+//        }
+//        self.present(nav, animated: true, completion: nil)
 
     }
 
+    func setupMenuButton(sender: UIButton) {
+        sender.setImage(UIImage(systemName: "ellipsis"), for: [])
+        sender.showsMenuAsPrimaryAction = true
+        sender.menu = UIMenu(children: [
+            UIAction(title: "新增地點", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off, handler: { [weak self] action in
+                guard let self = self else { return }
+                print("add place @ day \(sender.tag + 1)")
+                self.favoriteVC.caller = "ScheduleVC"
+                self.favoriteVC.calledButtonTag = sender.tag
+                self.favoriteVC.scheduleVC = self
+                
+                let navOfFavoriteVC = UINavigationController(rootViewController: self.favoriteVC)
+                if let sheetPresentationController = navOfFavoriteVC.sheetPresentationController {
+                    sheetPresentationController.prefersGrabberVisible = true
+                    sheetPresentationController.detents = [.large()]
+                    sheetPresentationController.preferredCornerRadius = 10
+                    
+                }
+                self.present(navOfFavoriteVC, animated: true, completion: nil)
+            }),
+            UIAction(title: "刪除整日", image: nil, identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off, handler: { action in
+                print("刪除整日")
+                let alert = UIAlertController(title: "確定刪除本日？", message: nil, preferredStyle: .alert)
+                let deleteAction = UIAlertAction(title: "Y", style: .destructive) { [weak self] action in
+                    guard let self = self else { return }
+                    self.userSchedules[scheduleIndex].numberOfDays -= 1
+                    self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
+                    
+                    saveUserScheduleData {
+                        self.scheduleTableView.reloadData()
+                        self.setupTableHeaderView()
+                    }
+                    
+                    print("已刪除")
+                }
+                let cancelAction = UIAlertAction(title: "N", style: .cancel)
+                alert.addAction(deleteAction)
+                alert.addAction(cancelAction)
+                self.present(alert, animated: true)
+                
+            })
+
+        ])
+    }
+    
+    
 } // ex table view end
 
 extension ScheduleViewController: CustomPageTabBarDelegate {
