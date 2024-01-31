@@ -193,7 +193,7 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
         }
         deleteAction.image = UIImage(systemName: "trash")
         let config = UISwipeActionsConfiguration(actions: [deleteAction])
-        config.performsFirstActionWithFullSwipe = true // 滑到底直接刪除
+        config.performsFirstActionWithFullSwipe = false // if true -> 滑到底直接刪除
         return config
     }
     
