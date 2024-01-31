@@ -69,8 +69,9 @@ class ScheduleConcourseTableViewCell: UITableViewCell {
 
     func setupLabel() {
         uiSettingUtility.labelSettings(label: scheduleTitleLabel, fontSize: 18, fontWeight: .bold, color: .black, alignment: .left, numOfLines: 0)
-        uiSettingUtility.labelSettings(label: dateRangeLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
+        uiSettingUtility.labelSettings(label: dateRangeLabel, fontSize: 0, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
         dateRangeLabel.text = "date range"
+        dateRangeLabel.adjustsFontSizeToFitWidth = true
     }
 
 

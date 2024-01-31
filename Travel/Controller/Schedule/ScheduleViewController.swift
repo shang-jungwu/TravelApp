@@ -20,20 +20,18 @@ class ScheduleViewController: UIViewController {
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
     var tabNames = [String]()
-    lazy var customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton(), style: .init())
+    lazy var customTabBar = CustomGroupTabBar(tabNames: [], style: .init())
    
-    lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
+    lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemGroupedBackground
         setupUI()
         setupScheduleTableView()
-        
-//        print("userSchedules:",userSchedules)
         
     }
     
@@ -55,26 +53,24 @@ class ScheduleViewController: UIViewController {
     func setupUI() {
         view.addSubview(tableHeaderView)
         tableHeaderView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
             make.height.equalTo(120)
         }
         setupTableHeaderView()
         
-        setupCustomTabBar()
         view.addSubview(customTabBar)
         customTabBar.snp.makeConstraints { make in
-            make.top.equalTo(tableHeaderView.snp.bottom)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.top.equalTo(tableHeaderView.snp.bottom).offset(15)
+            make.leading.equalToSuperview()//.offset(20)
+            make.trailing.equalToSuperview()//.offset(-20)
             make.height.equalTo(44)
-
         }
         
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
-            make.top.equalTo(customTabBar.snp.bottom)
+            make.top.equalTo(customTabBar.snp.bottom).offset(5)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
@@ -83,18 +79,26 @@ class ScheduleViewController: UIViewController {
     }
     
     func prepareTabBarButton() -> [String] {
+        tabNames.removeAll()
         var count = 1
+        
         while tabNames.count < userSchedules[scheduleIndex].numberOfDays {
             tabNames.append("Day\(count)")
             count += 1
         }
 //        tabNames.append("+")
+        print("tabNames;\(tabNames)")
         return tabNames
     }
     
     func setupCustomTabBar() {
+//        customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton(), style: .init())
         customTabBar.delegate = self
         customTabBar.setSelectedTab(index: 0)
+        customTabBar.tabNames = prepareTabBarButton()
+        
+        customTabBar.initialTabButtons()
+    
     }
 
     func setupScheduleTableView() {
@@ -106,9 +110,12 @@ class ScheduleViewController: UIViewController {
     }
 
     func setupTableHeaderView() {
-        tableHeaderView.backgroundColor = .systemYellow
+        tableHeaderView.backgroundColor = .white
+        tableHeaderView.layer.cornerRadius = 10
+
         tableHeaderView.userImageView.isHidden = true
         tableHeaderView.countStack.isHidden = true
+        
         tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
         tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
         let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
@@ -146,12 +153,14 @@ class ScheduleViewController: UIViewController {
         super.viewWillAppear(true)
         
         scheduleTableView.isEditing = false
+        scheduleTableView.reloadData()
+        scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
+        setupCustomTabBar()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
-
         saveUserScheduleData {
             print("Schedule has been saved")
         }
@@ -178,25 +187,28 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footer = UIView()
-        footer.backgroundColor = .systemMint
         return footer
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
-        header.backgroundColor = .systemGray
+        header.backgroundColor = .systemGroupedBackground
         let titleLabel = UILabel()
-        titleLabel.text = "Day - \(section + 1)"
+        titleLabel.layer.cornerRadius = 5
+        titleLabel.clipsToBounds = true
+        titleLabel.text = "  \(dateUtility.convertDateToString(date: userSchedules[scheduleIndex].dayByDaySchedule[section].date))  "
+        uiSettingUtility.labelSettings(label: titleLabel, fontSize: 16, fontWeight: .semibold, color: .white, alignment: .left, numOfLines: 1)
+        titleLabel.backgroundColor = .systemRed
         header.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview()//.offset(15)
         }
 
         let menuButton = UIButton(type: .custom)
         menuButton.tag = section
         setupMenuButton(sender: menuButton)
-        
+        menuButton.tintColor = .systemGray
         header.addSubview(menuButton)
         menuButton.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -294,10 +306,11 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let section = sourceIndexPath.section
         let index = sourceIndexPath.row
+        let destinationSection = destinationIndexPath.section
         let destinationIndex = destinationIndexPath.row
         let movedPlace = self.userSchedules[scheduleIndex].dayByDaySchedule[section].places[index]
         self.userSchedules[scheduleIndex].dayByDaySchedule[section].places.remove(at: index)
-        self.userSchedules[scheduleIndex].dayByDaySchedule[section].places.insert(movedPlace, at: destinationIndex)
+        self.userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places.insert(movedPlace, at: destinationIndex)
         tableView.reloadData()
         
     }

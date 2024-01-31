@@ -13,7 +13,7 @@ class ScheduleConcourseViewController: UIViewController {
     lazy var scheduleVC = ScheduleViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
-    lazy var scheduleTableView = UITableView(frame: .zero, style: .grouped)
+    lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
     var userSchedules = [UserSchedules]()
     let dateUtility = DateUtility()
     let defaults = UserDefaults.standard
@@ -22,6 +22,7 @@ class ScheduleConcourseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemGroupedBackground
         setupNav()
         setupUI()
         setupTableView()
@@ -40,24 +41,30 @@ class ScheduleConcourseViewController: UIViewController {
     func setupUI() {
         view.addSubview(tableHeaderView)
         tableHeaderView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
             make.height.equalTo(120)
         }
+        setupTableHeaderView()
+
+        view.addSubview(scheduleTableView)
+        scheduleTableView.snp.makeConstraints { make in
+            make.top.equalTo(tableHeaderView.snp.bottom).offset(15)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+    }
+    
+    func setupTableHeaderView() {
+        tableHeaderView.backgroundColor = .white
+        tableHeaderView.layer.cornerRadius = 10
         tableHeaderView.countLabel.text = "\(userSchedules.count)"
         tableHeaderView.scheduleInfoStack.isHidden = true
         tableHeaderView.editButton.isHidden = true
         tableHeaderView.userImageView.image = UIImage(systemName: "person.crop.circle.fill")
         tableHeaderView.userImageView.tintColor = .systemOrange
-
-        view.addSubview(scheduleTableView)
-        scheduleTableView.snp.makeConstraints { make in
-            make.top.equalTo(tableHeaderView.snp.bottom)
-            make.leading.equalToSuperview()
-            make.trailing.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
     }
 
     @objc func showCreateScheduleVC() {
@@ -134,7 +141,6 @@ class ScheduleConcourseViewController: UIViewController {
             self.present(alert, animated: true)
         }
         
-
     }
     
    
@@ -175,7 +181,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
-        header.backgroundColor = .systemRed
+//        header.backgroundColor = .systemRed
         return header
     }
 

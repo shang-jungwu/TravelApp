@@ -6,11 +6,12 @@
 //
 
 import UIKit
+import SnapKit
 
 class ScheduleTableHeaderView: UIView {
 
     let fullScreenWidth = UIScreen.main.bounds.width
-    lazy var tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: fullScreenWidth, height: 120))
+    lazy var tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: fullScreenWidth-40, height: 120))
 
     lazy var userImageView = UIImageView()
     lazy var countStack = UIStackView()

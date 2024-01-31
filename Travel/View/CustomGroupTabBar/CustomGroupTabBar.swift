@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 
 
 /// 自選股用的TabBar
@@ -40,6 +41,7 @@ public class CustomGroupTabBar: CustomPageTabBar {
         self.style = style
         super.init(tabNames: tabNames)
         backgroundColor = style.backgroundColor
+
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -59,6 +61,11 @@ public class CustomGroupTabBar: CustomPageTabBar {
         
         for name in tabNames {
             let button = UIButton()
+            // 自己加的客製化條件
+            button.layer.cornerRadius = 5
+//            button.layer.borderWidth = 1
+//            button.layer.borderColor =  #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
+            /////
             button.setTitle(name, for: .normal)
             
             if let customFont = style.customSegmentButtonFont {
@@ -112,15 +119,26 @@ public class CustomGroupTabBar: CustomPageTabBar {
     
     public override func setSelectedButton(button: UIButton) {
         selectedLine.removeFromSuperview()
-        selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
+        
+        // 這種寫法下，底線顯示有問題，無法跟隨被點選的button顯示
+//        selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
+
+        // 以下兩種可以
+        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
+//        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
+        ///////
+        
         button.setTitleColor(style.selectedTabTextColor, for: .normal)
         button.backgroundColor = style.selectedTabColor
         button.addSubview(selectedLine)
+        selectedLine.clipsToBounds = true
+
     }
     
     public override func setUnselectButton(button: UIButton) {
         button.setTitleColor(style.unselectedTabTextColor, for: .normal)
         button.backgroundColor = style.unselectedTabColor
+
     }
     
     // 使被選到的置中
@@ -139,19 +157,19 @@ public class CMCustomGroupTabBarStyle{
     public var backgroundColor = UIColor.clear
     
     /// 選擇線顏色
-    public var selectedLineColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+    public var selectedLineColor = UIColor.systemRed// #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
     
     /// 被選中的分頁顏色
-    public var selectedTabColor = #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+    public var selectedTabColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)//#colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
     
     /// 被選中的分頁文字顏色
-    public var selectedTabTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+    public var selectedTabTextColor = UIColor.black// #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
     
     /// 未選中的分頁顏色
-    public var unselectedTabColor = #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1) //#colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
+    public var unselectedTabColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)// #colorLiteral(red: 0.2, green: 0.2, blue: 0.2, alpha: 1)
     
     /// 未選中的分頁文字顏色
-    public var unselectedTabTextColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)//#colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
+    public var unselectedTabTextColor = #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
     
     /// 頁籤高度
     public var tabBarHeight: CGFloat = 44
@@ -160,7 +178,7 @@ public class CMCustomGroupTabBarStyle{
     public var customSegmentButtonFont: UIFont? = nil
     
     /// 底線高度(已選取)
-    public var selectedLineHeight: CGFloat = 2
+    public var selectedLineHeight: CGFloat = 3
     
     /// 頁籤之間的間距
     public var segmentSpace: CGFloat? = nil
