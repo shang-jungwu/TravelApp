@@ -20,7 +20,6 @@ class ScheduleTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .white
-//        self.accessoryType = .disclosureIndicator
         setupUI()
     }
 
@@ -34,9 +33,7 @@ class ScheduleTableViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(15)
         }
-        uiSettingUtility.labelSettings(label: timeLabel, fontSize: 14, fontWeight: .regular, color: .black, alignment: .center, numOfLines: 1)
-        timeLabel.text = "08:00"
-        
+       
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -54,8 +51,18 @@ class ScheduleTableViewCell: UITableViewCell {
             make.leading.equalTo(placeImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().offset(-15)
         }
-        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
+        
+        setupLabel()
 
+    }
+    
+    func setupLabel() {
+        uiSettingUtility.labelSettings(label: timeLabel, fontSize: 14, fontWeight: .regular, color: .black, alignment: .center, numOfLines: 1)
+        timeLabel.text = "08:00"
+        // 防止 time label 被延展和壓縮
+        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        timeLabel.setContentHuggingPriority(.required, for: .horizontal)
+        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -41,7 +41,7 @@ public class CustomGroupTabBar: CustomPageTabBar {
         self.style = style
         super.init(tabNames: tabNames)
         backgroundColor = style.backgroundColor
-
+        
     }
     
     public required init?(coder aDecoder: NSCoder) {
@@ -52,7 +52,9 @@ public class CustomGroupTabBar: CustomPageTabBar {
     }
     
     public override func initialTabButtons() {
-        scrollBar.subviews.forEach { $0.removeFromSuperview() }
+        scrollBar.subviews.forEach {
+            $0.removeFromSuperview()
+        }
         
         var x: CGFloat = 0
         if let leadingConstant = style.scrollViewLeadingConstant {
@@ -89,6 +91,8 @@ public class CustomGroupTabBar: CustomPageTabBar {
         }
         
         scrollBar.contentSize = CGSize(width: max(x, scrollBar.frame.width), height: getDefaultTabBarHeight())
+        
+
     }
     
     public override func clickTab(_ button: UIButton) {
@@ -121,11 +125,11 @@ public class CustomGroupTabBar: CustomPageTabBar {
         selectedLine.removeFromSuperview()
         
         // 這種寫法下，底線顯示有問題，無法跟隨被點選的button顯示
-//        selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
+//        selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: self.frame.width, height: style.selectedLineHeight)
 
         // 以下兩種可以
-        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
-//        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
+//        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
+        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 4, width: button.bounds.width, height: style.selectedLineHeight)
         ///////
         
         button.setTitleColor(style.selectedTabTextColor, for: .normal)
@@ -184,10 +188,10 @@ public class CMCustomGroupTabBarStyle{
     public var segmentSpace: CGFloat? = nil
     
     /// scrollView 的 Leading 間距
-    public var scrollViewLeadingConstant: CGFloat? = nil
+    public var scrollViewLeadingConstant: CGFloat? = 20
     
     /// scrollView 的 trailing 間距
-    public var scrollViewTrailingConstant: CGFloat? = nil
+    public var scrollViewTrailingConstant: CGFloat? = 0
     
     /// 初始化
     public init() {

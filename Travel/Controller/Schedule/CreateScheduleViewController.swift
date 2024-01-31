@@ -62,6 +62,18 @@ class CreateScheduleViewController: UIViewController {
         self.dismiss(animated: true)
     }
     
+    func prepareDBD() {
+        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        // 準備新的dbd陣列
+        var dayByday:[DayByDaySchedule] = []
+        var date = self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate//self.datePicker.date
+        while dayByday.count < newNumberOfDays {
+            dayByday.append(DayByDaySchedule(date: date))
+            date = self.dateUtility.nextDay(startingDate: date)
+        }
+        
+        self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
+    }
     
     
     
@@ -74,7 +86,7 @@ class CreateScheduleViewController: UIViewController {
         // 原始資料
         let originNumberOfDays = scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays
         
-        guard newTitle != "", newDestination != "", newDestination != "", newNumberOfDays > 0 else {
+        guard newTitle != "", newDestination != "", newDepartureDay != "", newNumberOfDays > 0 else {
             let alert = UIAlertController(title: "Warning!", message: "資料不可為空/0", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: .default)
             alert.addAction(okAction)
@@ -86,6 +98,7 @@ class CreateScheduleViewController: UIViewController {
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = newTitle!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = newDestination!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
+        prepareDBD()
         
         // 天數更動時跳出相關alert並賦值
         if newNumberOfDays != originNumberOfDays {
@@ -94,17 +107,8 @@ class CreateScheduleViewController: UIViewController {
             let alert = UIAlertController(title: "Warning!", message: "調整天數將清空已排行程", preferredStyle: .alert)
             let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
                 guard let self = self else { return }
-                
-                // 準備新的dbd陣列
-                var dayByday:[DayByDaySchedule] = []
-                var date = self.datePicker.date
-                while dayByday.count < newNumberOfDays {
-                    dayByday.append(DayByDaySchedule(date: date))
-                    date = self.dateUtility.nextDay(startingDate: date)
-                }
-                
-                self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
-                
+    
+                prepareDBD()
                 completion()
             }
             
@@ -133,7 +137,8 @@ class CreateScheduleViewController: UIViewController {
             // 更新資料庫
             saveUserScheduleData {
                 scheduleVC.scheduleTableView.reloadData()
-                scheduleVC.setupTableHeaderView() // 更新header view內容
+                scheduleVC.setupTableHeaderView() // 更新 header view
+                scheduleVC.setupCustomTabBar() // 更新 custom tabbar
                 dismiss(animated: true)
             }
         }

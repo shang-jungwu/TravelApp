@@ -19,8 +19,8 @@ class ScheduleViewController: UIViewController {
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
-    var tabNames = [String]()
-    lazy var customTabBar = CustomGroupTabBar(tabNames: [], style: .init())
+//    var tabNames = [String]()
+    lazy var customTabBar = CustomGroupTabBar(tabNames: [""], style: .init())
    
     lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
 
@@ -32,23 +32,9 @@ class ScheduleViewController: UIViewController {
         view.backgroundColor = .systemGroupedBackground
         setupUI()
         setupScheduleTableView()
-        
+    
     }
     
-//    func getUserScheduleData(completion: () -> Void) {
-//        let decoder = JSONDecoder()
-//        if let defaultData = defaults.data(forKey: "UserSchedule") {
-//            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
-//                self.userSchedules = decodedData
-//                completion()
-//            } else {
-//                print("Fail to decode")
-//            }
-//            
-//        } else {
-//            print("UserScheduleData不存在")
-//        }
-//    }
 
     func setupUI() {
         view.addSubview(tableHeaderView)
@@ -67,6 +53,7 @@ class ScheduleViewController: UIViewController {
             make.trailing.equalToSuperview()//.offset(-20)
             make.height.equalTo(44)
         }
+        customTabBar.clipsToBounds = true
         
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
@@ -78,27 +65,26 @@ class ScheduleViewController: UIViewController {
 
     }
     
-    func prepareTabBarButton() -> [String] {
-        tabNames.removeAll()
-        var count = 1
+    func prepareTabBarButton() {
+        // 每次都重新準備標題跟按鈕
+        customTabBar.tabNames.removeAll()
+        customTabBar.tabButtons.removeAll()
         
-        while tabNames.count < userSchedules[scheduleIndex].numberOfDays {
-            tabNames.append("Day\(count)")
+        var count = 1
+        while customTabBar.tabNames.count < userSchedules[scheduleIndex].numberOfDays {
+            customTabBar.tabNames.append("Day\(count)")
             count += 1
         }
-//        tabNames.append("+")
-        print("tabNames;\(tabNames)")
-        return tabNames
+
+        print("tabNames;\(customTabBar.tabNames)")
     }
     
     func setupCustomTabBar() {
-//        customTabBar = CustomGroupTabBar(tabNames: prepareTabBarButton(), style: .init())
         customTabBar.delegate = self
-        customTabBar.setSelectedTab(index: 0)
-        customTabBar.tabNames = prepareTabBarButton()
-        
+        prepareTabBarButton()
         customTabBar.initialTabButtons()
-    
+        customTabBar.setSelectedTab(index: 0)
+        
     }
 
     func setupScheduleTableView() {
@@ -157,10 +143,12 @@ class ScheduleViewController: UIViewController {
         scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
         setupCustomTabBar()
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
+        
         saveUserScheduleData {
             print("Schedule has been saved")
         }
@@ -248,16 +236,20 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                     numberOfDays -= 1
                     // 更新資料
                     self.userSchedules[scheduleIndex].numberOfDays = numberOfDays
+                    
                     self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
+                    
                     saveUserScheduleData {
                         self.scheduleTableView.reloadData()
                         self.setupTableHeaderView()
+                        self.setupCustomTabBar()
                     }
                 } else {
                     // 天數為1時，僅清空單日行程
                     self.userSchedules[scheduleIndex].dayByDaySchedule[0].places.removeAll()
                     saveUserScheduleData {
                         self.scheduleTableView.reloadData()
+
                     }
                 }
 
@@ -340,28 +332,31 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
         
         customTabBar.setSelectedTab(index: index)
 
-        let count = userSchedules[scheduleIndex].numberOfDays
+//        print("滾動到Day\(index+1)")
+//        self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+        
+        var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
             self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
 
         } 
-//        else if index == count {
-//            print("加一天")
-//            count += 1
-//            userSchedules[0].numberOfDays = count
-//            customTabBar.tabNames.removeLast()
-//            customTabBar.tabNames.append("Day\(count)")
-//            customTabBar.tabNames.append("+")
-//            print(customTabBar.tabNames)
-//            customTabBar.initialTabButtons()
-//            customTabBar.initialSeprateLine()
-//            
-//            self.scheduleTableView.reloadData()
-//
-//        }
+        else if index == count {
+            print("加一天")
+            count += 1
+            userSchedules[scheduleIndex].numberOfDays = count
+            customTabBar.tabNames.removeLast()
+            customTabBar.tabNames.append("Day\(count)")
+            customTabBar.tabNames.append("+")
+            print(customTabBar.tabNames)
+            customTabBar.initialTabButtons()
+            customTabBar.initialSeprateLine()
+            
+            self.scheduleTableView.reloadData()
 
-//        customTabBar.initialSeprateLine()
+        }
+
+
     }
     
     

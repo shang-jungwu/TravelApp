@@ -133,7 +133,7 @@ class ScheduleConcourseViewController: UIViewController {
 
         checkIfScheduleDataChanged {
             // show alert and save data
-            let alert = UIAlertController(title: "儲存行程", message: nil, preferredStyle: .alert)
+            let alert = UIAlertController(title: "更動已儲存", message: nil, preferredStyle: .alert)
             let saveAction = UIAlertAction(title: "OK", style: .default) { action in
                 self.saveUserScheduleData()
             }
