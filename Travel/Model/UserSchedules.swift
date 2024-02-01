@@ -30,6 +30,7 @@ struct UserSchedules: Codable, Equatable {
 }
 
 struct DayByDaySchedule: Codable {
+    
     var date: Date
     var places: [TravelData]
     init(date: Date, places: [TravelData] = [TravelData]()) {

@@ -21,6 +21,8 @@ class CreateScheduleViewController: UIViewController {
     lazy var destinationTextField = TravelCustomTextField()
     lazy var departureDateTextField = TravelCustomTextField()
     lazy var numberOfDaysTextField = TravelCustomTextField()
+//    lazy var startingTimeTextField = TravelCustomTextField()
+    
     lazy var datePicker = UIDatePicker()
     lazy var transluctentPickDateButton = UIButton(type: .custom)
     lazy var addScheduleButton: UIButton = {
@@ -47,13 +49,21 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByday:[DayByDaySchedule] = []
-        var date = datePicker.date
-        while dayByday.count < Int(numberOfDaysTextField.text!)! {
-            dayByday.append(DayByDaySchedule(date: date))
-            date = dateUtility.nextDay(startingDate: date)
-        }
         
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: datePicker.date, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
+        print("datepicker:\(datePicker.date)")
+        let morning8Date = dateUtility.get8amDate(date: datePicker.date)
+        print("morning8Date:\(morning8Date)")
+        
+        var dbdDate = morning8Date
+        while dayByday.count < Int(numberOfDaysTextField.text!)! {
+            print("dbdDate:\(dbdDate)")
+            dayByday.append(DayByDaySchedule(date: dbdDate))
+            dbdDate = dateUtility.nextDay(startingDate: dbdDate)
+            
+        }
+       
+        
+        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8Date, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
         
         concourseVC.userSchedules.append(newSchedule)
         concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
@@ -66,7 +76,8 @@ class CreateScheduleViewController: UIViewController {
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 準備新的dbd陣列
         var dayByday:[DayByDaySchedule] = []
-        var date = self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate//self.datePicker.date
+        let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
+        var date = morning8Date
         while dayByday.count < newNumberOfDays {
             dayByday.append(DayByDaySchedule(date: date))
             date = self.dateUtility.nextDay(startingDate: date)
@@ -156,10 +167,7 @@ class CreateScheduleViewController: UIViewController {
                 dismiss(animated: true)
             }
         }
-        
-
-        
-        
+    
     }
     
 
@@ -266,12 +274,20 @@ class CreateScheduleViewController: UIViewController {
     }
 
     func setupTextField() {
+        schedultTitleTextField.delegate = self
         uiSettingUtility.textFieldSetting(schedultTitleTextField, placeholder: "輸入行程名稱", keyboard: .default, autoCapitalize: .sentences)
+        
+        destinationTextField.delegate = self
         uiSettingUtility.textFieldSetting(destinationTextField, placeholder: "輸入目的地", keyboard: .default, autoCapitalize: .sentences)
+        
+        departureDateTextField.delegate = self
         uiSettingUtility.textFieldSetting(departureDateTextField, placeholder: "出發日期", keyboard: .default, autoCapitalize: .sentences)
+        
+        numberOfDaysTextField.delegate = self
         uiSettingUtility.textFieldSetting(numberOfDaysTextField, placeholder: "天數", keyboard: .numberPad, autoCapitalize: .sentences)
 
-       
+//        startingTimeTextField.delegate = self
+//        uiSettingUtility.textFieldSetting(startingTimeTextField, placeholder: "時間", keyboard: .numberPad, autoCapitalize: .none)
 
        
     }
@@ -338,6 +354,10 @@ extension CreateScheduleViewController: UITextFieldDelegate {
         textField.resignFirstResponder()
         return true
     }
-
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       self.view.endEditing(true)
+   }
 
 }
+

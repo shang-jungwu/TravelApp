@@ -12,6 +12,21 @@ struct DateUtility {
     var isoCalendar: Calendar {
         return Calendar(identifier: .iso8601)
     }
+    
+    func get8amDate(date: Date) -> Date {
+        let calendar = Calendar(identifier: .iso8601)
+        let components = calendar.dateComponents([.year,.month,.day], from: date)
+        if let midnight = calendar.date(from: components) {
+            let morning8 = Date(timeInterval: 28800, since: midnight)
+            return morning8
+        }
+        return Date()
+    }
+    
+    func convertDateToTimeString(date: Date) -> String {
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: date)
+    }
 
     func convertDateToString(date: Date) -> String {
         dateFormatter.dateFormat = "yyyy-MM-dd"

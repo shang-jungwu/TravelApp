@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class TravelCustomTextField: UITextField, UITextFieldDelegate {
+class TravelCustomTextField: UITextField {
 
     var textPadding = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
 
@@ -39,10 +39,9 @@ class TravelCustomTextField: UITextField, UITextFieldDelegate {
         self.textColor = .black
         self.layer.cornerRadius = 15
        
-        delegate = self
+//        delegate = self
 
    }
-
 
 
 }

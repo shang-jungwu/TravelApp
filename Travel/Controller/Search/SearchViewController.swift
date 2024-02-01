@@ -11,7 +11,7 @@ import Alamofire
 import SPAlert
 
 class SearchViewController: UIViewController {
-
+    
     var tripAdvisorPlaceData = [PlaceData]()
     var travelData = [TravelData]()
 //    var yelpData = [YelpApiData]()
@@ -90,11 +90,15 @@ class SearchViewController: UIViewController {
         }
     }
     func setupTextField() {
-        locationTextField.text = "taipei"//"暫用固定資料 省API次數"
+        locationTextField.delegate = self
+        locationTextField.text = "taipei"
         uiSettingUtility.textFieldSetting(locationTextField, placeholder: "輸入地點", keyboard: .default, autoCapitalize: .none)
         
-        termTextField.text = "restaurant"//"暫用固定資料 省API次數"
+        termTextField.delegate = self
+        termTextField.text = "restaurant"
         uiSettingUtility.textFieldSetting(termTextField, placeholder: "搜尋類別", keyboard: .default, autoCapitalize: .none)
+        
+        resultCountTextField.delegate = self
         resultCountTextField.text = "20"
         uiSettingUtility.textFieldSetting(resultCountTextField, placeholder: "顯示筆數", keyboard: .numberPad, autoCapitalize: .none)
     }
@@ -189,7 +193,7 @@ class SearchViewController: UIViewController {
 
 }
 
-extension LoginViewController: UITextFieldDelegate {
+extension SearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
            textField.resignFirstResponder()
            return true
@@ -199,8 +203,6 @@ extension LoginViewController: UITextFieldDelegate {
        self.view.endEditing(true)
    }
 
-   
-    
 }
 
 

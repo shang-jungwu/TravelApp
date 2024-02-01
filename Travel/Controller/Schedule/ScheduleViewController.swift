@@ -165,7 +165,12 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else { return UITableViewCell() }
+        // delegate
+        cell.delegate = self
+        cell.indexPath = indexPath
+        /////
         cell.nameLabel.text = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.name
+        cell.timePicker.date = userSchedules[scheduleIndex].departureDate
         return cell
     }
 
@@ -358,6 +363,25 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
 
 
     }
+    
+    
+}
+
+extension ScheduleViewController: ScheduleTableViewCellDelegate {
+    func timeChange(indexPath: IndexPath, time: Date) {
+        print(time)
+        let section = indexPath.section
+        let index = indexPath.row
+        self.userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time
+        saveUserScheduleData {
+            print("new data saved")
+            print(userSchedules[scheduleIndex])
+            self.scheduleTableView.reloadData()
+        }
+    }
+    
+    
+
     
     
 }
