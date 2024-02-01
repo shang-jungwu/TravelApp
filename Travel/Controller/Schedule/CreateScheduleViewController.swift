@@ -85,6 +85,26 @@ class CreateScheduleViewController: UIViewController {
         
         self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
     }
+    func updateDBD() {
+        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        // 準備新的dbd陣列
+        var dayByday:[DayByDaySchedule] = scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule
+        
+        let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
+        
+        var date = morning8Date
+        
+        for i in 0...dayByday.count-1 {
+            dayByday[i].date = date
+            for j in 0...dayByday[i].places.count-1 {
+                // 每一天的細節也同時更新，但已調整的時間會重置
+                dayByday[i].places[j].time = date
+            }
+            date = self.dateUtility.nextDay(startingDate: date)
+        }
+        
+        self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
+    }
     
     
     
@@ -95,6 +115,7 @@ class CreateScheduleViewController: UIViewController {
         let newDepartureDay = departureDateTextField.text
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 原始資料
+        let originDepartureDay = dateUtility.convertDateToString(date: scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
         let originNumberOfDays = scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays
         
         guard newTitle != "", newDestination != "", newDepartureDay != "", newNumberOfDays > 0 else {
@@ -105,11 +126,16 @@ class CreateScheduleViewController: UIViewController {
             return
         }
         
-        // 除天數外的其他欄位直接套用新值
+        // 欄位套用新值
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = newTitle!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = newDestination!
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
-
+        
+        if newDepartureDay != originDepartureDay {
+            scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = dateUtility.get8amDate(date: datePicker.date)
+            updateDBD()
+            print("updated:\( scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule)")
+        }
+//        scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
         
         // 天數更動時作出相應處理並賦值
         if newNumberOfDays < originNumberOfDays {
@@ -145,7 +171,7 @@ class CreateScheduleViewController: UIViewController {
                     currentLastDayDate = newDate
                 }
             }
-        
+
             completion()
         } else {
             // if newNumberOfDays == originNumberOfDays

@@ -77,7 +77,6 @@ class ScheduleViewController: UIViewController {
         }
         customTabBar.tabNames.append("+")
 
-        print("tabNames;\(customTabBar.tabNames)")
     }
     
     func setupCustomTabBar() {
@@ -219,7 +218,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return header
     }
-
+    
     func prepareMenuActions(sender: UIButton) -> [UIAction] {
         let addNewAction = UIAction(title: "新增地點", image: UIImage(systemName: "heart.fill"), identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off, handler: { [weak self] action in
             guard let self = self else { return }
@@ -249,20 +248,30 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                     numberOfDays -= 1
                     // 更新資料
                     self.userSchedules[scheduleIndex].numberOfDays = numberOfDays
-                    
                     self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
+
+                    // hope: 刪除時後一天的時間自動替換成-1天
+                    // try:
+                    var leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
+                    print("left date", leftDays)
+                    for i in sender.tag..<leftDays.count {
+                        let newDate = dateUtility.getYesterday(date: leftDays[i].date)
+                        
+                        self.userSchedules[scheduleIndex].dayByDaySchedule[i].date = newDate
+             
+                    }
                     
                     self.saveUserScheduleData {
                         self.scheduleTableView.reloadData()
                         self.setupTableHeaderView()
                         self.setupCustomTabBar()
                     }
+
                 } else {
                     // 天數為1時，僅清空單日行程
                     self.userSchedules[scheduleIndex].dayByDaySchedule[0].places.removeAll()
                     self.saveUserScheduleData {
                         self.scheduleTableView.reloadData()
-
                     }
                 }
 
@@ -381,7 +390,6 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
             customTabBar.tabNames.removeLast()
             customTabBar.tabNames.append("Day\(count)")
             customTabBar.tabNames.append("+")
-            print(customTabBar.tabNames)
             customTabBar.tabButtons.removeAll()
             customTabBar.initialTabButtons()
             
@@ -402,13 +410,11 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
 
 extension ScheduleViewController: ScheduleTableViewCellDelegate {
     func timeChange(indexPath: IndexPath, time: Date) {
-        print(time)
         let section = indexPath.section
         let index = indexPath.row
         self.userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time
         saveUserScheduleData {
             print("new data saved")
-            print(userSchedules[scheduleIndex].dayByDaySchedule[section].places[index])
     
             self.scheduleTableView.reloadRows(at: [indexPath], with: .automatic)
         }

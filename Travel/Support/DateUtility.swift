@@ -46,5 +46,12 @@ struct DateUtility {
         }
         return Date()
     }
+    
+    func getYesterday(date: Date) -> Date {
+        if let result = isoCalendar.date(byAdding: .day, value: -1, to: date) {
+            return result
+        }
+        return date
+    }
 
 }
