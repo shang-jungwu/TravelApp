@@ -17,7 +17,6 @@ class ScheduleTableViewCell: UITableViewCell {
     
     lazy var placeImageView = UIImageView()
     lazy var nameLabel = UILabel()
-    lazy var timeLabel = UILabel()
     lazy var timePicker = UIDatePicker()
     
     let uiSettingUtility = UISettingUtility()
@@ -39,8 +38,6 @@ class ScheduleTableViewCell: UITableViewCell {
     func setupTimePicker() {
         timePicker.preferredDatePickerStyle = .compact
         timePicker.datePickerMode = .time
-//        timePicker.setContentCompressionResistancePriority(.required, for: .horizontal)
-//        timePicker.setContentHuggingPriority(.required, for: .horizontal)
         
         timePicker.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         timePicker.setContentHuggingPriority(.defaultHigh, for: .horizontal)
@@ -58,27 +55,21 @@ class ScheduleTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
-        contentView.addSubview(timeLabel)
-        timeLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(10)
-        }
-
         contentView.addSubview(timePicker)
         timePicker.snp.makeConstraints { make in
-            make.edges.equalTo(timeLabel)
-            make.width.equalTo(100)
+            make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(20)
         }
         setupTimePicker()
         
        
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.leading.equalTo(timeLabel.snp.trailing).offset(15)
-            make.width.equalTo(60)
-            make.height.equalTo(60)
-            make.bottom.equalToSuperview().offset(-20)
+            make.top.equalTo(timePicker.snp.bottom).offset(10)
+            make.leading.equalTo(timePicker.snp.leading)
+            make.width.equalTo(80)
+            make.height.equalTo(80)
+            make.bottom.equalToSuperview().offset(-10)
         }
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 10)
 
@@ -89,23 +80,13 @@ class ScheduleTableViewCell: UITableViewCell {
             make.leading.equalTo(placeImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().offset(-15)
         }
-        
-        setupLabel()
 
-    }
-    
-
-    
-    func setupLabel() {
-        uiSettingUtility.labelSettings(label: timeLabel, fontSize: 14, fontWeight: .regular, color: .clear, alignment: .center, numOfLines: 1)
-        timeLabel.text = "08:00"
-        // 防止 time label 被延展和壓縮
-        timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        timeLabel.setContentHuggingPriority(.required, for: .horizontal)
-        
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
-    }
 
+    }
+    
+
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

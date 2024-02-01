@@ -30,7 +30,7 @@ class ScheduleConcourseViewController: UIViewController {
     }
 
     func setupNav() {
-        self.navigationItem.title = "已建立的行程"
+        self.navigationItem.title = "我的行程"
         let rightBarButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(showCreateScheduleVC))
         self.navigationItem.rightBarButtonItem = rightBarButton
         

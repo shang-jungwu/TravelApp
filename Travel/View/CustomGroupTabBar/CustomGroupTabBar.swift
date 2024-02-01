@@ -65,8 +65,6 @@ public class CustomGroupTabBar: CustomPageTabBar {
             let button = UIButton()
             // 自己加的客製化條件
             button.layer.cornerRadius = 5
-//            button.layer.borderWidth = 1
-//            button.layer.borderColor =  #colorLiteral(red: 0.662745098, green: 0.662745098, blue: 0.662745098, alpha: 1)
             /////
             button.setTitle(name, for: .normal)
             

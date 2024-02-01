@@ -55,11 +55,13 @@ class FavoriteViewController: UIViewController {
         if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
             for indexPath in selectedIndexPath {
                 let row = indexPath.row
-                let tmpPlace = favoriteListData[row]
-//                tempPlace.append(favoriteListData[row])
+                var selectedPlace = favoriteListData[row]
+                
+                // hope顯示預設時間八點
+                selectedPlace.time =  scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
                 
                 // 更新資料
-                scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(tmpPlace)
+                scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
                 
             }
             

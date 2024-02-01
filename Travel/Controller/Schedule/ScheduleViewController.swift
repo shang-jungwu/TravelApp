@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SDWebImage
 
 class ScheduleViewController: UIViewController {
 
@@ -18,8 +19,8 @@ class ScheduleViewController: UIViewController {
     let encoder = JSONEncoder()
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
+    lazy var detailVC = DetailViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
-//    var tabNames = [String]()
     lazy var customTabBar = CustomGroupTabBar(tabNames: [""], style: .init())
    
     lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -32,10 +33,9 @@ class ScheduleViewController: UIViewController {
         view.backgroundColor = .systemGroupedBackground
         setupUI()
         setupScheduleTableView()
-    
+        print("schedule：\(userSchedules[scheduleIndex].dayByDaySchedule)")
     }
     
-
     func setupUI() {
         view.addSubview(tableHeaderView)
         tableHeaderView.snp.makeConstraints { make in
@@ -75,6 +75,7 @@ class ScheduleViewController: UIViewController {
             customTabBar.tabNames.append("Day\(count)")
             count += 1
         }
+        customTabBar.tabNames.append("+")
 
         print("tabNames;\(customTabBar.tabNames)")
     }
@@ -170,7 +171,13 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         cell.indexPath = indexPath
         /////
         cell.nameLabel.text = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.name
-        cell.timePicker.date = userSchedules[scheduleIndex].departureDate
+        if let url = URL(string: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.imageURL) {
+            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
+        }
+        
+        cell.timePicker.date = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time
+        updateTime(cell, time: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)
+        
         return cell
     }
 
@@ -230,9 +237,10 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             }
             self.present(navOfFavoriteVC, animated: true, completion: nil)
         })
-        let deleteDayAction = UIAction(title: "刪除整日", image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off, handler: { action in
-
-            let alert = UIAlertController(title: "確定刪除本日？", message: "若天數為 1 ，僅清空單日行程", preferredStyle: .alert)
+        let deleteDayAction = UIAction(title: "刪除整日", image: UIImage(systemName: "trash"), identifier: nil, discoverabilityTitle: nil, attributes: .destructive, state: .off, handler: { [weak self] action in
+            guard let self = self else {return}
+           
+            let alert = UIAlertController(title: "確定刪除本日？", message: "行程天數為 1 時，僅清空單日行程", preferredStyle: .alert)
             let deleteAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
                 guard let self = self else { return }
                 
@@ -244,7 +252,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                     
                     self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
                     
-                    saveUserScheduleData {
+                    self.saveUserScheduleData {
                         self.scheduleTableView.reloadData()
                         self.setupTableHeaderView()
                         self.setupCustomTabBar()
@@ -252,7 +260,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                 } else {
                     // 天數為1時，僅清空單日行程
                     self.userSchedules[scheduleIndex].dayByDaySchedule[0].places.removeAll()
-                    saveUserScheduleData {
+                    self.saveUserScheduleData {
                         self.scheduleTableView.reloadData()
 
                     }
@@ -283,7 +291,16 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     }
     
-
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let section = indexPath.section
+        let index = indexPath.row
+        if let nav = self.navigationController {
+            detailVC.placeInfoData = self.userSchedules[scheduleIndex].dayByDaySchedule[section].places
+            detailVC.dataIndex = index
+            nav.pushViewController(detailVC, animated: true)
+        }
+    }
+    
     
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         if self.scheduleTableView.isEditing == true {
@@ -329,6 +346,13 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         return config
     }
     
+    func updateTime(_ cell: ScheduleTableViewCell, time: Date) {
+        if let index = cell.indexPath?.row {
+            cell.timePicker.date = time
+        }
+        
+    }
+    
 } // ex table view end
 
 extension ScheduleViewController: CustomPageTabBarDelegate {
@@ -336,29 +360,38 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
     func clickTab(index: Int) {
         
         customTabBar.setSelectedTab(index: index)
-
-//        print("滾動到Day\(index+1)")
-//        self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
         
         var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
-            self.scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+            scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
 
-        } 
-        else if index == count {
+        } else if index == count {
             print("加一天")
             count += 1
             userSchedules[scheduleIndex].numberOfDays = count
+            
+            if var currentLastDayDate =  userSchedules[scheduleIndex].dayByDaySchedule.last?.date {
+                
+                let newDate = dateUtility.nextDay(startingDate: currentLastDayDate)
+                userSchedules[scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
+                currentLastDayDate = newDate
+            }
+            
             customTabBar.tabNames.removeLast()
             customTabBar.tabNames.append("Day\(count)")
             customTabBar.tabNames.append("+")
             print(customTabBar.tabNames)
+            customTabBar.tabButtons.removeAll()
             customTabBar.initialTabButtons()
-            customTabBar.initialSeprateLine()
             
-            self.scheduleTableView.reloadData()
-
+            saveUserScheduleData {
+                customTabBar.setSelectedTab(index: index)
+                scheduleTableView.reloadData()
+                scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+                setupTableHeaderView()
+            }
+            
         }
 
 
@@ -375,13 +408,11 @@ extension ScheduleViewController: ScheduleTableViewCellDelegate {
         self.userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time
         saveUserScheduleData {
             print("new data saved")
-            print(userSchedules[scheduleIndex])
-            self.scheduleTableView.reloadData()
+            print(userSchedules[scheduleIndex].dayByDaySchedule[section].places[index])
+    
+            self.scheduleTableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
-    
-    
-
     
     
 }
