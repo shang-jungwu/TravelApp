@@ -72,9 +72,9 @@ class CreateScheduleViewController: UIViewController {
         self.dismiss(animated: true)
     }
     
-    func prepareDBD() {
+    func prepareNewDBD() {
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
-        // 準備新的dbd陣列
+        // 準備新的dbd陣列，清空所有資訊
         var dayByday:[DayByDaySchedule] = []
         let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
         var date = morning8Date
@@ -85,9 +85,9 @@ class CreateScheduleViewController: UIViewController {
         
         self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
     }
-    func updateDBD() {
+    func updateOriginDBD() {
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
-        // 準備新的dbd陣列
+        // 更新原有的dbd陣列時間，保留地點
         var dayByday:[DayByDaySchedule] = scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule
         
         let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
@@ -132,10 +132,9 @@ class CreateScheduleViewController: UIViewController {
         
         if newDepartureDay != originDepartureDay {
             scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = dateUtility.get8amDate(date: datePicker.date)
-            updateDBD()
+            updateOriginDBD()
             print("updated:\( scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule)")
         }
-//        scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
         
         // 天數更動時作出相應處理並賦值
         if newNumberOfDays < originNumberOfDays {
@@ -145,7 +144,7 @@ class CreateScheduleViewController: UIViewController {
             let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
                 guard let self = self else { return }
     
-                prepareDBD()
+                prepareNewDBD()
                 completion()
             }
             
@@ -334,7 +333,7 @@ class CreateScheduleViewController: UIViewController {
             make.width.equalTo(self.view.bounds.width*0.8)
         }
 
-        let addAction = UIAlertAction(title: "新增", style: .default) { [self] _ in
+        let addAction = UIAlertAction(title: "選擇日期", style: .default) { [self] _ in
             print("add Date")
             departureDateTextField.text = dateUtility.convertDateToString(date: datePicker.date)
         }

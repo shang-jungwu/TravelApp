@@ -126,7 +126,7 @@ public class CustomGroupTabBar: CustomPageTabBar {
 //       selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
 
         // 以下兩種可以
-        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
+        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
 //        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 4, width: button.bounds.width, height: style.selectedLineHeight)
         ///////
         
