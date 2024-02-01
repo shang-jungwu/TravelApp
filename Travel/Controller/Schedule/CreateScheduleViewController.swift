@@ -21,7 +21,7 @@ class CreateScheduleViewController: UIViewController {
     lazy var destinationTextField = TravelCustomTextField()
     lazy var departureDateTextField = TravelCustomTextField()
     lazy var numberOfDaysTextField = TravelCustomTextField()
-//    lazy var startingTimeTextField = TravelCustomTextField()
+
     
     lazy var datePicker = UIDatePicker()
     lazy var transluctentPickDateButton = UIButton(type: .custom)
@@ -86,7 +86,6 @@ class CreateScheduleViewController: UIViewController {
         self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     func updateOriginDBD() {
-        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 更新原有的dbd陣列時間，保留地點
         var dayByday:[DayByDaySchedule] = scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule
         
@@ -144,13 +143,13 @@ class CreateScheduleViewController: UIViewController {
             let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
                 guard let self = self else { return }
     
-                prepareNewDBD()
+                self.prepareNewDBD()
                 completion()
             }
             
             let cancelAction = UIAlertAction(title: "No", style: .cancel) {  [weak self] action in
                 guard let self = self else { return }
-                self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = originNumberOfDays
+                self.scheduleVC.userSchedules[self.scheduleVC.scheduleIndex].numberOfDays = originNumberOfDays
                 self.numberOfDaysTextField.text = "\(originNumberOfDays)"
                 completion()
             }
