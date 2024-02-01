@@ -124,12 +124,12 @@ public class CustomGroupTabBar: CustomPageTabBar {
     public override func setSelectedButton(button: UIButton) {
         selectedLine.removeFromSuperview()
         
-        // 這種寫法下，底線顯示有問題，無法跟隨被點選的button顯示
-//        selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: self.frame.width, height: style.selectedLineHeight)
+        // 底線顯示有問題
+//       selectedLine.frame = CGRect(x: 0, y: self.frame.maxY - 3, width: button.frame.width, height: style.selectedLineHeight)
 
         // 以下兩種可以
-//        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
-        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 4, width: button.bounds.width, height: style.selectedLineHeight)
+        selectedLine.frame = CGRect(x: 0, y: button.frame.maxY - 4, width: button.frame.width, height: style.selectedLineHeight)
+//        selectedLine.frame = CGRect(x: 0, y: self.bounds.maxY - 4, width: button.bounds.width, height: style.selectedLineHeight)
         ///////
         
         button.setTitleColor(style.selectedTabTextColor, for: .normal)

@@ -98,13 +98,13 @@ class CreateScheduleViewController: UIViewController {
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = newTitle!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = newDestination!
         scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = datePicker.date
-        prepareDBD()
+
         
-        // 天數更動時跳出相關alert並賦值
-        if newNumberOfDays != originNumberOfDays {
+        // 天數更動時作出相應處理並賦值
+        if newNumberOfDays < originNumberOfDays {
             scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = newNumberOfDays
             
-            let alert = UIAlertController(title: "Warning!", message: "調整天數將清空已排行程", preferredStyle: .alert)
+            let alert = UIAlertController(title: "Warning!", message: "縮減天數將重置已排行程", preferredStyle: .alert)
             let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
                 guard let self = self else { return }
     
@@ -123,7 +123,21 @@ class CreateScheduleViewController: UIViewController {
             alert.addAction(resetScheduleAction)
             self.present(alert, animated: true)
             
+        } else if newNumberOfDays > originNumberOfDays {
+            self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = newNumberOfDays
+            let count = newNumberOfDays - originNumberOfDays
+            if var currentLastDayDate =  scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule.last?.date {
+                
+                for _ in 1...count {
+                    let newDate = dateUtility.nextDay(startingDate: currentLastDayDate)
+                    scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
+                    currentLastDayDate = newDate
+                }
+            }
+        
+            completion()
         } else {
+            // if newNumberOfDays == originNumberOfDays
             completion()
         }
         
