@@ -117,7 +117,6 @@ class RegisterViewController: UIViewController {
     @objc func returnRegisterResult() {
         if let name = userNameTextField.text, let account = accountTextField.text, let pwd = passwordTextField.text, let pwdDoubleCheck = pwdDoubleCheckTextField.text {
 
-            // 之後改用spalert做？
             if name != "", account != "", pwd != "", pwdDoubleCheck != "" {
                 if pwd != pwdDoubleCheck {
                     showAlert(title: "註冊失敗", message: "密碼不一致", status: false)
@@ -127,7 +126,7 @@ class RegisterViewController: UIViewController {
                             nav.popToRootViewController(animated: true)
                         }
                     }
-                    
+                
                 }
             } else {
                 showAlert(title: "註冊失敗", message: "欄位空缺", status: false)
@@ -137,7 +136,9 @@ class RegisterViewController: UIViewController {
     }
     
     func createUser(account: String, pwd: String, completion: @escaping () -> Void) {
-        Auth.auth().createUser(withEmail: account, password: pwd) { result, error in
+        Auth.auth().createUser(withEmail: account, password: pwd) {
+            [weak self] result, error in
+            guard let self = self else { return }
             guard let user = result?.user, error == nil else {
                 if let error = error {
                     let alertView = AlertAppleMusic17View(title: error.localizedDescription, subtitle: nil, icon: .error)
@@ -147,10 +148,28 @@ class RegisterViewController: UIViewController {
                 print(error?.localizedDescription as Any)
                 return
             }
+            if let userName = self.userNameTextField.text {
+                self.changeUserProfile(displayName: userName)
+                completion()
+            }
+            
             print("emai:\(user.email ?? ""), uid:\(user.uid)")
-            completion()
+//            completion()
         }
-        
+    
+    }
+    
+    func changeUserProfile(displayName: String) {
+        let changeReuest = Auth.auth().currentUser?.createProfileChangeRequest()
+        changeReuest?.displayName = displayName
+        changeReuest?.commitChanges(completion: { error in
+            guard error == nil else {
+                if let error = error {
+                    print("error:",error.localizedDescription)
+                }
+                return
+            }
+        })
         
     }
     

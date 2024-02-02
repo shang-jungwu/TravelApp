@@ -6,10 +6,17 @@
 //
 
 import UIKit
+import SnapKit
+import FirebaseAuth
 
 class SettingViewController: UIViewController {
-
+    
+    let userDefaults = UserDefaults.standard
+    let uiSettingUtility = UISettingUtility()
+    let firebaseAuthUtility = FirebaseAuthUtility()
+    
     lazy var loginVC = LoginViewController()
+    lazy var userNameLabel = UILabel()
 
     lazy var logoutButton: UIButton = {
         let button = UIButton()
@@ -24,9 +31,13 @@ class SettingViewController: UIViewController {
     }()
 
     @objc func popToLoginVC() {
-        let userDefaults = UserDefaults.standard
-        userDefaults.set(false, forKey: "LoggedIn")
-
+        do {
+            try Auth.auth().signOut()
+            userDefaults.set(false, forKey: "LoggedIn")
+        } catch {
+            print(error)
+        }
+        
         let scene = UIApplication.shared.connectedScenes.first {
             $0.activationState == .foregroundActive
         }
@@ -37,10 +48,7 @@ class SettingViewController: UIViewController {
                 nav.popToRootViewController(animated: true)
             }
             print("pop to root vc")
-
         }
-
-
     }
 
     override func viewDidLoad() {
@@ -56,6 +64,16 @@ class SettingViewController: UIViewController {
     }
 
     func setupUI() {
+        view.addSubview(userNameLabel)
+        userNameLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+        }
+        uiSettingUtility.labelSettings(label: userNameLabel, fontSize: 26, fontWeight: .bold, color: .black, alignment: .center, numOfLines: 0)
+        userNameLabel.text = "Hi, \(firebaseAuthUtility.getUserName()) !"
+        
+        
         view.addSubview(logoutButton)
         logoutButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(50)
@@ -64,6 +82,8 @@ class SettingViewController: UIViewController {
             make.height.equalTo(50)
         }
     }
+
+    
 
     
 

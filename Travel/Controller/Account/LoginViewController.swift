@@ -11,6 +11,7 @@ import SPAlert
 import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
+import GoogleSignInSwift
 
 class LoginViewController: UIViewController {
     
@@ -23,6 +24,8 @@ class LoginViewController: UIViewController {
     lazy var travelPersonImageView = UIImageView(image: UIImage(named: "stripy-travel-plans-around-the-world"))
     lazy var accountTextField: TravelCustomTextField = TravelCustomTextField()
     lazy var passwordTextField: TravelCustomTextField = TravelCustomTextField()
+   
+    lazy var googleButton = UIButton()
     
     var currentObjectBottomYPosition: CGFloat = 0
 
@@ -84,6 +87,10 @@ class LoginViewController: UIViewController {
         }
     }
     
+
+
+    
+    
     lazy var registerButton: UIButton = {
         let button = UIButton()
         button.setTitle("Register", for: [])
@@ -122,18 +129,13 @@ class LoginViewController: UIViewController {
             let moveHeight = -(currentObjectBottomYPosition - visibleHeight + 20)
             if visibleHeight < currentObjectBottomYPosition {
                 self.view.frame.origin.y = moveHeight
-//                view.snp.updateConstraints { make in
-//                    make.top.equalTo(-moveHeight)
-//                }
+
             }
         }
     }
     
     @objc func keyboardWillHide() {
         self.view.frame.origin.y = 0
-//        view.snp.updateConstraints { make in
-//            make.top.equalTo(0)
-//        }
     }
     
     func setupNav() {
@@ -183,11 +185,35 @@ class LoginViewController: UIViewController {
             make.height.equalTo(50)
         }
         
-       
+        view.addSubview(googleButton)
+        googleButton.snp.makeConstraints { make in
+            make.bottom.equalTo(loginButton.snp.top).offset(-20)
+            make.leading.equalToSuperview().offset(30)
+            make.trailing.equalToSuperview().offset(-30)
+            make.height.equalTo(50)
+        }
+        googleButton.setTitle("google", for: [])
+        googleButton.backgroundColor = .systemCyan
+        googleButton.addTarget(self, action: #selector(googleSignIn), for: .touchUpInside)
 
     }
 
-    
+    @objc func googleSignIn() {
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
+            
+            guard error == nil else { return }
+
+          // If sign in succeeded, display the app's main content View.
+            guard let signInResult = signInResult else { return }
+            let user = signInResult.user
+
+            let emailAddress = user.profile?.email
+            let fullName = user.profile?.name
+            let familyName = user.profile?.familyName
+            let profilePicUrl = user.profile?.imageURL(withDimension: 320)
+                
+        }
+    }
 
 } // class end
 
@@ -206,7 +232,4 @@ extension LoginViewController: UITextFieldDelegate {
         return true
     }
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        currentObjectBottomYPosition = 0
-    }
 }
