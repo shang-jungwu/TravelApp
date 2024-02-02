@@ -78,7 +78,7 @@ class ScheduleConcourseViewController: UIViewController {
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.register(ScheduleConcourseTableViewCell.self, forCellReuseIdentifier: "ScheduleConcourseTableViewCell")
-        scheduleTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        scheduleTableView.backgroundColor = TravelAppColor.lightGrayBackgroundColor
 
     }
     

@@ -13,18 +13,18 @@ import FirebaseAuth
 import GoogleSignIn
 
 class LoginViewController: UIViewController {
+    
+    let uiSettingUtility = UISettingUtility()
+    let notificationCenter = NotificationCenter.default
 
-//    lazy var searchVC = SearchViewController()
     lazy var tabBarVC = TabBarController()
     lazy var registerVC = RegisterViewController()
-
-    let uiSettingUtility = UISettingUtility()
     
     lazy var travelPersonImageView = UIImageView(image: UIImage(named: "stripy-travel-plans-around-the-world"))
-
     lazy var accountTextField: TravelCustomTextField = TravelCustomTextField()
-
     lazy var passwordTextField: TravelCustomTextField = TravelCustomTextField()
+    
+    var currentObjectBottomYPosition: CGFloat = 0
 
     func setupTextField() {
         accountTextField.delegate = self
@@ -32,7 +32,6 @@ class LoginViewController: UIViewController {
 
         passwordTextField.delegate = self
         uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
-
     }
     
 
@@ -48,9 +47,7 @@ class LoginViewController: UIViewController {
     }()
 
     @objc func pushSearchVC() {
-
         if let account = accountTextField.text, let password = passwordTextField.text {
-            
             guard account != "", password != "" else {
                 let textBlankAlert = AlertAppleMusic17View(title: "不可留空", subtitle: nil, icon: .error)
                 textBlankAlert.present(on: self.view)
@@ -68,9 +65,6 @@ class LoginViewController: UIViewController {
                 print("show main vc")
             }
         }
-
-
-        
     }
     
     func checkUserStatus(account: String, password: String, completion: @escaping () -> Void) {
@@ -110,10 +104,36 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupNav()
         setupUI()
         setupTextField()
+        addObserverToNotification()
+    }
+    
+    func addObserverToNotification() {
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: Notification) {
+        if let keyboardHeight = (notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height {
+            let visibleHeight = self.view.bounds.height - keyboardHeight
+            let moveHeight = -(currentObjectBottomYPosition - visibleHeight + 20)
+            if visibleHeight < currentObjectBottomYPosition {
+                self.view.frame.origin.y = moveHeight
+//                view.snp.updateConstraints { make in
+//                    make.top.equalTo(-moveHeight)
+//                }
+            }
+        }
+    }
+    
+    @objc func keyboardWillHide() {
+        self.view.frame.origin.y = 0
+//        view.snp.updateConstraints { make in
+//            make.top.equalTo(0)
+//        }
     }
     
     func setupNav() {
@@ -181,4 +201,12 @@ extension LoginViewController: UITextFieldDelegate {
        self.view.endEditing(true)
    }
 
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        currentObjectBottomYPosition = textField.frame.maxY
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        currentObjectBottomYPosition = 0
+    }
 }

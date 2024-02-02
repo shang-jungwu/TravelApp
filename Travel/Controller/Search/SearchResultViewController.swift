@@ -24,7 +24,7 @@ class SearchResultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupNav()
         setupUI()
         setupResultTableView()

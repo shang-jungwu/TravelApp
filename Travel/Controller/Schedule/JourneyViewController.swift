@@ -30,7 +30,7 @@ class JourneyViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupUI()
         setupJourneyTableView()
         print("schedule：\(userSchedules[scheduleIndex].dayByDaySchedule)")
@@ -49,8 +49,8 @@ class JourneyViewController: UIViewController {
         view.addSubview(customTabBar)
         customTabBar.snp.makeConstraints { make in
             make.top.equalTo(tableHeaderView.snp.bottom).offset(15)
-            make.leading.equalToSuperview()//.offset(20)
-            make.trailing.equalToSuperview()//.offset(-20)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
             make.height.equalTo(44)
         }
         customTabBar.clipsToBounds = true

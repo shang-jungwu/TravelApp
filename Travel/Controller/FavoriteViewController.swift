@@ -18,7 +18,7 @@ class FavoriteViewController: UIViewController {
     var calledButtonTag = 0
     weak var journeyVC: JourneyViewController!
     lazy var detailVC = DetailViewController()
-    var tempPlace = [TravelData]()
+    var selectedPlaces = [TravelData]()
     
     lazy var favoriteTableView = UITableView(frame: .zero, style: .insetGrouped)
     var favoriteListData = [TravelData]()
@@ -26,7 +26,7 @@ class FavoriteViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupNav()
         setupUI()
         setupTableView()
@@ -40,10 +40,8 @@ class FavoriteViewController: UIViewController {
             self.favoriteTableView.allowsMultipleSelectionDuringEditing = false
         }
   
-
     }
     
-
     func setupNav() {
         self.navigationItem.title = "Favorite"
         let rightBarButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(addPlaceFromFavorite))
@@ -101,8 +99,8 @@ class FavoriteViewController: UIViewController {
         view.addSubview(favoriteTableView)
         favoriteTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalToSuperview()//.offset(15)
-            make.trailing.equalToSuperview()//.offset(-15)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             
         }
@@ -137,7 +135,7 @@ class FavoriteViewController: UIViewController {
         getUserFavoriteListData {
             self.favoriteTableView.reloadData()
         }
-        tempPlace.removeAll()
+        selectedPlaces.removeAll()
     }
     
 } // class end

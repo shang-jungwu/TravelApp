@@ -36,13 +36,10 @@ class RegisterViewController: UIViewController {
         return button
     }()
     
-//    @objc func createNewAccount() {
-//        print("register")
-//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         
         setupNav()
         setupUI()
@@ -125,7 +122,7 @@ class RegisterViewController: UIViewController {
                 if pwd != pwdDoubleCheck {
                     showAlert(title: "註冊失敗", message: "密碼不一致", status: false)
                 } else {
-                    createUser(email: account, pwd: pwd) {
+                    createUser(account: account, pwd: pwd) {
                         if let nav = self.navigationController {
                             nav.popToRootViewController(animated: true)
                         }
@@ -139,8 +136,8 @@ class RegisterViewController: UIViewController {
         
     }
     
-    func createUser(email: String, pwd: String, completion: @escaping () -> Void) {
-        Auth.auth().createUser(withEmail: email, password: pwd) { result, error in
+    func createUser(account: String, pwd: String, completion: @escaping () -> Void) {
+        Auth.auth().createUser(withEmail: account, password: pwd) { result, error in
             guard let user = result?.user, error == nil else {
                 if let error = error {
                     let alertView = AlertAppleMusic17View(title: error.localizedDescription, subtitle: nil, icon: .error)

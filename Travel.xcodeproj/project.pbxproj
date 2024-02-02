@@ -59,6 +59,7 @@
 		CAEF7D022B6C96A8008C33F0 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D012B6C96A8008C33F0 /* FirebaseDatabaseSwift */; };
 		CAEF7D052B6C96E0008C33F0 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D042B6C96E0008C33F0 /* GoogleSignIn */; };
 		CAEF7D072B6C96E0008C33F0 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D062B6C96E0008C33F0 /* GoogleSignInSwift */; };
+		CAEF7D0A2B6CD3D2008C33F0 /* TravelAppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEF7D092B6CD3D2008C33F0 /* TravelAppColor.swift */; };
 		CB9EA744C2F612D825154E05 /* Pods_TravelTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD045B34D9DD87A1DD45CA10 /* Pods_TravelTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -133,6 +134,7 @@
 		CAE4AD4B2B610E9900ED4435 /* MapViewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewTableViewCell.swift; sourceTree = "<group>"; };
 		CAE4AD4D2B61164F00ED4435 /* HotelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotelData.swift; sourceTree = "<group>"; };
 		CAEF7CF42B6C954D008C33F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CAEF7D092B6CD3D2008C33F0 /* TravelAppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelAppColor.swift; sourceTree = "<group>"; };
 		F27492EA71AC8C1065B0B486 /* Pods-Travel-TravelUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel-TravelUITests.release.xcconfig"; path = "Target Support Files/Pods-Travel-TravelUITests/Pods-Travel-TravelUITests.release.xcconfig"; sourceTree = "<group>"; };
 		FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Travel_TravelUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -308,6 +310,7 @@
 				CAD722192B58C8FF00EF3D7C /* FetchApiDataUtility.swift */,
 				494A36402B669FBB00B2895A /* DateUtility.swift */,
 				CAB014F32B5F63F5008CCA8A /* UISettingUtility.swift */,
+				CAEF7D092B6CD3D2008C33F0 /* TravelAppColor.swift */,
 			);
 			path = Support;
 			sourceTree = "<group>";
@@ -359,6 +362,7 @@
 				CA6DE1032B57D5B300F1861B /* Resources */,
 				F7AF747A4380B6F06299A84F /* [CP] Embed Pods Frameworks */,
 				9B70D7D8436B37411DF54AA8 /* [CP] Copy Pods Resources */,
+				CAEF7D082B6CC414008C33F0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -588,6 +592,28 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		CAEF7D082B6CC414008C33F0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
 		DC040392C61476B878E09D8A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -662,6 +688,7 @@
 				CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
 				CADDA0BC2B5A206A00F35BF7 /* TripAdvisorApi.swift in Sources */,
+				CAEF7D0A2B6CD3D2008C33F0 /* TravelAppColor.swift in Sources */,
 				CAD7221C2B58E37F00EF3D7C /* SearchResultViewController.swift in Sources */,
 				CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */,
 				CAD7221E2B58FAC100EF3D7C /* SearchResultTableViewCell.swift in Sources */,

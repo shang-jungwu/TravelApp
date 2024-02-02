@@ -35,8 +35,7 @@ class DetailViewController: UIViewController {
         setupNav()
         setupUI()
         setupTableView()
-        
-        
+
     }
     
     func setupNav() {

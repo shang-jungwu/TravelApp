@@ -182,9 +182,6 @@ class CreateScheduleViewController: UIViewController {
     }
     
     @objc func editScheduleInfo() {
-        print("Edit")
-        print(journeyVC.userSchedules[journeyVC.scheduleIndex])
-        
         updateInfoStatus { [self] in
             // 更新資料庫
             saveUserScheduleData {
@@ -214,7 +211,7 @@ class CreateScheduleViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupNav()
         setupUI()
         setupTextField()
