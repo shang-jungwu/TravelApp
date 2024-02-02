@@ -6,14 +6,19 @@
 //
 
 import UIKit
-import GooglePlaces
+//import GooglePlaces
 import GoogleMaps
+import FirebaseCore
+import FirebaseAuth
+//import GoogleSignIn
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        FirebaseApp.configure()
         GMSServices.provideAPIKey("AIzaSyDT0SGfWxNEZZqsISYtMUu8QFBh0F9qSY0")
 //        GMSPlacesClient.provideAPIKey("AIzaSyDT0SGfWxNEZZqsISYtMUu8QFBh0F9qSY0")
         
@@ -27,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         return true
     }
+    
 
     // MARK: UISceneSession Lifecycle
 

@@ -23,7 +23,7 @@ struct UISettingUtility {
         sender.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor: UIColor.systemGray])
         sender.layer.cornerRadius = 15
         sender.layer.borderWidth = 2
-        sender.layer.borderColor = UIColor.systemRed.cgColor
+        sender.layer.borderColor = UIColor.white.cgColor
         sender.keyboardType = keyboard
         sender.autocapitalizationType = autoCapitalize
         sender.snp.makeConstraints { make in

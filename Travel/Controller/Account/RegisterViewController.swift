@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 import SPAlert
-//import FirebaseAuth
+import FirebaseAuth
 
 
 class RegisterViewController: UIViewController {
@@ -32,17 +32,17 @@ class RegisterViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemOrange.cgColor
-        button.addTarget(self, action: #selector(createNewAccount), for: .touchUpInside)
+        button.addTarget(self, action: #selector(returnRegisterResult), for: .touchUpInside)
         return button
     }()
     
-    @objc func createNewAccount() {
-        print("register")
-    }
+//    @objc func createNewAccount() {
+//        print("register")
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         
         setupNav()
         setupUI()
@@ -52,7 +52,6 @@ class RegisterViewController: UIViewController {
 
     func setupNav() {
         self.navigationItem.title = "Register"
-//        self.navigationItem.setHidesBackButton(true, animated: false)
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
@@ -124,9 +123,13 @@ class RegisterViewController: UIViewController {
             // 之後改用spalert做？
             if name != "", account != "", pwd != "", pwdDoubleCheck != "" {
                 if pwd != pwdDoubleCheck {
-                    showAlert(title: "註冊失敗", message: "兩次密碼不一致", status: false)
+                    showAlert(title: "註冊失敗", message: "密碼不一致", status: false)
                 } else {
-                    createUser(email: account, pwd: pwd)
+                    createUser(email: account, pwd: pwd) {
+                        if let nav = self.navigationController {
+                            nav.popToRootViewController(animated: true)
+                        }
+                    }
                     
                 }
             } else {
@@ -136,8 +139,22 @@ class RegisterViewController: UIViewController {
         
     }
     
-    func createUser(email: String, pwd: String) {
-        print("create new account")
+    func createUser(email: String, pwd: String, completion: @escaping () -> Void) {
+        Auth.auth().createUser(withEmail: email, password: pwd) { result, error in
+            guard let user = result?.user, error == nil else {
+                if let error = error {
+                    let alertView = AlertAppleMusic17View(title: error.localizedDescription, subtitle: nil, icon: .error)
+                    alertView.present(on: self.view)
+                }
+                
+                print(error?.localizedDescription as Any)
+                return
+            }
+            print("emai:\(user.email ?? ""), uid:\(user.uid)")
+            completion()
+        }
+        
+        
     }
     
     func showAlert(title: String, message: String, status: Bool) {
@@ -161,16 +178,38 @@ class RegisterViewController: UIViewController {
     
     
     func setupTextField() {
+        userNameTextField.delegate = self
         uiSettingUtility.textFieldSetting(userNameTextField, placeholder: "user name", keyboard: .default, autoCapitalize: .none)
-        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .emailAddress, autoCapitalize: .none)
+        
+        accountTextField.delegate = self
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account(email)", keyboard: .emailAddress, autoCapitalize: .none)
+        
+        passwordTextField.delegate = self
         uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
+        
+        pwdDoubleCheckTextField.delegate = self
         uiSettingUtility.textFieldSetting(pwdDoubleCheckTextField, placeholder: "password doble check", keyboard: .default, autoCapitalize: .none)
+        
+        yearTextField.delegate = self
         uiSettingUtility.textFieldSetting(yearTextField, placeholder: "year", keyboard: .numberPad, autoCapitalize: .none)
+        
+        monthTextField.delegate = self
         uiSettingUtility.textFieldSetting(monthTextField, placeholder: "month", keyboard: .numberPad, autoCapitalize: .none)
+        
+        dayTextField.delegate = self
         uiSettingUtility.textFieldSetting(dayTextField, placeholder: "day", keyboard: .numberPad, autoCapitalize: .none)
     }
     
+}
 
-    
+extension RegisterViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+           textField.resignFirstResponder()
+           return true
+       }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       self.view.endEditing(true)
+   }
 
 }

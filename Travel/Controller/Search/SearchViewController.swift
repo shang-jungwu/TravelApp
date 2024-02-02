@@ -14,7 +14,7 @@ class SearchViewController: UIViewController {
     
     var tripAdvisorPlaceData = [PlaceData]()
     var travelData = [TravelData]()
-//    var yelpData = [YelpApiData]()
+
     
     private let uiSettingUtility = UISettingUtility()
     
@@ -28,7 +28,8 @@ class SearchViewController: UIViewController {
     lazy var searchButton: UIButton = {
         let button = UIButton()
         button.setTitle("Search", for: [])
-        button.setTitleColor(.systemRed, for: [])
+        button.setTitleColor(.white, for: [])
+        button.backgroundColor = .systemRed
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
         button.layer.borderColor = UIColor.systemRed.cgColor
@@ -51,7 +52,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupNav()
         setupUI()
         
@@ -76,8 +77,8 @@ class SearchViewController: UIViewController {
         view.addSubview(searchButton)
         searchButton.snp.makeConstraints { make in
             make.top.equalTo(searchTextFieldStack.snp.bottom).offset(50)
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().offset(-20)
+            make.leading.equalToSuperview().offset(100)
+            make.trailing.equalToSuperview().offset(-100)
             make.height.equalTo(50)
         }
         
@@ -188,10 +189,7 @@ class SearchViewController: UIViewController {
     }
         
 
-    
-    
-
-}
+} // class end
 
 extension SearchViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -17,11 +17,10 @@ class FavoriteListTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .white
-        self.accessoryType = .disclosureIndicator
-//        contentView.layer.cornerRadius = 10
-//        contentView.layer.borderColor = UIColor.green.cgColor
-//        contentView.layer.borderWidth = 1
+        
+        backgroundColor = .white
+        accessoryType = .disclosureIndicator
+        
         setupUI()
     }
 
@@ -30,6 +29,7 @@ class FavoriteListTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
+        contentView.backgroundColor = .white
         contentView.addSubview(placeImageView)
         placeImageView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)

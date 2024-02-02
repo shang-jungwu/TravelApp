@@ -24,7 +24,7 @@ class SearchResultViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemOrange
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupNav()
         setupUI()
         setupResultTableView()
@@ -47,7 +47,7 @@ class SearchResultViewController: UIViewController {
     }
     
     func setupResultTableView() {
-        resultTableView.backgroundColor = .systemOrange
+        resultTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         resultTableView.delegate = self
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
@@ -56,7 +56,7 @@ class SearchResultViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         checkIfPlaceSaved()
-//        resultTableView.reloadData()
+
     }
     
     func getUserFavoriteListData(completion: @escaping () -> Void) {

@@ -7,17 +7,18 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+class SettingViewController: UIViewController {
 
     lazy var loginVC = LoginViewController()
 
     lazy var logoutButton: UIButton = {
         let button = UIButton()
         button.setTitle("Log Out", for: [])
-        button.setTitleColor(UIColor.systemGreen, for: [])
+        button.setTitleColor(.white, for: [])
         button.layer.cornerRadius = 25
         button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.systemGreen.cgColor
+        button.backgroundColor = .systemOrange
+        button.layer.borderColor = UIColor.systemOrange.cgColor
         button.addTarget(self, action: #selector(popToLoginVC), for: .touchUpInside)
         return button
     }()

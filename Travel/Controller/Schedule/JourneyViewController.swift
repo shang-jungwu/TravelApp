@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import SDWebImage
 
-class ScheduleViewController: UIViewController {
+class JourneyViewController: UIViewController {
 
     // 整包資料 & 要顯示第幾筆的index
     var userSchedules = [UserSchedules]()
@@ -23,16 +23,16 @@ class ScheduleViewController: UIViewController {
     lazy var tableHeaderView = ScheduleTableHeaderView()
     lazy var customTabBar = CustomGroupTabBar(tabNames: [""], style: .init())
    
-    lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
+    lazy var journeyTableView = UITableView(frame: .zero, style: .insetGrouped)
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupUI()
-        setupScheduleTableView()
+        setupJourneyTableView()
         print("schedule：\(userSchedules[scheduleIndex].dayByDaySchedule)")
     }
     
@@ -55,8 +55,8 @@ class ScheduleViewController: UIViewController {
         }
         customTabBar.clipsToBounds = true
         
-        view.addSubview(scheduleTableView)
-        scheduleTableView.snp.makeConstraints { make in
+        view.addSubview(journeyTableView)
+        journeyTableView.snp.makeConstraints { make in
             make.top.equalTo(customTabBar.snp.bottom).offset(5)
             make.leading.equalToSuperview()
             make.trailing.equalToSuperview()
@@ -87,12 +87,12 @@ class ScheduleViewController: UIViewController {
         
     }
 
-    func setupScheduleTableView() {
-        scheduleTableView.dataSource = self
-        scheduleTableView.delegate = self
-        scheduleTableView.register(ScheduleTableViewCell.self, forCellReuseIdentifier: "ScheduleTableViewCell")
-        scheduleTableView.isEditing = false
-
+    func setupJourneyTableView() {
+        journeyTableView.dataSource = self
+        journeyTableView.delegate = self
+        journeyTableView.register(JourneyTableViewCell.self, forCellReuseIdentifier: "JourneyTableViewCell")
+        journeyTableView.isEditing = false
+        journeyTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
     }
 
     func setupTableHeaderView() {
@@ -112,7 +112,7 @@ class ScheduleViewController: UIViewController {
     
     @objc func editScheduleInfo() {
         createScheduleVC.caller = "schedule"
-        createScheduleVC.scheduleVC = self
+        createScheduleVC.journeyVC = self
         
         // 設定為保留原資料的狀態方便修改
         createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
@@ -138,9 +138,9 @@ class ScheduleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        scheduleTableView.isEditing = false
-        scheduleTableView.reloadData()
-        scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
+        journeyTableView.isEditing = false
+        journeyTableView.reloadData()
+        journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
         setupCustomTabBar()
 
@@ -157,14 +157,14 @@ class ScheduleViewController: UIViewController {
     
 }
 
-extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
+extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         userSchedules[scheduleIndex].dayByDaySchedule[section].places.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleTableViewCell", for: indexPath) as? ScheduleTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "JourneyTableViewCell", for: indexPath) as? JourneyTableViewCell else { return UITableViewCell() }
         // delegate
         cell.delegate = self
         cell.indexPath = indexPath
@@ -191,7 +191,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
-        header.backgroundColor = .systemGroupedBackground
+        header.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         let titleLabel = UILabel()
         titleLabel.layer.cornerRadius = 5
         titleLabel.clipsToBounds = true
@@ -223,9 +223,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         let addNewAction = UIAction(title: "新增地點", image: UIImage(systemName: "heart.fill"), identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: .off, handler: { [weak self] action in
             guard let self = self else { return }
 
-            self.favoriteVC.caller = "ScheduleVC"
+            self.favoriteVC.caller = "JourneyVC"
             self.favoriteVC.calledButtonTag = sender.tag
-            self.favoriteVC.scheduleVC = self
+            self.favoriteVC.journeyVC = self
             
             let navOfFavoriteVC = UINavigationController(rootViewController: self.favoriteVC)
             if let sheetPresentationController = navOfFavoriteVC.sheetPresentationController {
@@ -252,7 +252,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
                     // hope: 刪除時後一天的時間自動替換成-1天
                     // try:
-                    var leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
+                    let leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
                     print("left date", leftDays)
                     for i in sender.tag..<leftDays.count {
                         let newDate = dateUtility.getYesterday(date: leftDays[i].date)
@@ -262,7 +262,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                     }
                     
                     self.saveUserScheduleData {
-                        self.scheduleTableView.reloadData()
+                        self.journeyTableView.reloadData()
                         self.setupTableHeaderView()
                         self.setupCustomTabBar()
                     }
@@ -271,7 +271,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
                     // 天數為1時，僅清空單日行程
                     self.userSchedules[scheduleIndex].dayByDaySchedule[0].places.removeAll()
                     self.saveUserScheduleData {
-                        self.scheduleTableView.reloadData()
+                        self.journeyTableView.reloadData()
                     }
                 }
 
@@ -284,9 +284,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             
         })
         
-        let editOrderAction = UIAction(title: "編輯順序", image: UIImage(systemName: "line.3.horizontal"), identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: self.scheduleTableView.isEditing == true ? .on : .off, handler: { [weak self] action in
+        let editOrderAction = UIAction(title: "編輯順序", image: UIImage(systemName: "line.3.horizontal"), identifier: nil, discoverabilityTitle: nil, attributes: .init(), state: self.journeyTableView.isEditing == true ? .on : .off, handler: { [weak self] action in
             guard let self = self else { return }
-            self.scheduleTableView.isEditing = !self.scheduleTableView.isEditing
+            self.journeyTableView.isEditing = !self.journeyTableView.isEditing
             
         })
 
@@ -312,7 +312,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     
     
     func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        if self.scheduleTableView.isEditing == true {
+        if self.journeyTableView.isEditing == true {
             return true
         }
         return false
@@ -344,7 +344,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             guard let self = self else { return }
             self.userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places.remove(at: indexPath.row)
             self.saveUserScheduleData {
-                self.scheduleTableView.deleteRows(at: [indexPath], with: .automatic)
+                self.journeyTableView.deleteRows(at: [indexPath], with: .automatic)
             }
             completionHandler(true)
         }
@@ -355,16 +355,13 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         return config
     }
     
-    func updateTime(_ cell: ScheduleTableViewCell, time: Date) {
-        if let index = cell.indexPath?.row {
-            cell.timePicker.date = time
-        }
-        
+    func updateTime(_ cell: JourneyTableViewCell, time: Date) {
+        cell.timePicker.date = time
     }
     
 } // ex table view end
 
-extension ScheduleViewController: CustomPageTabBarDelegate {
+extension JourneyViewController: CustomPageTabBarDelegate {
     
     func clickTab(index: Int) {
         
@@ -373,7 +370,7 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
         var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
-            scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+            journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
 
         } else if index == count {
             print("加一天")
@@ -395,8 +392,8 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
             
             saveUserScheduleData {
                 customTabBar.setSelectedTab(index: index)
-                scheduleTableView.reloadData()
-                scheduleTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
+                journeyTableView.reloadData()
+                journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
                 setupTableHeaderView()
             }
             
@@ -408,7 +405,7 @@ extension ScheduleViewController: CustomPageTabBarDelegate {
     
 }
 
-extension ScheduleViewController: ScheduleTableViewCellDelegate {
+extension JourneyViewController: JourneyTableViewCellTableViewCellDelegate {
     func timeChange(indexPath: IndexPath, time: Date) {
         let section = indexPath.section
         let index = indexPath.row
@@ -416,7 +413,7 @@ extension ScheduleViewController: ScheduleTableViewCellDelegate {
         saveUserScheduleData {
             print("new data saved")
     
-            self.scheduleTableView.reloadRows(at: [indexPath], with: .automatic)
+            self.journeyTableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
     

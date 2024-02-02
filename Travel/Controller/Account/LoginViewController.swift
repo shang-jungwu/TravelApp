@@ -7,7 +7,10 @@
 
 import UIKit
 import SnapKit
-//import FirebaseAuth
+import SPAlert
+import FirebaseCore
+import FirebaseAuth
+import GoogleSignIn
 
 class LoginViewController: UIViewController {
 
@@ -20,26 +23,14 @@ class LoginViewController: UIViewController {
     lazy var travelPersonImageView = UIImageView(image: UIImage(named: "stripy-travel-plans-around-the-world"))
 
     lazy var accountTextField: TravelCustomTextField = TravelCustomTextField()
-//    {
-//        let textField = TravelCustomTextField()
-//        textField.layer.cornerRadius = 15
-//        textField.layer.borderWidth = 2
-//        textField.layer.borderColor = UIColor.systemRed.cgColor
-//        return textField
-//    }()
 
     lazy var passwordTextField: TravelCustomTextField = TravelCustomTextField()
-//    {
-//        let textField =  TravelCustomTextField()
-//        textField.layer.cornerRadius = 15
-//        textField.layer.borderWidth = 2
-//        textField.layer.borderColor = UIColor.systemRed.cgColor
-//        return textField
-//    }()
 
     func setupTextField() {
-        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account", keyboard: .default, autoCapitalize: .none)
+        accountTextField.delegate = self
+        uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account(email)", keyboard: .emailAddress, autoCapitalize: .none)
 
+        passwordTextField.delegate = self
         uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
 
     }
@@ -57,21 +48,46 @@ class LoginViewController: UIViewController {
     }()
 
     @objc func pushSearchVC() {
-        let userDefaults = UserDefaults.standard
-        if accountTextField.text != "", passwordTextField.text != "" {
-            userDefaults.set(true, forKey: "LoggedIn")
-        } else {
-            userDefaults.set(false, forKey: "LoggedIn")
+
+        if let account = accountTextField.text, let password = passwordTextField.text {
+            
+            guard account != "", password != "" else {
+                let textBlankAlert = AlertAppleMusic17View(title: "不可留空", subtitle: nil, icon: .error)
+                textBlankAlert.present(on: self.view)
+                return
+            }
+           
+            checkUserStatus(account: account, password: password) { [weak self] in
+                guard let self = self else { return }
+                let scene = UIApplication.shared.connectedScenes.first {
+                    $0.activationState == .foregroundActive
+                }
+                if let windowScene = scene as? UIWindowScene {
+                    windowScene.keyWindow?.rootViewController = self.tabBarVC
+                }
+                print("show main vc")
+            }
         }
 
-        let scene = UIApplication.shared.connectedScenes.first {
-            $0.activationState == .foregroundActive
-        }
-        if let windowScene = scene as? UIWindowScene {
-            windowScene.keyWindow?.rootViewController = tabBarVC
-        }
 
-        print("show search vc")
+        
+    }
+    
+    func checkUserStatus(account: String, password: String, completion: @escaping () -> Void) {
+        let defaults = UserDefaults.standard
+        Auth.auth().signIn(withEmail: account, password: password) { result, error in
+            guard error == nil else {
+                if let error = error {
+                    let errorAlertView = AlertAppleMusic17View(title: error.localizedDescription, subtitle: nil, icon: .error)
+                    errorAlertView.present(on: self.view)
+                }
+                defaults.set(false, forKey: "LoggedIn")
+                return
+            }
+            defaults.set(true, forKey: "LoggedIn")
+            print("User logged in")
+            completion()
+        }
     }
     
     lazy var registerButton: UIButton = {
@@ -94,7 +110,7 @@ class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupNav()
         setupUI()
         setupTextField()
@@ -102,11 +118,10 @@ class LoginViewController: UIViewController {
     
     func setupNav() {
         self.navigationItem.title = "User Login"
-        self.navigationController?.navigationBar.prefersLargeTitles = false
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
 
     func setupUI() {
-        
         view.addSubview(travelPersonImageView)
         travelPersonImageView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(50)
@@ -155,3 +170,15 @@ class LoginViewController: UIViewController {
     
 
 } // class end
+
+extension LoginViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+           textField.resignFirstResponder()
+           return true
+       }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       self.view.endEditing(true)
+   }
+
+}

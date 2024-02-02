@@ -1,5 +1,5 @@
 //
-//  ScheduleTableViewCell.swift
+//  JourneyTableViewCell.swift
 //  Travel
 //
 //  Created by SoniaWu on 2024/1/25.
@@ -9,11 +9,11 @@
 import UIKit
 import SnapKit
 
-protocol ScheduleTableViewCellDelegate: AnyObject {
+protocol JourneyTableViewCellTableViewCellDelegate: AnyObject {
     func timeChange(indexPath: IndexPath, time: Date)
 }
 
-class ScheduleTableViewCell: UITableViewCell {
+class JourneyTableViewCell: UITableViewCell {
     
     lazy var placeImageView = UIImageView()
     lazy var nameLabel = UILabel()
@@ -21,12 +21,14 @@ class ScheduleTableViewCell: UITableViewCell {
     
     let uiSettingUtility = UISettingUtility()
     
-    var delegate: ScheduleTableViewCellDelegate?
+    var delegate: JourneyTableViewCellTableViewCellDelegate?
     var indexPath: IndexPath?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .white
+
+//        backgroundColor = .white
+
         setupUI()
         
     }
@@ -55,6 +57,7 @@ class ScheduleTableViewCell: UITableViewCell {
     }
     
     func setupUI() {
+        contentView.backgroundColor = .white
         contentView.addSubview(timePicker)
         timePicker.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
@@ -81,7 +84,7 @@ class ScheduleTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-15)
         }
 
-        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
+        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .label, alignment: .left, numOfLines: 0)
 
     }
     

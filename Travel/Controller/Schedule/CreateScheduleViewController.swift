@@ -15,7 +15,7 @@ class CreateScheduleViewController: UIViewController {
     let dateUtility = DateUtility()
 
     var caller: String = ""
-    weak var scheduleVC: ScheduleViewController!
+    weak var journeyVC: JourneyViewController!
     weak var concourseVC: ScheduleConcourseViewController!
     lazy var schedultTitleTextField = TravelCustomTextField()
     lazy var destinationTextField = TravelCustomTextField()
@@ -76,33 +76,36 @@ class CreateScheduleViewController: UIViewController {
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 準備新的dbd陣列，清空所有資訊
         var dayByday:[DayByDaySchedule] = []
-        let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
+        let morning8Date = dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
         var date = morning8Date
         while dayByday.count < newNumberOfDays {
             dayByday.append(DayByDaySchedule(date: date))
             date = self.dateUtility.nextDay(startingDate: date)
         }
         
-        self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
+        self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     func updateOriginDBD() {
         // 更新原有的dbd陣列時間，保留地點
-        var dayByday:[DayByDaySchedule] = scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule
+        var dayByday:[DayByDaySchedule] = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule
         
-        let morning8Date = dateUtility.get8amDate(date: self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
+        let morning8Date = dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
         
         var date = morning8Date
         
         for i in 0...dayByday.count-1 {
             dayByday[i].date = date
-            for j in 0...dayByday[i].places.count-1 {
-                // 每一天的細節也同時更新，但已調整的時間會重置
-                dayByday[i].places[j].time = date
+            if !dayByday[i].places.isEmpty {
+                for j in 0...dayByday[i].places.count-1 {
+                    // 每一天的細節也同時更新，但已調整的時間會重置
+                    dayByday[i].places[j].time = date
+                }
             }
+            
             date = self.dateUtility.nextDay(startingDate: date)
         }
         
-        self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule = dayByday
+        self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     
     
@@ -114,8 +117,8 @@ class CreateScheduleViewController: UIViewController {
         let newDepartureDay = departureDateTextField.text
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 原始資料
-        let originDepartureDay = dateUtility.convertDateToString(date: scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate)
-        let originNumberOfDays = scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays
+        let originDepartureDay = dateUtility.convertDateToString(date: journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let originNumberOfDays = journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays
         
         guard newTitle != "", newDestination != "", newDepartureDay != "", newNumberOfDays > 0 else {
             let alert = UIAlertController(title: "Warning!", message: "資料不可為空/0", preferredStyle: .alert)
@@ -126,18 +129,18 @@ class CreateScheduleViewController: UIViewController {
         }
         
         // 欄位套用新值
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].scheduleTitle = newTitle!
-        scheduleVC.userSchedules[scheduleVC.scheduleIndex].destination = newDestination!
+        journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
+        journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
         
         if newDepartureDay != originDepartureDay {
-            scheduleVC.userSchedules[scheduleVC.scheduleIndex].departureDate = dateUtility.get8amDate(date: datePicker.date)
+            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = dateUtility.get8amDate(date: datePicker.date)
             updateOriginDBD()
-            print("updated:\( scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule)")
+            print("updated:\( journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule)")
         }
         
         // 天數更動時作出相應處理並賦值
         if newNumberOfDays < originNumberOfDays {
-            scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = newNumberOfDays
+            journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
             
             let alert = UIAlertController(title: "Warning!", message: "縮減天數將重置已排行程", preferredStyle: .alert)
             let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
@@ -149,7 +152,7 @@ class CreateScheduleViewController: UIViewController {
             
             let cancelAction = UIAlertAction(title: "No", style: .cancel) {  [weak self] action in
                 guard let self = self else { return }
-                self.scheduleVC.userSchedules[self.scheduleVC.scheduleIndex].numberOfDays = originNumberOfDays
+                self.journeyVC.userSchedules[self.journeyVC.scheduleIndex].numberOfDays = originNumberOfDays
                 self.numberOfDaysTextField.text = "\(originNumberOfDays)"
                 completion()
             }
@@ -159,13 +162,13 @@ class CreateScheduleViewController: UIViewController {
             self.present(alert, animated: true)
             
         } else if newNumberOfDays > originNumberOfDays {
-            self.scheduleVC.userSchedules[scheduleVC.scheduleIndex].numberOfDays = newNumberOfDays
+            self.journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
             let count = newNumberOfDays - originNumberOfDays
-            if var currentLastDayDate =  scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule.last?.date {
+            if var currentLastDayDate =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.last?.date {
                 
                 for _ in 1...count {
                     let newDate = dateUtility.nextDay(startingDate: currentLastDayDate)
-                    scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
+                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
                     currentLastDayDate = newDate
                 }
             }
@@ -180,14 +183,14 @@ class CreateScheduleViewController: UIViewController {
     
     @objc func editScheduleInfo() {
         print("Edit")
-        print(scheduleVC.userSchedules[scheduleVC.scheduleIndex])
+        print(journeyVC.userSchedules[journeyVC.scheduleIndex])
         
         updateInfoStatus { [self] in
             // 更新資料庫
             saveUserScheduleData {
-                scheduleVC.scheduleTableView.reloadData()
-                scheduleVC.setupTableHeaderView() // 更新 header view
-                scheduleVC.setupCustomTabBar() // 更新 custom tabbar
+                journeyVC.journeyTableView.reloadData()
+                journeyVC.setupTableHeaderView() // 更新 header view
+                journeyVC.setupCustomTabBar() // 更新 custom tabbar
                 dismiss(animated: true)
             }
         }
@@ -199,7 +202,7 @@ class CreateScheduleViewController: UIViewController {
     func saveUserScheduleData(completion: () -> Void) {
         let defaults = UserDefaults.standard
         let encoder = JSONEncoder()
-        if let newScheduleData = try? encoder.encode(scheduleVC.userSchedules.self) {
+        if let newScheduleData = try? encoder.encode(journeyVC.userSchedules.self) {
             defaults.set(newScheduleData, forKey: "UserSchedule")
             completion()
         } else {

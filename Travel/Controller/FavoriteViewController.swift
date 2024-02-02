@@ -16,22 +16,23 @@ class FavoriteViewController: UIViewController {
     
     var caller: String!
     var calledButtonTag = 0
-    weak var scheduleVC: ScheduleViewController!
+    weak var journeyVC: JourneyViewController!
     lazy var detailVC = DetailViewController()
     var tempPlace = [TravelData]()
     
-    lazy var favoriteTableView = UITableView(frame: .zero, style: .grouped)
+    lazy var favoriteTableView = UITableView(frame: .zero, style: .insetGrouped)
     var favoriteListData = [TravelData]()
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemYellow
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupNav()
         setupUI()
         setupTableView()
         
-        if caller == "ScheduleVC" {
+        if caller == "JourneyVC" {
+            self.navigationItem.leftBarButtonItem?.isHidden = true
             self.navigationItem.rightBarButtonItem?.isHidden = false
             self.favoriteTableView.isEditing = true
             self.favoriteTableView.allowsMultipleSelectionDuringEditing = true
@@ -48,6 +49,17 @@ class FavoriteViewController: UIViewController {
         let rightBarButton = UIBarButtonItem(title: "Add", style: .plain, target: self, action: #selector(addPlaceFromFavorite))
         self.navigationItem.setRightBarButton(rightBarButton, animated: true)
         self.navigationItem.rightBarButtonItem?.isHidden = true
+        
+        let leftBarButton = UIBarButtonItem(title: "Remove all", style: .plain, target: self, action: #selector(removeAllFromFavorite))
+        self.navigationItem.setLeftBarButton(leftBarButton, animated: true)
+        
+    }
+    
+    @objc func removeAllFromFavorite() {
+        defaults.removeObject(forKey: "UserFavoriteList")
+        favoriteListData.removeAll()
+        favoriteTableView.reloadData()
+        print("remove all")
     }
     
     @objc func addPlaceFromFavorite() {
@@ -58,17 +70,17 @@ class FavoriteViewController: UIViewController {
                 var selectedPlace = favoriteListData[row]
                 
                 // hope顯示預設時間八點
-                selectedPlace.time =  scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
+                selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
                 
                 // 更新資料
-                scheduleVC.userSchedules[scheduleVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+                journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
                 
             }
             
             // 更新資料庫
             saveUserScheduleData {
-                print("scheduleVC.userSchedules:\(scheduleVC.userSchedules)")
-                scheduleVC.scheduleTableView.reloadData()
+                print("JourneyVC.userSchedules:\(journeyVC.userSchedules)")
+                journeyVC.journeyTableView.reloadData()
                 self.dismiss(animated: true)
             }
             
@@ -78,7 +90,7 @@ class FavoriteViewController: UIViewController {
     
     
     func saveUserScheduleData(completion: () -> Void) {
-        if let newScheduleData = try? encoder.encode(scheduleVC.userSchedules.self) {
+        if let newScheduleData = try? encoder.encode(journeyVC.userSchedules.self) {
             defaults.set(newScheduleData, forKey: "UserSchedule")
             completion()
         }
@@ -100,7 +112,7 @@ class FavoriteViewController: UIViewController {
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
         favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
-        favoriteTableView.backgroundColor = .white
+        favoriteTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         favoriteTableView.separatorStyle = .singleLine
         
     }
@@ -149,7 +161,7 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if caller == "ScheduleVC" {
+        if caller == "JourneyVC" {
             return "選擇想加入行程的景點(可複選)"
         }
         return nil
@@ -158,7 +170,7 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
         
-        if caller == "ScheduleVC" {
+        if caller == "JourneyVC" {
 //            var selectedRows = self.favoriteTableView.indexPathsForSelectedRows
 //            print(selectedRows!)
             

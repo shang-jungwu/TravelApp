@@ -10,7 +10,7 @@ import UIKit
 class TabBarController: UITabBarController {
 
     lazy var searchVC = SearchViewController()
-    lazy var profileVC = ProfileViewController()
+    lazy var settingVC = SettingViewController()
     lazy var detailVC = DetailViewController()
     lazy var favoriteVC = FavoriteViewController()
     lazy var scheduleConcourseVC = ScheduleConcourseViewController()
@@ -31,13 +31,13 @@ class TabBarController: UITabBarController {
         favoriteVC.tabBarItem = UITabBarItem(title: "Favorite", image: UIImage(systemName: "heart.fill"), tag: 1)
         scheduleConcourseVC.tabBarItem = UITabBarItem(title: "Schedule", image: UIImage(systemName: "book"), tag: 2)
         
-        profileVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
+        settingVC.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
 
         let controllerArray = [
             UINavigationController(rootViewController: searchVC),
             UINavigationController(rootViewController: favoriteVC),
             UINavigationController(rootViewController: scheduleConcourseVC),
-            UINavigationController(rootViewController: profileVC),
+            UINavigationController(rootViewController: settingVC),
            
         ]
         self.viewControllers = controllerArray

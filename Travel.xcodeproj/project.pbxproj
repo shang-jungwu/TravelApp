@@ -13,13 +13,12 @@
 		494A363A2B66667000B2895A /* CreateScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A36392B66667000B2895A /* CreateScheduleViewController.swift */; };
 		494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */; };
 		494A36412B669FBB00B2895A /* DateUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 494A36402B669FBB00B2895A /* DateUtility.swift */; };
-		497751192B5805F00027546F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 497751182B5805F00027546F /* GoogleService-Info.plist */; };
 		4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4977511C2B580B970027546F /* TravelCustomTextField.swift */; };
-		49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */; };
+		49975B7B2B5820AD0066F8D3 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7A2B5820AD0066F8D3 /* SettingViewController.swift */; };
 		49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */; };
-		49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */; };
+		49A5C1D02B62960A003C5BEB /* JourneyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1CF2B62960A003C5BEB /* JourneyViewController.swift */; };
 		49A5C1D22B62968F003C5BEB /* ScheduleTableHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */; };
-		49A5C1D42B6296D9003C5BEB /* ScheduleTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */; };
+		49A5C1D42B6296D9003C5BEB /* JourneyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D32B6296D9003C5BEB /* JourneyTableViewCell.swift */; };
 		49A5C1D62B6298BE003C5BEB /* FavoriteListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */; };
 		96EF924BBB9B257A9CD74147 /* Pods_Travel_TravelUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */; };
 		CA6DE1092B57D5B300F1861B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA6DE1082B57D5B300F1861B /* AppDelegate.swift */; };
@@ -51,6 +50,15 @@
 		CAE4AD4A2B60B15500ED4435 /* YelpApiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE4AD492B60B15500ED4435 /* YelpApiData.swift */; };
 		CAE4AD4C2B610E9900ED4435 /* MapViewTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE4AD4B2B610E9900ED4435 /* MapViewTableViewCell.swift */; };
 		CAE4AD4E2B61164F00ED4435 /* HotelData.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAE4AD4D2B61164F00ED4435 /* HotelData.swift */; };
+		CAEF7CF52B6C954D008C33F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAEF7CF42B6C954D008C33F0 /* GoogleService-Info.plist */; };
+		CAEF7CF82B6C96A8008C33F0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7CF72B6C96A8008C33F0 /* FirebaseAnalytics */; };
+		CAEF7CFA2B6C96A8008C33F0 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7CF92B6C96A8008C33F0 /* FirebaseAnalyticsSwift */; };
+		CAEF7CFC2B6C96A8008C33F0 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7CFB2B6C96A8008C33F0 /* FirebaseAuth */; };
+		CAEF7CFE2B6C96A8008C33F0 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7CFD2B6C96A8008C33F0 /* FirebaseCrashlytics */; };
+		CAEF7D002B6C96A8008C33F0 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7CFF2B6C96A8008C33F0 /* FirebaseDatabase */; };
+		CAEF7D022B6C96A8008C33F0 /* FirebaseDatabaseSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D012B6C96A8008C33F0 /* FirebaseDatabaseSwift */; };
+		CAEF7D052B6C96E0008C33F0 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D042B6C96E0008C33F0 /* GoogleSignIn */; };
+		CAEF7D072B6C96E0008C33F0 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D062B6C96E0008C33F0 /* GoogleSignInSwift */; };
 		CB9EA744C2F612D825154E05 /* Pods_TravelTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD045B34D9DD87A1DD45CA10 /* Pods_TravelTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -79,13 +87,12 @@
 		494A36392B66667000B2895A /* CreateScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateScheduleViewController.swift; sourceTree = "<group>"; };
 		494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleConcourseTableViewCell.swift; sourceTree = "<group>"; };
 		494A36402B669FBB00B2895A /* DateUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtility.swift; sourceTree = "<group>"; };
-		497751182B5805F00027546F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4977511C2B580B970027546F /* TravelCustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelCustomTextField.swift; sourceTree = "<group>"; };
-		49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		49975B7A2B5820AD0066F8D3 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		49975B7C2B5827B10066F8D3 /* TravelThemeColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelThemeColor.swift; sourceTree = "<group>"; };
-		49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
+		49A5C1CF2B62960A003C5BEB /* JourneyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyViewController.swift; sourceTree = "<group>"; };
 		49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableHeaderView.swift; sourceTree = "<group>"; };
-		49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleTableViewCell.swift; sourceTree = "<group>"; };
+		49A5C1D32B6296D9003C5BEB /* JourneyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyTableViewCell.swift; sourceTree = "<group>"; };
 		49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteListTableViewCell.swift; sourceTree = "<group>"; };
 		60D262207B09658D7F3CD2EB /* Pods-Travel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel.debug.xcconfig"; path = "Target Support Files/Pods-Travel/Pods-Travel.debug.xcconfig"; sourceTree = "<group>"; };
 		68B6476BD36F88D8EB714C9F /* Pods-TravelTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TravelTests.release.xcconfig"; path = "Target Support Files/Pods-TravelTests/Pods-TravelTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -125,6 +132,7 @@
 		CAE4AD492B60B15500ED4435 /* YelpApiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YelpApiData.swift; sourceTree = "<group>"; };
 		CAE4AD4B2B610E9900ED4435 /* MapViewTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewTableViewCell.swift; sourceTree = "<group>"; };
 		CAE4AD4D2B61164F00ED4435 /* HotelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotelData.swift; sourceTree = "<group>"; };
+		CAEF7CF42B6C954D008C33F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F27492EA71AC8C1065B0B486 /* Pods-Travel-TravelUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel-TravelUITests.release.xcconfig"; path = "Target Support Files/Pods-Travel-TravelUITests/Pods-Travel-TravelUITests.release.xcconfig"; sourceTree = "<group>"; };
 		FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Travel_TravelUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -134,7 +142,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CAEF7D072B6C96E0008C33F0 /* GoogleSignInSwift in Frameworks */,
+				CAEF7D022B6C96A8008C33F0 /* FirebaseDatabaseSwift in Frameworks */,
+				CAEF7D052B6C96E0008C33F0 /* GoogleSignIn in Frameworks */,
+				CAEF7D002B6C96A8008C33F0 /* FirebaseDatabase in Frameworks */,
+				CAEF7CFA2B6C96A8008C33F0 /* FirebaseAnalyticsSwift in Frameworks */,
+				CAEF7CF82B6C96A8008C33F0 /* FirebaseAnalytics in Frameworks */,
+				CAEF7CFE2B6C96A8008C33F0 /* FirebaseCrashlytics in Frameworks */,
 				02921790EBA7D5AFDD859029 /* Pods_Travel.framework in Frameworks */,
+				CAEF7CFC2B6C96A8008C33F0 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,7 +176,7 @@
 		494A363B2B6666DE00B2895A /* Schedule */ = {
 			isa = PBXGroup;
 			children = (
-				49A5C1CF2B62960A003C5BEB /* ScheduleViewController.swift */,
+				49A5C1CF2B62960A003C5BEB /* JourneyViewController.swift */,
 				494A36292B63F7CC00B2895A /* ScheduleConcourseViewController.swift */,
 				494A36392B66667000B2895A /* CreateScheduleViewController.swift */,
 			);
@@ -190,7 +206,7 @@
 			children = (
 				494A363C2B6666FE00B2895A /* Account */,
 				494A363D2B66671700B2895A /* Search */,
-				49975B7A2B5820AD0066F8D3 /* ProfileViewController.swift */,
+				49975B7A2B5820AD0066F8D3 /* SettingViewController.swift */,
 				CAD7221F2B592AB400EF3D7C /* DetailViewController.swift */,
 				CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */,
 				494A363B2B6666DE00B2895A /* Schedule */,
@@ -204,7 +220,7 @@
 				4977511C2B580B970027546F /* TravelCustomTextField.swift */,
 				49A5C1D52B6298BE003C5BEB /* FavoriteListTableViewCell.swift */,
 				494A363E2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift */,
-				49A5C1D32B6296D9003C5BEB /* ScheduleTableViewCell.swift */,
+				49A5C1D32B6296D9003C5BEB /* JourneyTableViewCell.swift */,
 				49A5C1D12B62968F003C5BEB /* ScheduleTableHeaderView.swift */,
 				CAD7221D2B58FAC100EF3D7C /* SearchResultTableViewCell.swift */,
 				CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */,
@@ -262,7 +278,7 @@
 				CAB014F52B5F6C32008CCA8A /* Support */,
 				CA6DE1112B57D5B300F1861B /* Assets.xcassets */,
 				CA6DE1132B57D5B300F1861B /* LaunchScreen.storyboard */,
-				497751182B5805F00027546F /* GoogleService-Info.plist */,
+				CAEF7CF42B6C954D008C33F0 /* GoogleService-Info.plist */,
 				CA6DE1162B57D5B300F1861B /* Info.plist */,
 			);
 			path = Travel;
@@ -350,6 +366,14 @@
 			);
 			name = Travel;
 			packageProductDependencies = (
+				CAEF7CF72B6C96A8008C33F0 /* FirebaseAnalytics */,
+				CAEF7CF92B6C96A8008C33F0 /* FirebaseAnalyticsSwift */,
+				CAEF7CFB2B6C96A8008C33F0 /* FirebaseAuth */,
+				CAEF7CFD2B6C96A8008C33F0 /* FirebaseCrashlytics */,
+				CAEF7CFF2B6C96A8008C33F0 /* FirebaseDatabase */,
+				CAEF7D012B6C96A8008C33F0 /* FirebaseDatabaseSwift */,
+				CAEF7D042B6C96E0008C33F0 /* GoogleSignIn */,
+				CAEF7D062B6C96E0008C33F0 /* GoogleSignInSwift */,
 			);
 			productName = Travel;
 			productReference = CA6DE1052B57D5B300F1861B /* Travel.app */;
@@ -427,6 +451,8 @@
 			);
 			mainGroup = CA6DE0FC2B57D5B300F1861B;
 			packageReferences = (
+				CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				CAEF7D032B6C96E0008C33F0 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = CA6DE1062B57D5B300F1861B /* Products */;
 			projectDirPath = "";
@@ -446,7 +472,7 @@
 			files = (
 				CA6DE1152B57D5B300F1861B /* LaunchScreen.storyboard in Resources */,
 				CA6DE1122B57D5B300F1861B /* Assets.xcassets in Resources */,
-				497751192B5805F00027546F /* GoogleService-Info.plist in Resources */,
+				CAEF7CF52B6C954D008C33F0 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,7 +638,7 @@
 				CAB014F42B5F63F5008CCA8A /* UISettingUtility.swift in Sources */,
 				CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */,
 				CACFBBBD2B6773AE0086B890 /* UIColor+extension.swift in Sources */,
-				49A5C1D02B62960A003C5BEB /* ScheduleViewController.swift in Sources */,
+				49A5C1D02B62960A003C5BEB /* JourneyViewController.swift in Sources */,
 				CACFBBBB2B67723F0086B890 /* CustomPageViewController.swift in Sources */,
 				CA6DE10D2B57D5B300F1861B /* SearchViewController.swift in Sources */,
 				494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */,
@@ -629,9 +655,9 @@
 				CA6DE13B2B57DB3000F1861B /* LoginViewController.swift in Sources */,
 				494A363A2B66667000B2895A /* CreateScheduleViewController.swift in Sources */,
 				CAE4AD4C2B610E9900ED4435 /* MapViewTableViewCell.swift in Sources */,
-				49A5C1D42B6296D9003C5BEB /* ScheduleTableViewCell.swift in Sources */,
+				49A5C1D42B6296D9003C5BEB /* JourneyTableViewCell.swift in Sources */,
 				494A362C2B63F97700B2895A /* UserSchedules.swift in Sources */,
-				49975B7B2B5820AD0066F8D3 /* ProfileViewController.swift in Sources */,
+				49975B7B2B5820AD0066F8D3 /* SettingViewController.swift in Sources */,
 				CAD722152B58AF6400EF3D7C /* RegisterViewController.swift in Sources */,
 				CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */,
 				4977511D2B580B970027546F /* TravelCustomTextField.swift in Sources */,
@@ -989,6 +1015,68 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.20.0;
+			};
+		};
+		CAEF7D032B6C96E0008C33F0 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CAEF7CF72B6C96A8008C33F0 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		CAEF7CF92B6C96A8008C33F0 /* FirebaseAnalyticsSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsSwift;
+		};
+		CAEF7CFB2B6C96A8008C33F0 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		CAEF7CFD2B6C96A8008C33F0 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		CAEF7CFF2B6C96A8008C33F0 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		CAEF7D012B6C96A8008C33F0 /* FirebaseDatabaseSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7CF62B6C96A8008C33F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabaseSwift;
+		};
+		CAEF7D042B6C96E0008C33F0 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7D032B6C96E0008C33F0 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		CAEF7D062B6C96E0008C33F0 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CAEF7D032B6C96E0008C33F0 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CA6DE0FD2B57D5B300F1861B /* Project object */;
 }

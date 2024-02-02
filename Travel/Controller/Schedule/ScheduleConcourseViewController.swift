@@ -10,7 +10,7 @@ import SnapKit
 
 class ScheduleConcourseViewController: UIViewController {
     
-    lazy var scheduleVC = ScheduleViewController()
+    lazy var journeyVC = JourneyViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
     lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
@@ -22,7 +22,7 @@ class ScheduleConcourseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         setupNav()
         setupUI()
         setupTableView()
@@ -78,6 +78,7 @@ class ScheduleConcourseViewController: UIViewController {
         scheduleTableView.delegate = self
         scheduleTableView.dataSource = self
         scheduleTableView.register(ScheduleConcourseTableViewCell.self, forCellReuseIdentifier: "ScheduleConcourseTableViewCell")
+        scheduleTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
 
     }
     
@@ -211,9 +212,9 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
         if let nav = self.navigationController {
-            scheduleVC.scheduleIndex = section
-            scheduleVC.userSchedules = self.userSchedules
-            nav.pushViewController(scheduleVC, animated: true)
+            journeyVC.scheduleIndex = section
+            journeyVC.userSchedules = self.userSchedules
+            nav.pushViewController(journeyVC, animated: true)
         }
     }
 

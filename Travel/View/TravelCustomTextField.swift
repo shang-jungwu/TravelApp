@@ -34,12 +34,10 @@ class TravelCustomTextField: UITextField {
 
     private func setup() {
         self.textAlignment = .left
-//        self.contentScaleFactor = 0.5
         self.backgroundColor = .white
         self.textColor = .black
         self.layer.cornerRadius = 15
-       
-//        delegate = self
+
 
    }
 
