@@ -8,11 +8,14 @@
 import UIKit
 import SnapKit
 import SPAlert
+import FirebaseDatabase
+import FirebaseAuth
 
 class CreateScheduleViewController: UIViewController {
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
+    let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
 
     var caller: String = ""
     weak var journeyVC: JourneyViewController!
@@ -49,21 +52,33 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByday:[DayByDaySchedule] = []
-        
-        print("datepicker:\(datePicker.date)")
+
         let morning8Date = dateUtility.get8amDate(date: datePicker.date)
-        print("morning8Date:\(morning8Date)")
         
         var dbdDate = morning8Date
         while dayByday.count < Int(numberOfDaysTextField.text!)! {
-            print("dbdDate:\(dbdDate)")
             dayByday.append(DayByDaySchedule(date: dbdDate))
             dbdDate = dateUtility.nextDay(startingDate: dbdDate)
-            
         }
        
         
         let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8Date, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
+        
+        
+        let createrID = Auth.auth().currentUser?.uid
+        let newJourneyRef = self.ref.child("journeys").childByAutoId() //讓系統自動產生一個唯一的 journeyID value
+        let journeyID = newJourneyRef.key
+        let newJourneyData = [
+            "createrID":createrID,
+            "journeyID":journeyID,
+            "scheduleTitle":schedultTitleTextField.text!,
+            "destination":destinationTextField.text!,
+            "departureDate": morning8Date.timeIntervalSince1970,
+            "dayByDaySchedule": dayByday
+        ] as [String : Any]
+        ref.child("journeys").childByAutoId().setValue(newJourneyData)
+        
+        
         
         concourseVC.userSchedules.append(newSchedule)
         concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
@@ -309,10 +324,6 @@ class CreateScheduleViewController: UIViewController {
         
         numberOfDaysTextField.delegate = self
         uiSettingUtility.textFieldSetting(numberOfDaysTextField, placeholder: "天數", keyboard: .numberPad, autoCapitalize: .sentences)
-
-//        startingTimeTextField.delegate = self
-//        uiSettingUtility.textFieldSetting(startingTimeTextField, placeholder: "時間", keyboard: .numberPad, autoCapitalize: .none)
-
        
     }
 

@@ -154,7 +154,7 @@ class RegisterViewController: UIViewController {
             }
             
             print("emai:\(user.email ?? ""), uid:\(user.uid)")
-//            completion()
+
         }
     
     }

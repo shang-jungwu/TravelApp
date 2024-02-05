@@ -12,6 +12,7 @@ import FirebaseCore
 import FirebaseAuth
 import GoogleSignIn
 import GoogleSignInSwift
+import FirebaseDatabase
 
 class LoginViewController: UIViewController {
     
@@ -29,6 +30,9 @@ class LoginViewController: UIViewController {
     
     var currentObjectBottomYPosition: CGFloat = 0
 
+    var ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
+    
+    
     func setupTextField() {
         accountTextField.delegate = self
         uiSettingUtility.textFieldSetting(accountTextField, placeholder: "account(email)", keyboard: .emailAddress, autoCapitalize: .none)
@@ -113,6 +117,7 @@ class LoginViewController: UIViewController {
         setupUI()
         setupTextField()
         addObserverToNotification()
+
     }
     
     func addObserverToNotification() {
