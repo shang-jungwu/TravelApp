@@ -35,6 +35,7 @@
 		CAB014F72B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */; };
 		CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */; };
 		CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABC93052B62349700066F3C /* InfoTableViewCell.swift */; };
+		CAC5A1B42B706B32006C4EB8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAC5A1B32B706B32006C4EB8 /* GoogleService-Info.plist */; };
 		CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */; };
 		CACFBBB92B67720A0086B890 /* CustomPageTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */; };
 		CACFBBBB2B67723F0086B890 /* CustomPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBBA2B67723F0086B890 /* CustomPageViewController.swift */; };
@@ -60,7 +61,6 @@
 		CAEF7D072B6C96E0008C33F0 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CAEF7D062B6C96E0008C33F0 /* GoogleSignInSwift */; };
 		CAEF7D0A2B6CD3D2008C33F0 /* TravelAppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEF7D092B6CD3D2008C33F0 /* TravelAppColor.swift */; };
 		CAEF7D0C2B6CDC63008C33F0 /* FirebaseAuthUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAEF7D0B2B6CDC63008C33F0 /* FirebaseAuthUtility.swift */; };
-		CAEF7D102B6CF451008C33F0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAEF7D0F2B6CF451008C33F0 /* GoogleService-Info.plist */; };
 		CB9EA744C2F612D825154E05 /* Pods_TravelTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD045B34D9DD87A1DD45CA10 /* Pods_TravelTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -119,6 +119,7 @@
 		CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceImageTableViewCell.swift; sourceTree = "<group>"; };
 		CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CABC93052B62349700066F3C /* InfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
+		CAC5A1B32B706B32006C4EB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGroupTabBar.swift; sourceTree = "<group>"; };
 		CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageTabBar.swift; sourceTree = "<group>"; };
 		CACFBBBA2B67723F0086B890 /* CustomPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageViewController.swift; sourceTree = "<group>"; };
@@ -136,7 +137,6 @@
 		CAE4AD4D2B61164F00ED4435 /* HotelData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotelData.swift; sourceTree = "<group>"; };
 		CAEF7D092B6CD3D2008C33F0 /* TravelAppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelAppColor.swift; sourceTree = "<group>"; };
 		CAEF7D0B2B6CDC63008C33F0 /* FirebaseAuthUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthUtility.swift; sourceTree = "<group>"; };
-		CAEF7D0F2B6CF451008C33F0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F27492EA71AC8C1065B0B486 /* Pods-Travel-TravelUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Travel-TravelUITests.release.xcconfig"; path = "Target Support Files/Pods-Travel-TravelUITests/Pods-Travel-TravelUITests.release.xcconfig"; sourceTree = "<group>"; };
 		FABE3E09EC5EB89C93BF57AF /* Pods_Travel_TravelUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Travel_TravelUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -282,7 +282,7 @@
 				CAB014F52B5F6C32008CCA8A /* Support */,
 				CA6DE1112B57D5B300F1861B /* Assets.xcassets */,
 				CA6DE1132B57D5B300F1861B /* LaunchScreen.storyboard */,
-				CAEF7D0F2B6CF451008C33F0 /* GoogleService-Info.plist */,
+				CAC5A1B32B706B32006C4EB8 /* GoogleService-Info.plist */,
 				CA6DE1162B57D5B300F1861B /* Info.plist */,
 			);
 			path = Travel;
@@ -479,7 +479,7 @@
 			files = (
 				CA6DE1152B57D5B300F1861B /* LaunchScreen.storyboard in Resources */,
 				CA6DE1122B57D5B300F1861B /* Assets.xcassets in Resources */,
-				CAEF7D102B6CF451008C33F0 /* GoogleService-Info.plist in Resources */,
+				CAC5A1B42B706B32006C4EB8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

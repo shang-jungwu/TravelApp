@@ -87,9 +87,6 @@ class LoginViewController: UIViewController {
         }
     }
     
-
-
-    
     
     lazy var registerButton: UIButton = {
         let button = UIButton()
@@ -207,11 +204,11 @@ class LoginViewController: UIViewController {
             guard let signInResult = signInResult else { return }
             let user = signInResult.user
 
-            let emailAddress = user.profile?.email
-            let fullName = user.profile?.name
-            let familyName = user.profile?.familyName
-            let profilePicUrl = user.profile?.imageURL(withDimension: 320)
-                
+//            let emailAddress = user.profile?.email
+//            let fullName = user.profile?.name
+//            let familyName = user.profile?.familyName
+//            let profilePicUrl = user.profile?.imageURL(withDimension: 320)
+//            print(user,emailAddress,fullName,familyName)
         }
     }
 

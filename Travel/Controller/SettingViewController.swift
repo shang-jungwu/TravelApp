@@ -17,6 +17,7 @@ class SettingViewController: UIViewController {
     
     lazy var loginVC = LoginViewController()
     lazy var userNameLabel = UILabel()
+       
 
     lazy var logoutButton: UIButton = {
         let button = UIButton()
