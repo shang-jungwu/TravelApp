@@ -40,9 +40,10 @@ class SearchResultTableViewCell: UITableViewCell {
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview().offset(10)
             make.width.equalTo(80)
-            make.height.greaterThanOrEqualTo(placeImageView.snp.width)
-            make.bottom.equalToSuperview().offset(-10)
+            make.height.equalTo(placeImageView.snp.width)
+            make.bottom.equalToSuperview().offset(-10).priority(999)
         }
+
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
         
         contentView.addSubview(heartButton)

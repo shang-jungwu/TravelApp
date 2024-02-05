@@ -77,7 +77,6 @@ class FavoriteViewController: UIViewController {
             
             // 更新資料庫
             saveUserScheduleData {
-//                print("JourneyVC.userSchedules:\(journeyVC.userSchedules)")
                 journeyVC.journeyTableView.reloadData()
                 self.dismiss(animated: true)
             }
@@ -112,7 +111,8 @@ class FavoriteViewController: UIViewController {
         favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
         favoriteTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
         favoriteTableView.separatorStyle = .singleLine
-        
+        favoriteTableView.rowHeight = UITableView.automaticDimension
+        favoriteTableView.estimatedRowHeight = 100
     }
     
     

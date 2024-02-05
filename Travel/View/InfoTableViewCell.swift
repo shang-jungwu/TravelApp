@@ -51,18 +51,7 @@ class InfoTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-//    func setupInfoStack() {
-//        infoStackView.axis = .vertical
-//        infoStackView.distribution = .fill
-//        
-//        infoStackView.addArrangedSubview(aliasCategoryPriceView)
-//        setupAliasAreaView()
-//        infoStackView.addArrangedSubview(ratingView)
-//        setupRatingView()
-//        infoStackView.addArrangedSubview(otherInfoView)
-//        setupOtherInfoView()
-//    }
+
     
     func setupRatingView() {
         ratingView.addSubview(ratingImageView)
@@ -114,7 +103,6 @@ class InfoTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview()
         }
         
-        
         otherInfoView.addSubview(phoneImageView)
         phoneImageView.snp.makeConstraints { make in
             make.top.equalTo(addressLabel.snp.bottom).offset(10)
@@ -152,9 +140,7 @@ class InfoTableViewCell: UITableViewCell {
             make.centerY.equalToSuperview()
             make.trailing.equalTo(priceLabel.snp.leading).offset(-5)
         }
-        
-       
-      
+
     }
     
 
@@ -170,7 +156,7 @@ class InfoTableViewCell: UITableViewCell {
         
         contentView.addSubview(ratingView)
         ratingView.snp.makeConstraints { make in
-            make.top.equalTo(aliasCategoryPriceView.snp.bottom)//.offset(10)
+            make.top.equalTo(aliasCategoryPriceView.snp.bottom)
             make.leading.equalToSuperview().offset(10)
             make.trailing.equalToSuperview().offset(-10)
             make.height.lessThanOrEqualTo(50)//.equalTo(50)
@@ -179,7 +165,7 @@ class InfoTableViewCell: UITableViewCell {
         
         contentView.addSubview(otherInfoView)
         otherInfoView.snp.makeConstraints { make in
-            make.top.equalTo(ratingView.snp.bottom)//.offset(10)
+            make.top.equalTo(ratingView.snp.bottom)
             make.leading.equalToSuperview().offset(10)
             make.trailing.equalToSuperview().offset(-10)
             make.bottom.equalToSuperview().offset(-10)
@@ -207,19 +193,6 @@ class InfoTableViewCell: UITableViewCell {
         uiSettingUtility.labelSettings(label: categoryLabel, fontSize: 16, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 1)
     }
     
-    
-//    func setupHeartButton() {
-//        uiSettingUtility.setupHeartButton(sender: heartButton)
-//        heartButton.addTarget(self, action: #selector(heartDidTap), for: .touchUpInside)
-//    }
-//    
-//    
-//    @objc private func heartDidTap() {
-//        print("heart did tap")
-//        guard let delegate = delegate, let indexPath = indexPath else { print("xxxRETURNxxx")
-//            return }
-//        delegate.savePlaceDidTap(indexPath: indexPath)
-//    }
     
 
 }

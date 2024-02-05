@@ -51,6 +51,8 @@ class SearchResultViewController: UIViewController {
         resultTableView.delegate = self
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")
+        resultTableView.rowHeight = UITableView.automaticDimension
+        resultTableView.estimatedRowHeight = 100
     }
 
     override func viewWillAppear(_ animated: Bool) {
