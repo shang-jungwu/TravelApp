@@ -7,8 +7,7 @@
 
 import UIKit
 import SnapKit
-//import GoogleMaps
-//import CoreLocation
+
 
 class DetailViewController: UIViewController {
 

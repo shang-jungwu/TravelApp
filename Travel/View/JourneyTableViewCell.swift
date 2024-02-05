@@ -10,7 +10,7 @@ import UIKit
 import SnapKit
 
 protocol JourneyTableViewCellTableViewCellDelegate: AnyObject {
-    func timeChange(indexPath: IndexPath, time: Date)
+    func timeChange(indexPath: IndexPath, time: TimeInterval)
 }
 
 class JourneyTableViewCell: UITableViewCell {
@@ -53,7 +53,7 @@ class JourneyTableViewCell: UITableViewCell {
         guard let delegate = delegate, let indexPath = indexPath else {
             return
         }
-        delegate.timeChange(indexPath: indexPath, time: timePicker.date)
+        delegate.timeChange(indexPath: indexPath, time: timePicker.date.timeIntervalSince1970)
     }
     
     func setupUI() {

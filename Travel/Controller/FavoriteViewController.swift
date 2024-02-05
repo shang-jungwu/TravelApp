@@ -77,7 +77,7 @@ class FavoriteViewController: UIViewController {
             
             // 更新資料庫
             saveUserScheduleData {
-                print("JourneyVC.userSchedules:\(journeyVC.userSchedules)")
+//                print("JourneyVC.userSchedules:\(journeyVC.userSchedules)")
                 journeyVC.journeyTableView.reloadData()
                 self.dismiss(animated: true)
             }

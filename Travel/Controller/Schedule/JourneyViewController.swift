@@ -104,7 +104,7 @@ class JourneyViewController: UIViewController {
         
         tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
         tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
-        let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
+        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate)) //dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
         tableHeaderView.departureDayLabel.text = dateStr
         tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
         tableHeaderView.editButton.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
@@ -118,7 +118,7 @@ class JourneyViewController: UIViewController {
         createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
         createScheduleVC.numberOfDaysTextField.text = "\(userSchedules[scheduleIndex].numberOfDays)"
         createScheduleVC.destinationTextField.text = userSchedules[scheduleIndex].destination
-        let dateStr = dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
+        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate)) // dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
         createScheduleVC.departureDateTextField.text = dateStr
         
         
@@ -174,7 +174,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
             cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
         }
         
-        cell.timePicker.date = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time
+        cell.timePicker.date = Date(timeIntervalSince1970: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)// userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time
         updateTime(cell, time: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)
         
         return cell
@@ -195,7 +195,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         let titleLabel = UILabel()
         titleLabel.layer.cornerRadius = 5
         titleLabel.clipsToBounds = true
-        titleLabel.text = "  \(dateUtility.convertDateToString(date: userSchedules[scheduleIndex].dayByDaySchedule[section].date))  "
+        titleLabel.text = "  \(dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].dayByDaySchedule[section].date)))  "// "  \(dateUtility.convertDateToString(date: userSchedules[scheduleIndex].dayByDaySchedule[section].date))  "
         uiSettingUtility.labelSettings(label: titleLabel, fontSize: 16, fontWeight: .semibold, color: .white, alignment: .left, numOfLines: 1)
         titleLabel.backgroundColor = .systemRed
         header.addSubview(titleLabel)
@@ -255,7 +255,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
                     let leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
                     print("left date", leftDays)
                     for i in sender.tag..<leftDays.count {
-                        let newDate = dateUtility.getYesterday(date: leftDays[i].date)
+                        let newDate = leftDays[i].date - 86400// dateUtility.getYesterday(date: leftDays[i].date)
                         
                         self.userSchedules[scheduleIndex].dayByDaySchedule[i].date = newDate
              
@@ -355,8 +355,8 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         return config
     }
     
-    func updateTime(_ cell: JourneyTableViewCell, time: Date) {
-        cell.timePicker.date = time
+    func updateTime(_ cell: JourneyTableViewCell, time: TimeInterval) {
+        cell.timePicker.date = Date(timeIntervalSince1970: time)
     }
     
 } // ex table view end
@@ -379,7 +379,7 @@ extension JourneyViewController: CustomPageTabBarDelegate {
             
             if var currentLastDayDate =  userSchedules[scheduleIndex].dayByDaySchedule.last?.date {
                 
-                let newDate = dateUtility.nextDay(startingDate: currentLastDayDate)
+                let newDate = currentLastDayDate + 86400// dateUtility.nextDay(startingDate: currentLastDayDate)
                 userSchedules[scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
                 currentLastDayDate = newDate
             }
@@ -406,7 +406,7 @@ extension JourneyViewController: CustomPageTabBarDelegate {
 }
 
 extension JourneyViewController: JourneyTableViewCellTableViewCellDelegate {
-    func timeChange(indexPath: IndexPath, time: Date) {
+    func timeChange(indexPath: IndexPath, time: TimeInterval) {
         let section = indexPath.section
         let index = indexPath.row
         self.userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time

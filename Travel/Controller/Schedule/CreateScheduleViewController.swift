@@ -53,16 +53,17 @@ class CreateScheduleViewController: UIViewController {
             return }
         var dayByday:[DayByDaySchedule] = []
 
-        let morning8Date = dateUtility.get8amDate(date: datePicker.date)
+        let morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
-        var dbdDate = morning8Date
+        var dbdDateTimeInterval = morning8DateTimeInterval
         while dayByday.count < Int(numberOfDaysTextField.text!)! {
-            dayByday.append(DayByDaySchedule(date: dbdDate))
-            dbdDate = dateUtility.nextDay(startingDate: dbdDate)
+            dayByday.append(DayByDaySchedule(date: dbdDateTimeInterval))
+            dbdDateTimeInterval += 86400
+//            dbdDate = dateUtility.nextDay(startingDate: dbdDate)
         }
        
-        
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8Date, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
+        print("dbd: \(dayByday)")
+        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
         
         
         let createrID = Auth.auth().currentUser?.uid
@@ -73,8 +74,8 @@ class CreateScheduleViewController: UIViewController {
             "journeyID":journeyID,
             "scheduleTitle":schedultTitleTextField.text!,
             "destination":destinationTextField.text!,
-            "departureDate": morning8Date.timeIntervalSince1970,
-            "dayByDaySchedule": dayByday
+            "departureDate": morning8DateTimeInterval,
+//            "dayByDaySchedule": dayByday
         ] as [String : Any]
         ref.child("journeys").childByAutoId().setValue(newJourneyData)
         
@@ -91,11 +92,11 @@ class CreateScheduleViewController: UIViewController {
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 準備新的dbd陣列，清空所有資訊
         var dayByday:[DayByDaySchedule] = []
-        let morning8Date = dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
-        var date = morning8Date
+        let morning8DateTimeInverval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate//dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        var date = morning8DateTimeInverval
         while dayByday.count < newNumberOfDays {
             dayByday.append(DayByDaySchedule(date: date))
-            date = self.dateUtility.nextDay(startingDate: date)
+            date += 86400//self.dateUtility.nextDay(startingDate: date)
         }
         
         self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
@@ -104,9 +105,9 @@ class CreateScheduleViewController: UIViewController {
         // 更新原有的dbd陣列時間，保留地點
         var dayByday:[DayByDaySchedule] = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule
         
-        let morning8Date = dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let morning8DateTimeInterval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate//dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
         
-        var date = morning8Date
+        var date = morning8DateTimeInterval
         
         for i in 0...dayByday.count-1 {
             dayByday[i].date = date
@@ -117,7 +118,7 @@ class CreateScheduleViewController: UIViewController {
                 }
             }
             
-            date = self.dateUtility.nextDay(startingDate: date)
+            date += 86400//self.dateUtility.nextDay(startingDate: date)
         }
         
         self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
@@ -132,7 +133,7 @@ class CreateScheduleViewController: UIViewController {
         let newDepartureDay = departureDateTextField.text
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         // 原始資料
-        let originDepartureDay = dateUtility.convertDateToString(date: journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let originDepartureDay = String(journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)// dateUtility.convertDateToString(date: journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
         let originNumberOfDays = journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays
         
         guard newTitle != "", newDestination != "", newDepartureDay != "", newNumberOfDays > 0 else {
@@ -148,7 +149,7 @@ class CreateScheduleViewController: UIViewController {
         journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
         
         if newDepartureDay != originDepartureDay {
-            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = dateUtility.get8amDate(date: datePicker.date)
+            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = dateUtility.get8amDateTimeInterval(date: datePicker.date)// dateUtility.get8amDate(date: datePicker.date)
             updateOriginDBD()
             print("updated:\( journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule)")
         }
@@ -182,7 +183,7 @@ class CreateScheduleViewController: UIViewController {
             if var currentLastDayDate =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.last?.date {
                 
                 for _ in 1...count {
-                    let newDate = dateUtility.nextDay(startingDate: currentLastDayDate)
+                    let newDate = currentLastDayDate + 86400 //dateUtility.nextDay(startingDate: currentLastDayDate)
                     journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
                     currentLastDayDate = newDate
                 }

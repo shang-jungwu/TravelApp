@@ -23,6 +23,16 @@ struct DateUtility {
         return Date()
     }
     
+    func get8amDateTimeInterval(date: Date) -> TimeInterval {
+        let calendar = Calendar(identifier: .iso8601)
+        let components = calendar.dateComponents([.year,.month,.day], from: date)
+        if let midnight = calendar.date(from: components)?.timeIntervalSince1970 {
+            let morning8 = midnight + 28800
+            return morning8
+        }
+        return Date().timeIntervalSince1970
+    }
+    
     func convertDateToTimeString(date: Date) -> String {
         dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: date)

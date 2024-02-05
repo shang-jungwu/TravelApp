@@ -18,7 +18,7 @@ class InfoTableViewCell: UITableViewCell {
     var indexPath: IndexPath?
     var urlStr: String?
     
-    lazy var infoStackView = UIStackView()
+//    lazy var infoStackView = UIStackView()
     
     lazy var aliasCategoryPriceView = UIView()
     lazy var aliasLabel = UILabel()
@@ -37,8 +37,6 @@ class InfoTableViewCell: UITableViewCell {
     lazy var phoneImageView = UIImageView(image: UIImage(systemName: "phone"))
     lazy var phoneLabel = UILabel()
     
-//    lazy var heartButton = UIButton(type: .custom)
-
     private let uiSettingUtility = UISettingUtility()
     
     
@@ -54,23 +52,19 @@ class InfoTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupInfoStack() {
-        infoStackView.axis = .vertical
-        infoStackView.distribution = .fill
-
-//        infoStackView.backgroundColor = .systemCyan
-        
-        infoStackView.addArrangedSubview(aliasCategoryPriceView)
-        setupAliasAreaView()
-        infoStackView.addArrangedSubview(ratingView)
-        setupRatingView()
-        infoStackView.addArrangedSubview(otherInfoView)
-        setupOtherInfoView()
-    }
+//    func setupInfoStack() {
+//        infoStackView.axis = .vertical
+//        infoStackView.distribution = .fill
+//        
+//        infoStackView.addArrangedSubview(aliasCategoryPriceView)
+//        setupAliasAreaView()
+//        infoStackView.addArrangedSubview(ratingView)
+//        setupRatingView()
+//        infoStackView.addArrangedSubview(otherInfoView)
+//        setupOtherInfoView()
+//    }
     
     func setupRatingView() {
-//        ratingView.backgroundColor = .systemMint
-      
         ratingView.addSubview(ratingImageView)
         ratingImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
@@ -90,7 +84,7 @@ class InfoTableViewCell: UITableViewCell {
             make.top.equalToSuperview()
             make.leading.equalTo(reviewCountLabel.snp.trailing).offset(10)
             make.width.equalTo(50)
-            make.height.equalTo(50)
+            make.height.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         yelpLogoButton.setImage(UIImage(named: "yelp_logo_cmyk"), for: [])
@@ -106,7 +100,6 @@ class InfoTableViewCell: UITableViewCell {
     }
     
     func setupOtherInfoView() {
-//        otherInfoView.backgroundColor = .systemYellow
         otherInfoView.addSubview(pinImageView)
         pinImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()//.offset(10)
@@ -141,7 +134,6 @@ class InfoTableViewCell: UITableViewCell {
     }
     
     func setupAliasAreaView() {
-
         aliasCategoryPriceView.addSubview(aliasLabel)
         aliasLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
@@ -168,14 +160,32 @@ class InfoTableViewCell: UITableViewCell {
 
     
     func setupUI() {
-        contentView.addSubview(infoStackView)
-        infoStackView.snp.makeConstraints { make in
+        contentView.addSubview(aliasCategoryPriceView)
+        aliasCategoryPriceView.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().offset(-10)
+        }
+        setupAliasAreaView()
+        
+        contentView.addSubview(ratingView)
+        ratingView.snp.makeConstraints { make in
+            make.top.equalTo(aliasCategoryPriceView.snp.bottom)//.offset(10)
+            make.leading.equalToSuperview().offset(10)
+            make.trailing.equalToSuperview().offset(-10)
+            make.height.lessThanOrEqualTo(50)//.equalTo(50)
+        }
+        setupRatingView()
+        
+        contentView.addSubview(otherInfoView)
+        otherInfoView.snp.makeConstraints { make in
+            make.top.equalTo(ratingView.snp.bottom)//.offset(10)
             make.leading.equalToSuperview().offset(10)
             make.trailing.equalToSuperview().offset(-10)
             make.bottom.equalToSuperview().offset(-10)
         }
-        setupInfoStack()
+        setupOtherInfoView()
+
         setupLabel()
 
     }

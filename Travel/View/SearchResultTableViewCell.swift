@@ -40,7 +40,7 @@ class SearchResultTableViewCell: UITableViewCell {
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview().offset(10)
             make.width.equalTo(80)
-            make.height.equalTo(80)
+            make.height.greaterThanOrEqualTo(placeImageView.snp.width)
             make.bottom.equalToSuperview().offset(-10)
         }
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
@@ -61,7 +61,6 @@ class SearchResultTableViewCell: UITableViewCell {
             make.trailing.equalToSuperview().offset(-40)
         }
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
-//        nameLabel.backgroundColor = .systemCyan
 
     }
     

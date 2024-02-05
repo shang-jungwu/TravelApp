@@ -15,11 +15,11 @@ struct UserSchedules: Codable, Equatable {
     
     var scheduleTitle: String
     var destination: String
-    var departureDate: Date
+    var departureDate: TimeInterval//Date
     var numberOfDays: Int
     var dayByDaySchedule: [DayByDaySchedule]
 
-    init(scheduleTitle: String, destination: String, departureDate: Date, numberOfDays: Int, dayByDaySchedule: [DayByDaySchedule] = []) {
+    init(scheduleTitle: String, destination: String, departureDate: TimeInterval, numberOfDays: Int, dayByDaySchedule: [DayByDaySchedule] = []) {
         self.scheduleTitle = scheduleTitle
         self.destination = destination
         self.departureDate = departureDate
@@ -31,9 +31,9 @@ struct UserSchedules: Codable, Equatable {
 
 struct DayByDaySchedule: Codable {
     
-    var date: Date
+    var date: TimeInterval//Date
     var places: [TravelData]
-    init(date: Date, places: [TravelData] = [TravelData]()) {
+    init(date: TimeInterval, places: [TravelData] = [TravelData]()) {
         self.date = date
         self.places = places
     }

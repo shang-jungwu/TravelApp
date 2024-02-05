@@ -160,9 +160,13 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
 
         cell.scheduleTitleLabel.text = userSchedules[indexPath.section].scheduleTitle
         cell.placeImageView.image = UIImage(systemName: "globe.central.south.asia")
-        let startDateStr = dateUtility.convertDateToString(date: userSchedules[indexPath.section].departureDate)
-        let endDate = dateUtility.nextSomeDay(startingDate: userSchedules[indexPath.section].departureDate, countOfDays: userSchedules[indexPath.section].numberOfDays)
-        let endDateStr = dateUtility.convertDateToString(date: endDate)
+        
+        let startDateTimeInterval = userSchedules[indexPath.section].departureDate
+        let startDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: startDateTimeInterval)) // dateUtility.convertDateToString(date: userSchedules[indexPath.section].departureDate)
+//        let endDate = dateUtility.nextSomeDay(startingDate: userSchedules[indexPath.section].departureDate, countOfDays: userSchedules[indexPath.section].numberOfDays)
+        let countOfDays = userSchedules[indexPath.section].numberOfDays
+        let endDateTimeInterval = userSchedules[indexPath.section].departureDate + Double(86400*(countOfDays-1))
+        let endDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: endDateTimeInterval))//dateUtility.convertDateToString(date: endDate)
         
         cell.dateRangeLabel.text = "\(startDateStr) ~ \(endDateStr)"
 
@@ -182,15 +186,14 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
-//        header.backgroundColor = .systemRed
         return header
     }
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         let footer = UIView()
-//        footer.backgroundColor = .systemBlue
         return footer
     }
+    
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section = indexPath.section
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] action, view, completionHandler in

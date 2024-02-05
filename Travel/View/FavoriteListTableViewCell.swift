@@ -35,7 +35,7 @@ class FavoriteListTableViewCell: UITableViewCell {
             make.top.equalToSuperview().offset(10)
             make.leading.equalToSuperview().offset(15)
             make.width.equalTo(80)
-            make.height.equalTo(80)
+            make.height.greaterThanOrEqualTo(placeImageView.snp.width)//.equalTo(80)
             make.bottom.equalToSuperview().offset(-10)
         }
         uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 40)
