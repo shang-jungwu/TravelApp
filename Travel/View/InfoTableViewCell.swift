@@ -159,7 +159,7 @@ class InfoTableViewCell: UITableViewCell {
             make.top.equalTo(aliasCategoryPriceView.snp.bottom)
             make.leading.equalToSuperview().offset(10)
             make.trailing.equalToSuperview().offset(-10)
-            make.height.lessThanOrEqualTo(50)//.equalTo(50)
+            make.height.lessThanOrEqualTo(50)
         }
         setupRatingView()
         

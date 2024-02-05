@@ -39,13 +39,13 @@ class SearchViewController: UIViewController {
     
     @objc func pushSearchResultVC() {
         // MARK: - 先餵固定資料 省API次數
-//               getYelpData()
+               getYelpData()
         
-        if let nav = self.navigationController {
-            // passing data
-            searchResultVC.travelData = restaurantData
-            nav.pushViewController(searchResultVC, animated: true)
-        }
+//        if let nav = self.navigationController {
+//            // passing data
+//            searchResultVC.travelData = restaurantData
+//            nav.pushViewController(searchResultVC, animated: true)
+//        }
         
 
     }
@@ -122,7 +122,7 @@ class SearchViewController: UIViewController {
             return
         }
         
-        if let location = locationTextField.text, let term = termTextField.text {
+        if let location = locationTextField.text, let term = termTextField.text, let count = resultCountTextField.text {
             let headers: HTTPHeaders = [
                 "accept": "application/json",
                 "Authorization": "Bearer 5bP0Nd3XrOHvq6Jy3RBDLkF6PgtlmeeU3LaO-MQ-_py2jYKLoPHXIeGvuBtfgOfHC0xsQ_GR-_jEsFl1K17i_oeAgPfwLkcvNnTjTXSud_DH-hBrNZBYv2EJ3XewZXYx"
@@ -133,7 +133,7 @@ class SearchViewController: UIViewController {
                 "location": location,
                 "term": term,
                 "sort_by": "best_match",
-                "limit": 20
+                "limit": count
             ]
 
             AF.request(url, method: .get, parameters: parameters, headers: headers).response { response in
@@ -188,6 +188,12 @@ class SearchViewController: UIViewController {
         }
     }
         
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(true)
+        locationTextField.endEditing(true)
+        termTextField.endEditing(true)
+        resultCountTextField.endEditing(true)
+    }
 
 } // class end
 

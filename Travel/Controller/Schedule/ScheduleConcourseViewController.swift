@@ -162,11 +162,10 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
         cell.placeImageView.image = UIImage(systemName: "globe.central.south.asia")
         
         let startDateTimeInterval = userSchedules[indexPath.section].departureDate
-        let startDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: startDateTimeInterval)) // dateUtility.convertDateToString(date: userSchedules[indexPath.section].departureDate)
-//        let endDate = dateUtility.nextSomeDay(startingDate: userSchedules[indexPath.section].departureDate, countOfDays: userSchedules[indexPath.section].numberOfDays)
+        let startDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: startDateTimeInterval))
         let countOfDays = userSchedules[indexPath.section].numberOfDays
         let endDateTimeInterval = userSchedules[indexPath.section].departureDate + Double(86400*(countOfDays-1))
-        let endDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: endDateTimeInterval))//dateUtility.convertDateToString(date: endDate)
+        let endDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: endDateTimeInterval))
         
         cell.dateRangeLabel.text = "\(startDateStr) ~ \(endDateStr)"
 
