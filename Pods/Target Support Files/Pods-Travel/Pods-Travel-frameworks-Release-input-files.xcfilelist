@@ -1,5 +1,6 @@
 ${PODS_ROOT}/Target Support Files/Pods-Travel/Pods-Travel-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework
+${BUILT_PRODUCTS_DIR}/CodableFirebase/CodableFirebase.framework
 ${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework
 ${BUILT_PRODUCTS_DIR}/SPAlert/SPAlert.framework
 ${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework

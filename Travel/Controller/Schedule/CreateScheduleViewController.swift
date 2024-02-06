@@ -10,6 +10,7 @@ import SnapKit
 import SPAlert
 import FirebaseDatabase
 import FirebaseAuth
+import CodableFirebase
 
 class CreateScheduleViewController: UIViewController {
 
@@ -51,32 +52,36 @@ class CreateScheduleViewController: UIViewController {
             let alertView = AlertAppleMusic16View(title: "天數必須大於0", subtitle: nil, icon: .error)
             alertView.present(on: self.view)
             return }
-        var dayByday:[DayByDaySchedule] = []
-
+        var dayByDay:[DayByDaySchedule] = []
+        var dbdTimeArr = [TimeInterval]()
         let morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
         var dbdDateTimeInterval = morning8DateTimeInterval
-        while dayByday.count < Int(numberOfDaysTextField.text!)! {
-            dayByday.append(DayByDaySchedule(date: dbdDateTimeInterval))
+        while dayByDay.count < Int(numberOfDaysTextField.text!)! {
+            dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
+            dbdTimeArr.append(dbdDateTimeInterval)
             dbdDateTimeInterval += 86400
-//            dbdDate = dateUtility.nextDay(startingDate: dbdDate)
+
         }
        
-        print("dbd: \(dayByday)")
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByday)
+        print("dbdTimeArr: \(dbdTimeArr)")
+        
+        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
         
         
         let createrID = Auth.auth().currentUser?.uid
         let newJourneyRef = self.ref.child("journeys").childByAutoId() //讓系統自動產生一個唯一的 journeyID value
         let journeyID = newJourneyRef.key
+        
+        
         let newJourneyData = [
-            "createrID":createrID,
-            "journeyID":journeyID,
+            "createrID":createrID!,
+            "journeyID":journeyID!,
             "scheduleTitle":schedultTitleTextField.text!,
             "destination":destinationTextField.text!,
             "departureDate": morning8DateTimeInterval,
-//            "dayByDaySchedule": dayByday
-        ] as [String : Any]
+            "dayByDayTimeStamp":dbdTimeArr
+            ] as [String : Any]
         ref.child("journeys").childByAutoId().setValue(newJourneyData)
         
         

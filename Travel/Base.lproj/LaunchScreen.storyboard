@@ -17,27 +17,24 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="stripy-188" translatesAutoresizingMaskIntoConstraints="NO" id="GOU-uo-eCe">
-                                <rect key="frame" x="0.0" y="139" width="393" height="500"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="500" id="E0i-aX-4UY"/>
-                                </constraints>
+                                <rect key="frame" x="0.0" y="192" width="393" height="368"/>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="yelp_logo" translatesAutoresizingMaskIntoConstraints="NO" id="n6u-1f-sNp">
-                                <rect key="frame" x="76.666666666666686" y="609" width="240" height="35"/>
+                                <rect key="frame" x="0.0" y="560" width="393" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="35" id="2JB-G5-0WJ"/>
-                                    <constraint firstAttribute="width" constant="240" id="IFt-qQ-Uu6"/>
+                                    <constraint firstAttribute="height" constant="50" id="tge-EC-amk"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="GOU-uo-eCe" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="80" id="212-HG-I4m"/>
-                            <constraint firstItem="GOU-uo-eCe" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" id="Bkz-JY-Eyq"/>
-                            <constraint firstItem="GOU-uo-eCe" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="NOd-GN-zhb"/>
-                            <constraint firstItem="n6u-1f-sNp" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="okN-nK-c4c"/>
-                            <constraint firstItem="n6u-1f-sNp" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="550" id="w1V-7V-wUh"/>
+                            <constraint firstItem="GOU-uo-eCe" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" id="69G-Ql-S9G"/>
+                            <constraint firstItem="n6u-1f-sNp" firstAttribute="top" secondItem="GOU-uo-eCe" secondAttribute="bottom" id="E04-SY-bis"/>
+                            <constraint firstItem="GOU-uo-eCe" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Phx-N5-Haj"/>
+                            <constraint firstItem="n6u-1f-sNp" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="VnB-iY-cSN"/>
+                            <constraint firstItem="GOU-uo-eCe" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-50" id="igv-2A-vX4"/>
+                            <constraint firstItem="n6u-1f-sNp" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" id="nq1-ZE-GH8"/>
                         </constraints>
                     </view>
                 </viewController>

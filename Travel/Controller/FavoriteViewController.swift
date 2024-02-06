@@ -7,12 +7,20 @@
 
 import UIKit
 import SnapKit
+import FirebaseDatabase
+import CodableFirebase
+
+struct DayByDayPlace: Codable {
+    var time: TimeInterval
+    let place: String
+}
 
 class FavoriteViewController: UIViewController {
 
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
+    let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     
     var caller: String!
     var calledButtonTag = 0
@@ -61,7 +69,7 @@ class FavoriteViewController: UIViewController {
     }
     
     @objc func addPlaceFromFavorite() {
-        print("addPlaceFromFavorite")
+        var placeArr = [DayByDayPlace]()
         if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
             for indexPath in selectedIndexPath {
                 let row = indexPath.row
@@ -73,9 +81,19 @@ class FavoriteViewController: UIViewController {
                 // 更新資料
                 journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
                 
+               
+                placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                
             }
+            print(placeArr)
+            var currendFirebaseData = [DayByDayPlace]()
+            let placeArrData = try! FirebaseEncoder().encode(placeArr.self)
+            // realtime database
+            let newDayByDayData = [
+                "place":placeArr] as [String : Any]
+            ref.child("journeys").child("-NpxJdHO6efHY14kUTgj").child("dayByDayTimeStamp").child("\(calledButtonTag)").setValue(placeArrData)
             
-            // 更新資料庫
+             //更新資料庫
             saveUserScheduleData {
                 journeyVC.journeyTableView.reloadData()
                 self.dismiss(animated: true)
@@ -109,7 +127,7 @@ class FavoriteViewController: UIViewController {
         favoriteTableView.delegate = self
         favoriteTableView.dataSource = self
         favoriteTableView.register(FavoriteListTableViewCell.self, forCellReuseIdentifier: "FavoriteListTableViewCell")
-        favoriteTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        favoriteTableView.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         favoriteTableView.separatorStyle = .singleLine
         favoriteTableView.rowHeight = UITableView.automaticDimension
         favoriteTableView.estimatedRowHeight = 100

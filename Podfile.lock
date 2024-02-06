@@ -1,5 +1,6 @@
 PODS:
   - Alamofire (5.8.1)
+  - CodableFirebase (0.2.1)
   - GoogleMaps (8.3.1):
     - GoogleMaps/Maps (= 8.3.1)
   - GoogleMaps/Base (8.3.1)
@@ -14,6 +15,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire
+  - CodableFirebase
   - GoogleMaps (= 8.3.1)
   - GooglePlaces (= 8.3.0)
   - SDWebImage
@@ -23,6 +25,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Alamofire
+    - CodableFirebase
     - GoogleMaps
     - GooglePlaces
     - SDWebImage
@@ -31,12 +34,13 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   Alamofire: 3ca42e259043ee0dc5c0cdd76c4bc568b8e42af7
+  CodableFirebase: 0bf201991eeec35eb9fcd987d271ea463cf34a80
   GoogleMaps: b47b67bd63d708477d6ff457da2d695c0d8ceb5f
   GooglePlaces: b922e192c50994436900ef14d19f84971950250b
   SDWebImage: fc8f2d48bbfd72ef39d70e981bd24a3f3be53fec
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SPAlert: 7027ed9df9a2ba8202cab39fd05b53e110f48a99
 
-PODFILE CHECKSUM: 8eaa301c49b1963714ad6b6b59b97ae4f1df427b
+PODFILE CHECKSUM: 8f4aef3d56c5ea11ad285d07894c56725f5c14bc
 
 COCOAPODS: 1.14.3
