@@ -146,23 +146,23 @@ class JourneyViewController: UIViewController {
         journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
         setupCustomTabBar()
-        fetchJourneyDayByDayData()
+//        fetchJourneyDayByDayData()
     }
     
-    func fetchJourneyDayByDayData() {
-        ref.child("journeys").child("\(userSchedules[scheduleIndex].journeyID)").child("info").observeSingleEvent(of: .value, with: { snapshot in
-            guard let value = snapshot.value else { return }
-            print("value:\(value)")
-            do {
-                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-                print(model)
-            } catch let error {
-                print(error)
-            }
-        })
-        
-
-    }
+//    func fetchJourneyDayByDayData() {
+//        ref.child("journeys").child("\(userSchedules[scheduleIndex].journeyID)").child("info").observeSingleEvent(of: .value, with: { snapshot in
+//            guard let value = snapshot.value else { return }
+//            print("value:\(value)")
+//            do {
+//                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+//                print(model)
+//            } catch let error {
+//                print(error)
+//            }
+//        })
+//        
+//
+//    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)

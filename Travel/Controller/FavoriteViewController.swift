@@ -17,7 +17,7 @@ struct DayByDayPlace: Codable {
 
 class FavoriteViewController: UIViewController {
 
-    var currentFirebaseData = [DayByDayPlace]()
+    var currentFirebaseData = [[DayByDayPlace]]()
     
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
@@ -63,16 +63,19 @@ class FavoriteViewController: UIViewController {
         
     }
     
+    // MARK: - to do
     func fetchJourneyDayByDayData(completion: @escaping () ->Void) {
-        currentFirebaseData.removeAll()
+//        currentFirebaseData.removeAll()
         let day = calledButtonTag
-        ref.child("journeys").child("-Nq0hlmfJCMdbZydV7SG").child("dayByDayTimeStamp").child("\(day)").observeSingleEvent(of: .value, with: { snapshot in
+        ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("dayByDay").observeSingleEvent(of: .value, with: { snapshot in
             guard let value = snapshot.value else { return }
+            print("value:\(value)")
             do {
                 let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-                self.currentFirebaseData = model
+                print("model:\(model)")
+//                self.currentFirebaseData.append(model)
                 completion()
-//                    print(model)
+
             } catch let error {
                 print(error)
             }
@@ -89,33 +92,57 @@ class FavoriteViewController: UIViewController {
     }
     
     @objc func addPlaceFromFavorite() {
-
-        fetchJourneyDayByDayData { [self] in
-            var placeArr = [DayByDayPlace]()
-            if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
-                for indexPath in selectedIndexPath {
-                    let row = indexPath.row
-                    var selectedPlace = favoriteListData[row]
-                    
-                    // hope顯示預設時間八點
-                    selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
-                    
-                    // 更新資料
-                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
-                    
-                   
-                    placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
-                    
-                }
-    //            print(placeArr)
-                currentFirebaseData = placeArr
-
-                let placeArrData = try! FirebaseEncoder().encode(currentFirebaseData.self)
+        
+        var placeArr = [DayByDayPlace]()
+        if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+            for indexPath in selectedIndexPath {
+                let row = indexPath.row
+                var selectedPlace = self.favoriteListData[row]
                 
-                // realtime database
-               
-                ref.child("journeys").child("-Nq0hlmfJCMdbZydV7SG").child("dayByDayTimeStamp").child("\(calledButtonTag)").setValue(placeArrData)
-        }
+                // hope顯示預設時間八點
+                selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
+                
+                // 更新資料
+                journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+                
+                placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+            }
+
+//            currentFirebaseData = placeArr
+
+            let placeArrData = try! FirebaseEncoder().encode(placeArr.self)
+            
+            // realtime database
+            ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("dayByDay").child("Day\(calledButtonTag+1)").setValue(placeArrData)
+    }
+        
+
+//        fetchJourneyDayByDayData { [self] in
+//            var placeArr = [DayByDayPlace]()
+//            if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+//                for indexPath in selectedIndexPath {
+//                    let row = indexPath.row
+//                    var selectedPlace = favoriteListData[row]
+//                    
+//                    // hope顯示預設時間八點
+//                    selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
+//                    
+//                    // 更新資料
+//                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+//                    
+//                   
+//                    placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+//                    
+//                }
+//
+//                currentFirebaseData = placeArr
+//
+//                let placeArrData = try! FirebaseEncoder().encode(currentFirebaseData.self)
+//                
+//                // realtime database
+//                ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("dayByDay").setValue(0)
+////                ref.child("journeys").child("-Nq0hlmfJCMdbZydV7SG").child("dayByDayTimeStamp").child("\(calledButtonTag)").setValue(placeArrData)
+//        }
 
             
              //更新資料庫
@@ -124,7 +151,7 @@ class FavoriteViewController: UIViewController {
 //                self.dismiss(animated: true)
 //            }
             
-        }
+//        }
             
     }
     
