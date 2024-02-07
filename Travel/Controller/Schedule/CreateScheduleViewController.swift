@@ -13,11 +13,24 @@ import FirebaseAuth
 import CodableFirebase
 
 class CreateScheduleViewController: UIViewController {
+    
+    enum InfoChangeStatus {
+//        case departureDateChange
+//        case numberOfDaysChange
+        case depOrNumBothChange
+        case otherChange
+        case none
+    }
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
+    // realtime database
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
-
+    var createrID = ""
+    var newJourneyRef: DatabaseReference!
+    var journeyID = ""
+    //
+    var changeStatus = InfoChangeStatus.none
     var caller: String = ""
     weak var journeyVC: JourneyViewController!
     weak var concourseVC: ScheduleConcourseViewController!
@@ -54,36 +67,36 @@ class CreateScheduleViewController: UIViewController {
             return }
         var dayByDay:[DayByDaySchedule] = []
         var dbdTimeArr = [TimeInterval]()
+        var placeArr = [DayByDayPlace]()
+        
         let morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
         var dbdDateTimeInterval = morning8DateTimeInterval
         while dayByDay.count < Int(numberOfDaysTextField.text!)! {
             dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
-            dbdTimeArr.append(dbdDateTimeInterval)
+//            dbdTimeArr.append(dbdDateTimeInterval)
+            placeArr.append(DayByDayPlace(time: dbdDateTimeInterval, place: ""))
             dbdDateTimeInterval += 86400
 
         }
+        
+        createrID = Auth.auth().currentUser!.uid
+        newJourneyRef = self.ref.child("journeys").childByAutoId() //讓系統自動產生一個唯一的 journeyID value
+        journeyID = newJourneyRef.key ?? ""
        
-        print("dbdTimeArr: \(dbdTimeArr)")
         
-        let newSchedule = UserSchedules(scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
+        let newSchedule = UserSchedules(createrID: createrID, journeyID: journeyID, scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
         
-        
-        let createrID = Auth.auth().currentUser?.uid
-        let newJourneyRef = self.ref.child("journeys").childByAutoId() //讓系統自動產生一個唯一的 journeyID value
-        let journeyID = newJourneyRef.key
-        
+        let data = try! FirebaseEncoder().encode(placeArr)
         
         let newJourneyData = [
-            "createrID":createrID!,
-            "journeyID":journeyID!,
+            "createrID":createrID,
             "scheduleTitle":schedultTitleTextField.text!,
             "destination":destinationTextField.text!,
             "departureDate": morning8DateTimeInterval,
-            "dayByDayTimeStamp":dbdTimeArr
             ] as [String : Any]
-        ref.child("journeys").childByAutoId().setValue(newJourneyData)
-        
+
+        ref.child("journeys").child("journeyID").child("\(journeyID)").child("info").setValue(newJourneyData)
         
         
         concourseVC.userSchedules.append(newSchedule)
@@ -93,24 +106,23 @@ class CreateScheduleViewController: UIViewController {
         self.dismiss(animated: true)
     }
     
-    func prepareNewDBD() {
-        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
+    func prepareNewDBD(newNumberOfDays: Int) {
         // 準備新的dbd陣列，清空所有資訊
         var dayByday:[DayByDaySchedule] = []
-        let morning8DateTimeInverval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate//dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let morning8DateTimeInverval = journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
         var date = morning8DateTimeInverval
         while dayByday.count < newNumberOfDays {
             dayByday.append(DayByDaySchedule(date: date))
-            date += 86400//self.dateUtility.nextDay(startingDate: date)
+            date += 86400
         }
         
-        self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
+        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     func updateOriginDBD() {
         // 更新原有的dbd陣列時間，保留地點
         var dayByday:[DayByDaySchedule] = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule
         
-        let morning8DateTimeInterval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate//dateUtility.get8amDate(date: self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let morning8DateTimeInterval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
         
         var date = morning8DateTimeInterval
         
@@ -123,10 +135,10 @@ class CreateScheduleViewController: UIViewController {
                 }
             }
             
-            date += 86400//self.dateUtility.nextDay(startingDate: date)
+            date += 86400
         }
         
-        self.journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
+        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     
     
@@ -135,13 +147,15 @@ class CreateScheduleViewController: UIViewController {
         // 新資料
         let newTitle = schedultTitleTextField.text
         let newDestination = destinationTextField.text
-        let newDepartureDay = departureDateTextField.text
-        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        let newDepartureDay = dateUtility.convertStringToDate(string: departureDateTextField.text!)//departureDateTextField.text
+        var newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        
+        let newDepDate = dateUtility.get8amDateTimeInterval(date: newDepartureDay)
         // 原始資料
-        let originDepartureDay = String(journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)// dateUtility.convertDateToString(date: journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate)
+        let originDepartureDay = journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
         let originNumberOfDays = journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays
         
-        guard newTitle != "", newDestination != "", newDepartureDay != "", newNumberOfDays > 0 else {
+        guard newTitle != "", newDestination != "", newNumberOfDays > 0 else {
             let alert = UIAlertController(title: "Warning!", message: "資料不可為空/0", preferredStyle: .alert)
             let okAction = UIAlertAction(title: "OK", style: .default)
             alert.addAction(okAction)
@@ -149,68 +163,110 @@ class CreateScheduleViewController: UIViewController {
             return
         }
         
+        if newDepartureDay.timeIntervalSince1970 != originDepartureDay || newNumberOfDays != originNumberOfDays {
+            changeStatus = .depOrNumBothChange
+        } else {
+            changeStatus = .otherChange
+        }
+        
+        switch changeStatus {
+            
+        case .depOrNumBothChange:
+            // 只要有變化就全部重置
+            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
+            prepareNewDBD(newNumberOfDays: newNumberOfDays)
+           
+            // 天數更動時作出相應處理並賦值
+//            if newNumberOfDays < originNumberOfDays {
+//                let alert = UIAlertController(title: "Warning!", message: "縮減天數將重置已排行程", preferredStyle: .alert)
+//                let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
+//                    guard let self = self else { return }
+//        
+//                    self.prepareNewDBD(newNumberOfDays: newNumberOfDays)
+//
+//                }
+//                
+//                let cancelAction = UIAlertAction(title: "No", style: .cancel) {  [weak self] action in
+//                    guard let self = self else { return }
+//                    self.journeyVC.userSchedules[self.journeyVC.scheduleIndex].numberOfDays = originNumberOfDays
+//                    self.numberOfDaysTextField.text = "\(originNumberOfDays)"
+//                    newNumberOfDays = originNumberOfDays
+//
+//                }
+//                
+//                alert.addAction(cancelAction)
+//                alert.addAction(resetScheduleAction)
+//                present(alert, animated: true)
+//                
+//            } else if newNumberOfDays > originNumberOfDays {
+//                journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
+//                let count = newNumberOfDays - originNumberOfDays
+//                if var currentLastDayDate =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.last?.date {
+//                    
+//                    for _ in 1...count {
+//                        let newDate = currentLastDayDate + 86400
+//                        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
+//                        currentLastDayDate = newDate
+//                    }
+//                }
+//            } else {
+//                // if newNumberOfDays == originNumberOfDays
+//            }
+        case .otherChange:
+            break
+        case .none:
+            break
+        }
+        
         // 欄位套用新值
+//        journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
+//        journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
+//                
+//        if newDepartureDay != originDepartureDay {
+//            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = dateUtility.get8amDateTimeInterval(date: datePicker.date)
+//            updateOriginDBD()
+//            print("updated:\( journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule)")
+//        }
+//        
+        
+        
+        
+        // realtime
+        let newInfoData = [
+            "scheduleTitle":newTitle!,
+            "destination":newDestination!,
+            "departureDate":newDepDate,
+            "createrID":journeyVC.userSchedules[journeyVC.scheduleIndex].createrID,
+            "numberOfDays":newNumberOfDays
+        ] as [String : Any]
+        ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("info").setValue(newInfoData)
+        
+        // local
         journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
         journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
+        journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
+        journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
         
-        if newDepartureDay != originDepartureDay {
-            journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = dateUtility.get8amDateTimeInterval(date: datePicker.date)// dateUtility.get8amDate(date: datePicker.date)
-            updateOriginDBD()
-            print("updated:\( journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule)")
-        }
         
-        // 天數更動時作出相應處理並賦值
-        if newNumberOfDays < originNumberOfDays {
-            journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
-            
-            let alert = UIAlertController(title: "Warning!", message: "縮減天數將重置已排行程", preferredStyle: .alert)
-            let resetScheduleAction = UIAlertAction(title: "Yes", style: .destructive) { [weak self] action in
-                guard let self = self else { return }
-    
-                self.prepareNewDBD()
-                completion()
-            }
-            
-            let cancelAction = UIAlertAction(title: "No", style: .cancel) {  [weak self] action in
-                guard let self = self else { return }
-                self.journeyVC.userSchedules[self.journeyVC.scheduleIndex].numberOfDays = originNumberOfDays
-                self.numberOfDaysTextField.text = "\(originNumberOfDays)"
-                completion()
-            }
-            
-            alert.addAction(cancelAction)
-            alert.addAction(resetScheduleAction)
-            self.present(alert, animated: true)
-            
-        } else if newNumberOfDays > originNumberOfDays {
-            self.journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
-            let count = newNumberOfDays - originNumberOfDays
-            if var currentLastDayDate =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.last?.date {
-                
-                for _ in 1...count {
-                    let newDate = currentLastDayDate + 86400 //dateUtility.nextDay(startingDate: currentLastDayDate)
-                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
-                    currentLastDayDate = newDate
-                }
-            }
-
-            completion()
-        } else {
-            // if newNumberOfDays == originNumberOfDays
-            completion()
-        }
+        print("updated schedule:",journeyVC.userSchedules[journeyVC.scheduleIndex])
+        completion()
+        ///
         
     }
     
     @objc func editScheduleInfo() {
         updateInfoStatus { [self] in
-            // 更新資料庫
-            saveUserScheduleData {
-                journeyVC.journeyTableView.reloadData()
-                journeyVC.setupTableHeaderView() // 更新 header view
-                journeyVC.setupCustomTabBar() // 更新 custom tabbar
-                dismiss(animated: true)
-            }
+            journeyVC.journeyTableView.reloadData()
+            journeyVC.setupTableHeaderView() // 更新 header view
+            journeyVC.setupCustomTabBar() // 更新 custom tabbar
+            dismiss(animated: true)
+            // 更新 user defaults
+//            saveUserScheduleData {
+//                journeyVC.journeyTableView.reloadData()
+//                journeyVC.setupTableHeaderView() // 更新 header view
+//                journeyVC.setupCustomTabBar() // 更新 custom tabbar
+//                dismiss(animated: true)
+//            }
         }
     
     }

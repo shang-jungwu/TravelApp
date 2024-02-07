@@ -33,6 +33,10 @@ struct DateUtility {
         return Date().timeIntervalSince1970
     }
     
+    func convertStringToDate(string: String) -> Date {
+        return dateFormatter.date(from: string) ?? Date()
+    }
+    
     func convertDateToTimeString(date: Date) -> String {
         dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: date)

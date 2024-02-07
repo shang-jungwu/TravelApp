@@ -8,9 +8,12 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import CodableFirebase
+import FirebaseDatabase
 
 class JourneyViewController: UIViewController {
 
+    let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     // 整包資料 & 要顯示第幾筆的index
     var userSchedules = [UserSchedules]()
     var scheduleIndex = 0
@@ -33,7 +36,7 @@ class JourneyViewController: UIViewController {
         view.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         setupUI()
         setupJourneyTableView()
-        print("schedule：\(userSchedules[scheduleIndex].dayByDaySchedule)")
+
     }
     
     func setupUI() {
@@ -92,7 +95,7 @@ class JourneyViewController: UIViewController {
         journeyTableView.delegate = self
         journeyTableView.register(JourneyTableViewCell.self, forCellReuseIdentifier: "JourneyTableViewCell")
         journeyTableView.isEditing = false
-        journeyTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        journeyTableView.backgroundColor = TravelAppColor.lightGrayBackgroundColor
     }
 
     func setupTableHeaderView() {
@@ -118,7 +121,7 @@ class JourneyViewController: UIViewController {
         createScheduleVC.schedultTitleTextField.text = userSchedules[scheduleIndex].scheduleTitle
         createScheduleVC.numberOfDaysTextField.text = "\(userSchedules[scheduleIndex].numberOfDays)"
         createScheduleVC.destinationTextField.text = userSchedules[scheduleIndex].destination
-        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate)) // dateUtility.convertDateToString(date: userSchedules[scheduleIndex].departureDate)
+        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate))
         createScheduleVC.departureDateTextField.text = dateStr
         
         
@@ -143,6 +146,21 @@ class JourneyViewController: UIViewController {
         journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
         setupCustomTabBar()
+        fetchJourneyDayByDayData()
+    }
+    
+    func fetchJourneyDayByDayData() {
+        ref.child("journeys").child("\(userSchedules[scheduleIndex].journeyID)").child("info").observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value else { return }
+            print("value:\(value)")
+            do {
+                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+                print(model)
+            } catch let error {
+                print(error)
+            }
+        })
+        
 
     }
     

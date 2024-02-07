@@ -39,13 +39,13 @@ class SearchViewController: UIViewController {
     
     @objc func pushSearchResultVC() {
         // MARK: - 先餵固定資料 省API次數
-               getYelpData()
+//               getYelpData()
         
-//        if let nav = self.navigationController {
-//            // passing data
-//            searchResultVC.travelData = restaurantData
-//            nav.pushViewController(searchResultVC, animated: true)
-//        }
+        if let nav = self.navigationController {
+            // passing data
+            searchResultVC.travelData = restaurantData
+            nav.pushViewController(searchResultVC, animated: true)
+        }
         
 
     }

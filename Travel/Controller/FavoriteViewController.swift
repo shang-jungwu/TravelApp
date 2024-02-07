@@ -17,6 +17,8 @@ struct DayByDayPlace: Codable {
 
 class FavoriteViewController: UIViewController {
 
+    var currentFirebaseData = [DayByDayPlace]()
+    
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
@@ -61,6 +63,24 @@ class FavoriteViewController: UIViewController {
         
     }
     
+    func fetchJourneyDayByDayData(completion: @escaping () ->Void) {
+        currentFirebaseData.removeAll()
+        let day = calledButtonTag
+        ref.child("journeys").child("-Nq0hlmfJCMdbZydV7SG").child("dayByDayTimeStamp").child("\(day)").observeSingleEvent(of: .value, with: { snapshot in
+            guard let value = snapshot.value else { return }
+            do {
+                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+                self.currentFirebaseData = model
+                completion()
+//                    print(model)
+            } catch let error {
+                print(error)
+            }
+        })
+        
+
+    }
+    
     @objc func removeAllFromFavorite() {
         defaults.removeObject(forKey: "UserFavoriteList")
         favoriteListData.removeAll()
@@ -69,35 +89,40 @@ class FavoriteViewController: UIViewController {
     }
     
     @objc func addPlaceFromFavorite() {
-        var placeArr = [DayByDayPlace]()
-        if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
-            for indexPath in selectedIndexPath {
-                let row = indexPath.row
-                var selectedPlace = favoriteListData[row]
+
+        fetchJourneyDayByDayData { [self] in
+            var placeArr = [DayByDayPlace]()
+            if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+                for indexPath in selectedIndexPath {
+                    let row = indexPath.row
+                    var selectedPlace = favoriteListData[row]
+                    
+                    // hope顯示預設時間八點
+                    selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
+                    
+                    // 更新資料
+                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+                    
+                   
+                    placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                    
+                }
+    //            print(placeArr)
+                currentFirebaseData = placeArr
+
+                let placeArrData = try! FirebaseEncoder().encode(currentFirebaseData.self)
                 
-                // hope顯示預設時間八點
-                selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].date
-                
-                // 更新資料
-                journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
-                
+                // realtime database
                
-                placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
-                
-            }
-            print(placeArr)
-            var currendFirebaseData = [DayByDayPlace]()
-            let placeArrData = try! FirebaseEncoder().encode(placeArr.self)
-            // realtime database
-            let newDayByDayData = [
-                "place":placeArr] as [String : Any]
-            ref.child("journeys").child("-NpxJdHO6efHY14kUTgj").child("dayByDayTimeStamp").child("\(calledButtonTag)").setValue(placeArrData)
+                ref.child("journeys").child("-Nq0hlmfJCMdbZydV7SG").child("dayByDayTimeStamp").child("\(calledButtonTag)").setValue(placeArrData)
+        }
+
             
              //更新資料庫
-            saveUserScheduleData {
-                journeyVC.journeyTableView.reloadData()
-                self.dismiss(animated: true)
-            }
+//            saveUserScheduleData {
+//                journeyVC.journeyTableView.reloadData()
+//                self.dismiss(animated: true)
+//            }
             
         }
             
