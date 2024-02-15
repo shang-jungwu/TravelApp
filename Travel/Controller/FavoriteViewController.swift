@@ -17,7 +17,7 @@ struct DayByDayPlace: Codable {
 
 class FavoriteViewController: UIViewController {
 
-    var currentFirebaseData = [[DayByDayPlace]]()
+    var placeArr = [DayByDayPlace]()
     
     let defaults = UserDefaults.standard
     let encoder = JSONEncoder()
@@ -64,26 +64,6 @@ class FavoriteViewController: UIViewController {
     }
     
     // MARK: - to do
-    func fetchJourneyDayByDayData(completion: @escaping () ->Void) {
-//        currentFirebaseData.removeAll()
-        let day = calledButtonTag
-        ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("dayByDay").observeSingleEvent(of: .value, with: { snapshot in
-            guard let value = snapshot.value else { return }
-            print("value:\(value)")
-            do {
-                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-                print("model:\(model)")
-//                self.currentFirebaseData.append(model)
-                completion()
-
-            } catch let error {
-                print(error)
-            }
-        })
-        
-
-    }
-    
     @objc func removeAllFromFavorite() {
         defaults.removeObject(forKey: "UserFavoriteList")
         favoriteListData.removeAll()
@@ -91,30 +71,83 @@ class FavoriteViewController: UIViewController {
         print("remove all")
     }
     
-    @objc func addPlaceFromFavorite() {
-        
-        var placeArr = [DayByDayPlace]()
-        if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
-            for indexPath in selectedIndexPath {
-                let row = indexPath.row
-                var selectedPlace = self.favoriteListData[row]
-                
-                // hope顯示預設時間八點
-                selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
-                
-                // 更新資料
-                journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
-                
-                placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+    func fetchCurrentPlaces(completion: @escaping (Result<[DayByDayPlace],Error>) -> Void) {
+        // MARK: - realtime database
+        ref.removeAllObservers()
+        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observeSingleEvent(of: .value) { [weak self] snapshot, Result in
+            guard let self = self, let value = snapshot.value else { return }
+//            print("value:\(value)")
+            do {
+                let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+//                self.placeArr = currentPlaces
+                completion(.success(currentPlaces))
+            } catch {
+//                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue([DayByDayPlace]())
+//                print("error: ",error.localizedDescription)
+                completion(.failure(error))
             }
-
-//            currentFirebaseData = placeArr
-
-            let placeArrData = try! FirebaseEncoder().encode(placeArr.self)
-            
-            // realtime database
-            ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("dayByDay").child("Day\(calledButtonTag+1)").setValue(placeArrData)
+        }
     }
+    
+    @objc func addPlaceFromFavorite() {
+        // 從雲端獲取已存地點後append新選的地點
+        // MARK: - weal self needed?
+        fetchCurrentPlaces { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let currentPlaces):
+                self.placeArr = currentPlaces
+                if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+                    for indexPath in selectedIndexPath {
+                        let row = indexPath.row
+                        var selectedPlace = self.favoriteListData[row]
+                        
+                        // hope顯示預設時間八點
+                        selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
+                        
+                        // 更新資料
+                        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+                        
+                        placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                    }
+
+                    let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
+                    
+                    let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)":placeUpdatedData]
+                    ref.updateChildValues(childUpdates)
+                    
+                    self.dismiss(animated: true)
+                }
+            case .failure(_):
+                // when nil
+                if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+                    for indexPath in selectedIndexPath {
+                        let row = indexPath.row
+                        var selectedPlace = self.favoriteListData[row]
+                        
+                        // hope顯示預設時間八點
+                        selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
+                        
+                        // 更新資料
+                        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
+                        
+                        placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                    }
+
+                    let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
+                    
+                    
+                    ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue(placeUpdatedData)
+//                    self.dismiss(animated: true)
+                }
+                
+                
+                
+              
+            }
+        }
+
+
         
 
 //        fetchJourneyDayByDayData { [self] in

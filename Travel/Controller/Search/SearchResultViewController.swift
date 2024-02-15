@@ -47,7 +47,7 @@ class SearchResultViewController: UIViewController {
     }
     
     func setupResultTableView() {
-        resultTableView.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        resultTableView.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         resultTableView.delegate = self
         resultTableView.dataSource = self
         resultTableView.register(SearchResultTableViewCell.self, forCellReuseIdentifier: "SearchResultTableViewCell")

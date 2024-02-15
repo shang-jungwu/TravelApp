@@ -27,7 +27,7 @@ class CreateScheduleViewController: UIViewController {
     // realtime database
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     var createrID = ""
-    var newJourneyRef: DatabaseReference!
+//    var newJourneyRef: DatabaseReference!
     var journeyID = ""
     //
     var changeStatus = InfoChangeStatus.none
@@ -81,13 +81,15 @@ class CreateScheduleViewController: UIViewController {
         }
         
         createrID = Auth.auth().currentUser!.uid
-        newJourneyRef = self.ref.child("journeys").childByAutoId() //讓系統自動產生一個唯一的 journeyID value
-        journeyID = newJourneyRef.key ?? ""
+//        newJourneyRef = self.ref.child("journeys").childByAutoId()
+        
+        // 自動產生一個唯一的 journeyID
+        journeyID = self.ref.child("journeys").childByAutoId().key ?? ""
        
         
         let newSchedule = UserSchedules(createrID: createrID, journeyID: journeyID, scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
         
-        let data = try! FirebaseEncoder().encode(placeArr)
+//        let data = try! FirebaseEncoder().encode(placeArr)
         
         let newJourneyData = [
             "createrID":createrID,
@@ -148,7 +150,7 @@ class CreateScheduleViewController: UIViewController {
         let newTitle = schedultTitleTextField.text
         let newDestination = destinationTextField.text
         let newDepartureDay = dateUtility.convertStringToDate(string: departureDateTextField.text!)//departureDateTextField.text
-        var newNumberOfDays = Int(numberOfDaysTextField.text!)!
+        let newNumberOfDays = Int(numberOfDaysTextField.text!)!
         
         let newDepDate = dateUtility.get8amDateTimeInterval(date: newDepartureDay)
         // 原始資料
@@ -172,7 +174,7 @@ class CreateScheduleViewController: UIViewController {
         switch changeStatus {
             
         case .depOrNumBothChange:
-            // 只要有變化就全部重置
+            // 只要出發日或天數有變化就把行程全部重置
             journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
             prepareNewDBD(newNumberOfDays: newNumberOfDays)
            
@@ -213,6 +215,7 @@ class CreateScheduleViewController: UIViewController {
 //                // if newNumberOfDays == originNumberOfDays
 //            }
         case .otherChange:
+            // 除出發日/天數外的其他值改變的時候行程不動
             break
         case .none:
             break
@@ -231,15 +234,19 @@ class CreateScheduleViewController: UIViewController {
         
         
         
-        // realtime
-        let newInfoData = [
+        //  MARK: - realtime
+        let infoDataUpdates = [
             "scheduleTitle":newTitle!,
             "destination":newDestination!,
             "departureDate":newDepDate,
             "createrID":journeyVC.userSchedules[journeyVC.scheduleIndex].createrID,
             "numberOfDays":newNumberOfDays
         ] as [String : Any]
-        ref.child("journeys").child("journeyID").child("\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)").child("info").setValue(newInfoData)
+        
+        let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info":infoDataUpdates]
+        
+        ref.updateChildValues(childUpdates)
+
         
         // local
         journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
@@ -370,7 +377,7 @@ class CreateScheduleViewController: UIViewController {
     }
 
     @objc private func showDatePicker() {
-        print("show Date Picker")
+//        print("show Date Picker")
         setupDatePickerActionSheet()
     }
 
@@ -406,7 +413,7 @@ class CreateScheduleViewController: UIViewController {
         }
 
         let addAction = UIAlertAction(title: "選擇日期", style: .default) { [self] _ in
-            print("add Date")
+            print("select Date")
             departureDateTextField.text = dateUtility.convertDateToString(date: datePicker.date)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel)

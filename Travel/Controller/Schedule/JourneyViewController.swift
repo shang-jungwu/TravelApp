@@ -146,11 +146,18 @@ class JourneyViewController: UIViewController {
         journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
         setupTableHeaderView()
         setupCustomTabBar()
+        // MARK: - realtime database
 //        fetchJourneyDayByDayData()
     }
     
-//    func fetchJourneyDayByDayData() {
-//        ref.child("journeys").child("\(userSchedules[scheduleIndex].journeyID)").child("info").observeSingleEvent(of: .value, with: { snapshot in
+    func fetchJourneyDayByDayData() {
+        ref.removeAllObservers()
+        ref.child("journeys").observe(.value, with: { snapshot in
+            print("snapshot:\(snapshot)")
+        })
+            
+//            .observeSingleEvent(of: .value, with: { snapshot in
+            
 //            guard let value = snapshot.value else { return }
 //            print("value:\(value)")
 //            do {
@@ -160,9 +167,9 @@ class JourneyViewController: UIViewController {
 //                print(error)
 //            }
 //        })
-//        
-//
-//    }
+        
+
+    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
@@ -209,7 +216,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let header = UIView()
-        header.backgroundColor = UIColor(r: 239, g: 239, b: 244, a: 1)
+        header.backgroundColor = TravelAppColor.lightGrayBackgroundColor
         let titleLabel = UILabel()
         titleLabel.layer.cornerRadius = 5
         titleLabel.clipsToBounds = true
@@ -219,7 +226,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         header.addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview()//.offset(15)
+            make.leading.equalToSuperview()
         }
 
         let menuButton = UIButton(type: .custom)
