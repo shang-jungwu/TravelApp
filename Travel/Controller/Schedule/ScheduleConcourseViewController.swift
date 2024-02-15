@@ -7,8 +7,21 @@
 
 import UIKit
 import SnapKit
+import FirebaseDatabase
+import FirebaseAuth
+import CodableFirebase
+
+struct JourneyInfo: Codable {
+    let createrUID: String
+    var departureDate: String
+    var destination: String
+    var numberOfDays: Int
+    var scheduleTitle: String
+}
 
 class ScheduleConcourseViewController: UIViewController {
+    
+    let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     
     lazy var journeyVC = JourneyViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
@@ -84,6 +97,18 @@ class ScheduleConcourseViewController: UIViewController {
     
     func getUserScheduleData(completion: () -> Void) {
         
+//        ref.removeAllObservers()
+//        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { snapshot, result in
+//            guard let value = snapshot.value else { return }
+//            do {
+//                let journeyInfo = try FirebaseDecoder().decode(JourneyInfo.self, from: value)
+//                completion(.success(journeyInfo))
+//            } catch let error {
+//                print("error:",error.localizedDescription)
+//                completion(.failure(error))
+//            }
+//        }
+        
         if let defaultData = defaults.data(forKey: "UserSchedule") {
             if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
                 self.userSchedules = decodedData
@@ -110,6 +135,15 @@ class ScheduleConcourseViewController: UIViewController {
         super.viewWillAppear(true)
         
         // 取得使用者儲存資料
+//        getUserScheduleData { result in
+//            switch result {
+//                
+//            case .success(_):
+//                print(123456)
+//            case .failure(_):
+//                self.tableHeaderView.countLabel.text = "0"
+//            }
+//        }
         getUserScheduleData {
             // 更新 header view
             self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"

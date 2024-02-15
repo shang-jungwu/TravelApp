@@ -18,3 +18,13 @@ struct TravelData: Codable {
         self.time = time
     }
 }
+
+struct TestTravelData: Codable {
+    let placeName: String
+    var time: TimeInterval//Date
+    
+    init(placeName: String, time: TimeInterval = Date().timeIntervalSince1970) {
+        self.placeName = placeName
+        self.time = time
+    }
+}

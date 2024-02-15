@@ -35,8 +35,8 @@ struct UserSchedules: Codable, Equatable {
 struct DayByDaySchedule: Codable {
     
     var date: TimeInterval//Date
-    var places: [TravelData]
-    init(date: TimeInterval, places: [TravelData] = [TravelData]()) {
+    var places: [DayByDayPlace]
+    init(date: TimeInterval, places: [DayByDayPlace] = [DayByDayPlace]()) {
         self.date = date
         self.places = places
     }

@@ -208,7 +208,7 @@ class LoginViewController: UIViewController {
           // If sign in succeeded, display the app's main content View.
             guard let signInResult = signInResult else { return }
             let user = signInResult.user
-
+            print("user;\(user)")
 //            let emailAddress = user.profile?.email
 //            let fullName = user.profile?.name
 //            let familyName = user.profile?.familyName

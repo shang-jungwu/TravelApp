@@ -26,8 +26,7 @@ class CreateScheduleViewController: UIViewController {
     let dateUtility = DateUtility()
     // realtime database
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
-    var createrID = ""
-//    var newJourneyRef: DatabaseReference!
+    var createrUID = ""
     var journeyID = ""
     //
     var changeStatus = InfoChangeStatus.none
@@ -66,7 +65,7 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByDay:[DayByDaySchedule] = []
-        var dbdTimeArr = [TimeInterval]()
+//        var dbdTimeArr = [TimeInterval]()
         var placeArr = [DayByDayPlace]()
         
         let morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
@@ -80,22 +79,23 @@ class CreateScheduleViewController: UIViewController {
 
         }
         
-        createrID = Auth.auth().currentUser!.uid
+        createrUID = Auth.auth().currentUser!.uid
 //        newJourneyRef = self.ref.child("journeys").childByAutoId()
         
         // 自動產生一個唯一的 journeyID
         journeyID = self.ref.child("journeys").childByAutoId().key ?? ""
        
         
-        let newSchedule = UserSchedules(createrID: createrID, journeyID: journeyID, scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
+        let newSchedule = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
         
 //        let data = try! FirebaseEncoder().encode(placeArr)
         
         let newJourneyData = [
-            "createrID":createrID,
+            "createrUID":createrUID,
             "scheduleTitle":schedultTitleTextField.text!,
             "destination":destinationTextField.text!,
             "departureDate": morning8DateTimeInterval,
+            "numberOfDays":Int(numberOfDaysTextField.text!)!
             ] as [String : Any]
 
         ref.child("journeys").child("journeyID").child("\(journeyID)").child("info").setValue(newJourneyData)
@@ -177,6 +177,7 @@ class CreateScheduleViewController: UIViewController {
             // 只要出發日或天數有變化就把行程全部重置
             journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
             prepareNewDBD(newNumberOfDays: newNumberOfDays)
+            ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay").removeValue()
            
             // 天數更動時作出相應處理並賦值
 //            if newNumberOfDays < originNumberOfDays {
@@ -239,7 +240,7 @@ class CreateScheduleViewController: UIViewController {
             "scheduleTitle":newTitle!,
             "destination":newDestination!,
             "departureDate":newDepDate,
-            "createrID":journeyVC.userSchedules[journeyVC.scheduleIndex].createrID,
+            "createrUID":journeyVC.userSchedules[journeyVC.scheduleIndex].createrID,
             "numberOfDays":newNumberOfDays
         ] as [String : Any]
         
@@ -377,7 +378,6 @@ class CreateScheduleViewController: UIViewController {
     }
 
     @objc private func showDatePicker() {
-//        print("show Date Picker")
         setupDatePickerActionSheet()
     }
 

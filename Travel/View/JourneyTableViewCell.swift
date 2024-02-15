@@ -66,22 +66,26 @@ class JourneyTableViewCell: UITableViewCell {
         setupTimePicker()
         
        
-        contentView.addSubview(placeImageView)
-        placeImageView.snp.makeConstraints { make in
-            make.top.equalTo(timePicker.snp.bottom).offset(10)
-            make.leading.equalTo(timePicker.snp.leading)
-            make.width.equalTo(80)
-            make.height.equalTo(80)
-            make.bottom.equalToSuperview().offset(-10)
-        }
-        uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 10)
+//        contentView.addSubview(placeImageView)
+//        placeImageView.snp.makeConstraints { make in
+//            make.top.equalTo(timePicker.snp.bottom).offset(10)
+//            make.leading.equalTo(timePicker.snp.leading)
+//            make.width.equalTo(80)
+//            make.height.equalTo(80)
+//            make.bottom.equalToSuperview().offset(-10)
+//        }
+//        uiSettingUtility.setupImageView(sender: placeImageView, cornerRadius: 10)
+        
 
         
         contentView.addSubview(nameLabel)
         nameLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(placeImageView.snp.centerY)
-            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
+            make.top.equalTo(timePicker.snp.bottom).offset(10)
+            make.leading.equalTo(timePicker.snp.leading)
+//            make.centerY.equalTo(placeImageView.snp.centerY)
+//            make.leading.equalTo(placeImageView.snp.trailing).offset(10)
             make.trailing.equalToSuperview().offset(-15)
+            make.bottom.equalToSuperview().offset(-10)
         }
 
         uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .label, alignment: .left, numOfLines: 0)
@@ -92,7 +96,7 @@ class JourneyTableViewCell: UITableViewCell {
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        selectionStyle = .none
         // Configure the view for the selected state
     }
 

@@ -74,16 +74,13 @@ class FavoriteViewController: UIViewController {
     func fetchCurrentPlaces(completion: @escaping (Result<[DayByDayPlace],Error>) -> Void) {
         // MARK: - realtime database
         ref.removeAllObservers()
-        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observeSingleEvent(of: .value) { [weak self] snapshot, Result in
-            guard let self = self, let value = snapshot.value else { return }
-//            print("value:\(value)")
+        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observeSingleEvent(of: .value) { snapshot, Result in
+            guard let value = snapshot.value else { return }
             do {
                 let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-//                self.placeArr = currentPlaces
                 completion(.success(currentPlaces))
-            } catch {
-//                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue([DayByDayPlace]())
-//                print("error: ",error.localizedDescription)
+            } catch let error {
+                print("error:",error.localizedDescription)
                 completion(.failure(error))
             }
         }
@@ -94,57 +91,40 @@ class FavoriteViewController: UIViewController {
         // MARK: - weal self needed?
         fetchCurrentPlaces { [weak self] result in
             guard let self = self else { return }
+            
+            var selectedPlacesArr = [DayByDayPlace]()
+            if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
+                for indexPath in selectedIndexPath {
+                    let row = indexPath.row
+                    var selectedPlace = self.favoriteListData[row]
+                    
+                    // hope顯示預設時間八點
+                    selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
+                    
+                    // 更新資料
+                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                    
+                    selectedPlacesArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+                }
+            }
+            
             switch result {
             case .success(let currentPlaces):
-                self.placeArr = currentPlaces
-                if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
-                    for indexPath in selectedIndexPath {
-                        let row = indexPath.row
-                        var selectedPlace = self.favoriteListData[row]
-                        
-                        // hope顯示預設時間八點
-                        selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
-                        
-                        // 更新資料
-                        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
-                        
-                        placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
-                    }
-
-                    let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
-                    
-                    let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)":placeUpdatedData]
-                    ref.updateChildValues(childUpdates)
-                    
-                    self.dismiss(animated: true)
-                }
+                self.placeArr = currentPlaces + selectedPlacesArr
+                
+                let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
+                
+                let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)":placeUpdatedData]
+                ref.updateChildValues(childUpdates)
+                
             case .failure(_):
                 // when nil
-                if let selectedIndexPath = self.favoriteTableView.indexPathsForSelectedRows {
-                    for indexPath in selectedIndexPath {
-                        let row = indexPath.row
-                        var selectedPlace = self.favoriteListData[row]
-                        
-                        // hope顯示預設時間八點
-                        selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
-                        
-                        // 更新資料
-                        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(selectedPlace)
-                        
-                        placeArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
-                    }
-
-                    let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
-                    
-                    
-                    ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue(placeUpdatedData)
-//                    self.dismiss(animated: true)
-                }
+                let placeUpdatedData = try! FirebaseEncoder().encode(selectedPlacesArr.self)
                 
-                
-                
-              
+                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue(placeUpdatedData)
             }
+            journeyVC.journeyTableView.reloadData()
+            self.dismiss(animated: true)
         }
 
 
