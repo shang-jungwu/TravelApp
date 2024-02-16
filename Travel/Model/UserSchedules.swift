@@ -20,7 +20,7 @@ struct UserSchedules: Codable, Equatable {
     var numberOfDays: Int
     var dayByDaySchedule: [DayByDaySchedule]
 
-    init(createrID: String, journeyID: String, scheduleTitle: String, destination: String, departureDate: TimeInterval, numberOfDays: Int, dayByDaySchedule: [DayByDaySchedule] = []) {
+    init(createrID: String, journeyID: String, scheduleTitle: String, destination: String, departureDate: TimeInterval, numberOfDays: Int, dayByDaySchedule: [DayByDaySchedule]) {
         self.createrID = createrID
         self.journeyID = journeyID
         self.scheduleTitle = scheduleTitle

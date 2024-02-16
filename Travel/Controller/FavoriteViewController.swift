@@ -74,13 +74,34 @@ class FavoriteViewController: UIViewController {
     func fetchCurrentPlaces(completion: @escaping (Result<[DayByDayPlace],Error>) -> Void) {
         // MARK: - realtime database
         ref.removeAllObservers()
-        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observeSingleEvent(of: .value) { snapshot, Result in
+//        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observe(.value) { [weak self] snapshot,Result  in
+//            guard let self = self else { return }
+//            if snapshot.hasChild("places") {
+//                let childSnapShot = snapshot.childSnapshot(forPath: "places")
+//                print("childSnapShot;\(childSnapShot)")
+//                if let childSnapShotValue = childSnapShot.value {
+//                    do {
+//                        let dbdPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: childSnapShotValue)
+//                        completion(.success(dbdPlaces))
+//                    } catch let error {
+//                        completion(.failure(error))
+//                    }
+//                }
+//                
+//            } else {
+//                print("snapshot has no Child")
+//
+//
+//            }
+//        }
+        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").observeSingleEvent(of: .value) { snapshot, Result in
             guard let value = snapshot.value else { return }
+            print(value)
             do {
                 let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
                 completion(.success(currentPlaces))
             } catch let error {
-                print("error:",error.localizedDescription)
+                print("fetchCurrentPlaces error:",error.localizedDescription)
                 completion(.failure(error))
             }
         }
@@ -102,7 +123,7 @@ class FavoriteViewController: UIViewController {
                     selectedPlace.time =  journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[self.calledButtonTag].date
                     
                     // 更新資料
-                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
+//                    journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
                     
                     selectedPlacesArr.append(DayByDayPlace(time: selectedPlace.time, place: selectedPlace.placeData.name))
                 }
@@ -114,21 +135,20 @@ class FavoriteViewController: UIViewController {
                 
                 let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
                 
-                let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)":placeUpdatedData]
+                let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places":placeUpdatedData]
                 ref.updateChildValues(childUpdates)
                 
-            case .failure(_):
+            case .failure(let error):
+                print(error)
                 // when nil
                 let placeUpdatedData = try! FirebaseEncoder().encode(selectedPlacesArr.self)
                 
-                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").setValue(placeUpdatedData)
+                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").setValue(placeUpdatedData)
             }
-            journeyVC.journeyTableView.reloadData()
+            self.journeyVC.journeyTableView.reloadData()
             self.dismiss(animated: true)
         }
-
-
-        
+ 
 
 //        fetchJourneyDayByDayData { [self] in
 //            var placeArr = [DayByDayPlace]()

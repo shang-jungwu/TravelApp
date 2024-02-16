@@ -35,6 +35,7 @@
 		CAB014F72B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */; };
 		CAB014F92B5FC3F9008CCA8A /* FavoriteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */; };
 		CABC93062B62349700066F3C /* InfoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CABC93052B62349700066F3C /* InfoTableViewCell.swift */; };
+		CAC2BB6C2B7F04350048F8B2 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAC2BB6B2B7F04350048F8B2 /* File.swift */; };
 		CAC5A1B42B706B32006C4EB8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CAC5A1B32B706B32006C4EB8 /* GoogleService-Info.plist */; };
 		CACFBBB62B6771920086B890 /* CustomGroupTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */; };
 		CACFBBB92B67720A0086B890 /* CustomPageTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */; };
@@ -119,6 +120,7 @@
 		CAB014F62B5F6F7B008CCA8A /* PlaceImageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceImageTableViewCell.swift; sourceTree = "<group>"; };
 		CAB014F82B5FC3F9008CCA8A /* FavoriteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteViewController.swift; sourceTree = "<group>"; };
 		CABC93052B62349700066F3C /* InfoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoTableViewCell.swift; sourceTree = "<group>"; };
+		CAC2BB6B2B7F04350048F8B2 /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		CAC5A1B32B706B32006C4EB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CACFBBB52B6771920086B890 /* CustomGroupTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGroupTabBar.swift; sourceTree = "<group>"; };
 		CACFBBB82B67720A0086B890 /* CustomPageTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageTabBar.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				49A5C1CF2B62960A003C5BEB /* JourneyViewController.swift */,
+				CAC2BB6B2B7F04350048F8B2 /* File.swift */,
 				494A36292B63F7CC00B2895A /* ScheduleConcourseViewController.swift */,
 				494A36392B66667000B2895A /* CreateScheduleViewController.swift */,
 			);
@@ -673,6 +676,7 @@
 				494A363F2B6667E000B2895A /* ScheduleConcourseTableViewCell.swift in Sources */,
 				494A362A2B63F7CC00B2895A /* ScheduleConcourseViewController.swift in Sources */,
 				49975B7D2B5827B10066F8D3 /* TravelThemeColor.swift in Sources */,
+				CAC2BB6C2B7F04350048F8B2 /* File.swift in Sources */,
 				CA6DE1392B57D69900F1861B /* TabBarController.swift in Sources */,
 				CADDA0BE2B5A446000F35BF7 /* TravelData.swift in Sources */,
 				49A5C1D62B6298BE003C5BEB /* FavoriteListTableViewCell.swift in Sources */,

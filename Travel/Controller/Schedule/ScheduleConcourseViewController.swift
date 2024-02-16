@@ -59,7 +59,7 @@ class ScheduleConcourseViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-20)
             make.height.equalTo(120)
         }
-        setupTableHeaderView()
+//        setupTableHeaderView(journeyCount: <#Int#>)
 
         view.addSubview(scheduleTableView)
         scheduleTableView.snp.makeConstraints { make in
@@ -70,10 +70,10 @@ class ScheduleConcourseViewController: UIViewController {
         }
     }
     
-    func setupTableHeaderView() {
+    func setupTableHeaderView(journeyCount: Int) {
         tableHeaderView.backgroundColor = .white
         tableHeaderView.layer.cornerRadius = 10
-        tableHeaderView.countLabel.text = "\(userSchedules.count)"
+        tableHeaderView.countLabel.text = "\(journeyCount)"
         tableHeaderView.scheduleInfoStack.isHidden = true
         tableHeaderView.editButton.isHidden = true
         tableHeaderView.userImageView.image = UIImage(systemName: "person.crop.circle.fill")
@@ -95,34 +95,71 @@ class ScheduleConcourseViewController: UIViewController {
 
     }
     
-    func getUserScheduleData(completion: () -> Void) {
-        
-//        ref.removeAllObservers()
-//        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { snapshot, result in
-//            guard let value = snapshot.value else { return }
-//            do {
-//                let journeyInfo = try FirebaseDecoder().decode(JourneyInfo.self, from: value)
-//                completion(.success(journeyInfo))
-//            } catch let error {
-//                print("error:",error.localizedDescription)
-//                completion(.failure(error))
+//    func getUserScheduleData(completion: @escaping () -> Void) {
+//        if let defaultData = defaults.data(forKey: "UserSchedule") {
+//            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
+//                self.userSchedules = decodedData
+//                completion()
+//            } else {
+//                print("Fail to decode")
 //            }
+//            
+//        } else {
+//            print("UserScheduleData不存在")
 //        }
-        
-        if let defaultData = defaults.data(forKey: "UserSchedule") {
-            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
-                self.userSchedules = decodedData
-                completion()
+//    }
+    
+    func getUserJourneyCount(completion: @escaping (Int) -> Void) {
+        ref.removeAllObservers()
+        ref.child("journeys").observeSingleEvent(of: .value) { [weak self] snapshot in
+            guard let self = self else { return }
+            // 取得行程筆數
+            if !snapshot.hasChild("journeyID") {
+                self.tableHeaderView.countLabel.text = "0"
+                completion(0)
             } else {
-                print("Fail to decode")
+                let journeyCount = snapshot.childSnapshot(forPath: "journeyID").childrenCount
+                self.tableHeaderView.countLabel.text = "\(journeyCount)"
+                completion(Int(journeyCount))
             }
             
-        } else {
-            print("UserScheduleData不存在")
         }
+        
     }
     
-    
+    func getUserJourneyInfoData(completion: @escaping () -> Void) {
+        ref.removeAllObservers()
+        userSchedules.removeAll()
+        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] snapshot in
+            guard let self = self else { return }
+            for child in snapshot.children {
+                // 把取得的snapshot轉換回DataSnapshot型別，再取得子節點的值
+                if let childSnapShot = child as? DataSnapshot {
+                    let journeyID = childSnapShot.key
+                    let createrUID = childSnapShot.childSnapshot(forPath: "info/createrUID").value as! String
+                    let departureDate = childSnapShot.childSnapshot(forPath: "info/departureDate").value as! TimeInterval
+                    let destination = childSnapShot.childSnapshot(forPath: "info/destination").value as! String
+                    let numberOfDays = childSnapShot.childSnapshot(forPath: "info/numberOfDays").value as! Int
+                    let scheduleTitle
+ = childSnapShot.childSnapshot(forPath: "info/scheduleTitle").value as! String
+                    var dbdArr = [DayByDaySchedule]()
+                    for i in 1...numberOfDays {
+                        let dbdDate = childSnapShot.childSnapshot(forPath: "dayByDay/Day\(i)/date").value as! Double
+//                        print("journeyID:\(journeyID), dbdDate:\(dbdDate)")
+                        dbdArr.append(DayByDaySchedule(date: dbdDate))
+                    }
+//                    print("dbdArr:\(dbdArr)")
+                    self.userSchedules.append(UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr))
+
+                    completion()
+                }
+
+            }
+            
+        }
+        
+    }
+ 
     @objc func saveUserScheduleData() {
         
         if let newScheduleData = try? encoder.encode(userSchedules.self) {
@@ -134,22 +171,26 @@ class ScheduleConcourseViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        // 取得使用者儲存資料
-//        getUserScheduleData { result in
-//            switch result {
-//                
-//            case .success(_):
-//                print(123456)
-//            case .failure(_):
-//                self.tableHeaderView.countLabel.text = "0"
-//            }
-//        }
-        getUserScheduleData {
-            // 更新 header view
-            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
-            // 更新 table view
-            self.scheduleTableView.reloadData()
+        // 取得使用者行程筆數
+        getUserJourneyCount { [self] journeyCount in
+            setupTableHeaderView(journeyCount: journeyCount)
+            if journeyCount > 0 {
+                // 取得使用者行程info
+                getUserJourneyInfoData { [self] in
+                    scheduleTableView.reloadData()
+                }
+            }
+            
         }
+       
+        
+        
+//        getUserScheduleData {
+//            // 更新 header view
+//            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
+//            // 更新 table view
+//            self.scheduleTableView.reloadData()
+//        }
     }
     
     func checkIfScheduleDataChanged(completion: () -> Void) {
@@ -166,15 +207,15 @@ class ScheduleConcourseViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
 
-        checkIfScheduleDataChanged {
-            // show alert and save data
-            let alert = UIAlertController(title: "更動已儲存", message: nil, preferredStyle: .alert)
-            let saveAction = UIAlertAction(title: "OK", style: .default) { action in
-                self.saveUserScheduleData()
-            }
-            alert.addAction(saveAction)
-            self.present(alert, animated: true)
-        }
+//        checkIfScheduleDataChanged {
+//            // show alert and save data
+//            let alert = UIAlertController(title: "更動已儲存", message: nil, preferredStyle: .alert)
+//            let saveAction = UIAlertAction(title: "OK", style: .default) { action in
+//                self.saveUserScheduleData()
+//            }
+//            alert.addAction(saveAction)
+//            self.present(alert, animated: true)
+//        }
         
     }
     
@@ -191,14 +232,14 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "ScheduleConcourseTableViewCell", for: indexPath) as? ScheduleConcourseTableViewCell else { return UITableViewCell() }
-
-        cell.scheduleTitleLabel.text = userSchedules[indexPath.section].scheduleTitle
+        let section = indexPath.section
+        cell.scheduleTitleLabel.text = userSchedules[section].scheduleTitle
         cell.placeImageView.image = UIImage(systemName: "globe.central.south.asia")
         
-        let startDateTimeInterval = userSchedules[indexPath.section].departureDate
+        let startDateTimeInterval = userSchedules[section].departureDate
         let startDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: startDateTimeInterval))
-        let countOfDays = userSchedules[indexPath.section].numberOfDays
-        let endDateTimeInterval = userSchedules[indexPath.section].departureDate + Double(86400*(countOfDays-1))
+        let countOfDays = userSchedules[section].numberOfDays
+        let endDateTimeInterval = userSchedules[section].departureDate + Double(86400*(countOfDays-1))
         let endDateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: endDateTimeInterval))
         
         cell.dateRangeLabel.text = "\(startDateStr) ~ \(endDateStr)"
@@ -231,10 +272,18 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
         let section = indexPath.section
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] action, view, completionHandler in
             guard let self = self else { return }
-            self.userSchedules.remove(at: section)
-            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
-            self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+//            self.userSchedules.remove(at: section)
+            // realtime db
+            self.ref.child("journeys/journeyID/\(userSchedules[section].journeyID)").removeValue()
+            self.getUserJourneyInfoData {
+                self.scheduleTableView.reloadData()
+//                self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+            }
+            ///
 
+//            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
+//            self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+            
             completionHandler(true)
 
         }
@@ -248,8 +297,8 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
         if let nav = self.navigationController {
-            journeyVC.scheduleIndex = section
-            journeyVC.userSchedules = self.userSchedules
+//            journeyVC.scheduleIndex = section
+            journeyVC.userSchedules = [self.userSchedules[section]]
             nav.pushViewController(journeyVC, animated: true)
         }
     }

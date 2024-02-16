@@ -147,49 +147,55 @@ class JourneyViewController: UIViewController {
         setupTableHeaderView()
         setupCustomTabBar()
         // MARK: - realtime database
-        fetchJourneyDayByDayData {
+        fetchJourneyDayByDayData { [self] in
             journeyTableView.reloadData()
         }
+
         
     }
     
     func fetchJourneyDayByDayData(completion: () -> Void) {
-        var aaa = [DayByDayPlace]()
+        var currentPlaces = [DayByDayPlace]()
         ref.removeAllObservers()
         for i in 1...userSchedules[scheduleIndex].numberOfDays {
-            ref.child("/journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(i)").observe(.value, with: { [weak self] snapshot in
-                guard let self = self, let value = snapshot.value else { return }
-                
-                do {
-                    let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-                    aaa = model
-                    self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = aaa
-                    print("model:\(model)")
-                    print("schedule:\(userSchedules[scheduleIndex])")
-                    
-                } catch {
-                    print("error:",error.localizedDescription)
-                  
+            ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(i)").observe(.value) { [weak self] snapshot in
+                guard let self = self else { return }
+                if snapshot.hasChild("places") {
+                    let childSnapShot = snapshot.childSnapshot(forPath: "places")
+
+                    if let childSnapShotValue = childSnapShot.value {
+                        do {
+                            let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: childSnapShotValue)
+                            print("model:\(model)")
+                            currentPlaces = model
+                            self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = currentPlaces
+                        } catch let error {
+                            print(error)
+                        }
+                    }
+
                 }
-                
-            })
+            }
+//            ref.child("/journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(i)/places").observe(.value, with: { [weak self] snapshot in
+//                guard let self = self, let value = snapshot.value else { return }
+//                
+//                do {
+//                    let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+//                    currentPlaces = model
+//                    self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = currentPlaces
+//                    print("model:\(model)")
+//                    print("schedule:\(userSchedules[scheduleIndex])")
+//                    
+//                } catch {
+//                    print("error:",error.localizedDescription)
+//                  
+//                }
+//                
+//            })
           
         }
        
         completion()
-
-            
-//            .observeSingleEvent(of: .value, with: { snapshot in
-            
-//            guard let value = snapshot.value else { return }
-//            print("value:\(value)")
-//            do {
-//                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-//                print(model)
-//            } catch let error {
-//                print(error)
-//            }
-//        })
         
 
     }
@@ -207,8 +213,7 @@ class JourneyViewController: UIViewController {
 
 extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        userSchedules[scheduleIndex].dayByDaySchedule[section].places.count
+     userSchedules[scheduleIndex].dayByDaySchedule[section].places.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -217,12 +222,13 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         cell.delegate = self
         cell.indexPath = indexPath
         /////
-        cell.nameLabel.text = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].place//.placeData.name
+
+        cell.nameLabel.text = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].place
 //        if let url = URL(string: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].placeData.imageURL) {
 //            cell.placeImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "fork.knife"))
 //        }
         
-        cell.timePicker.date = Date(timeIntervalSince1970: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)// userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time
+        cell.timePicker.date = Date(timeIntervalSince1970: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)
         updateTime(cell, time: userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places[indexPath.row].time)
         
         return cell
@@ -351,8 +357,8 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = indexPath.section
-        let index = indexPath.row
+//        let section = indexPath.section
+//        let index = indexPath.row
 //        if let nav = self.navigationController {
 //            detailVC.placeInfoData = self.userSchedules[scheduleIndex].dayByDaySchedule[section].places
 //            detailVC.dataIndex = index
@@ -379,10 +385,10 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let section = sourceIndexPath.section
         let index = sourceIndexPath.row
-        var destinationSection = destinationIndexPath.section
-        var destinationIndex = destinationIndexPath.row
+        let destinationSection = destinationIndexPath.section
+        let destinationIndex = destinationIndexPath.row
        
-        var numberOfDayChange = Double(destinationSection - section)
+        let numberOfDayChange = Double(destinationSection - section)
        
         
         // local
@@ -511,9 +517,9 @@ extension JourneyViewController: JourneyTableViewCellTableViewCellDelegate {
         let section = indexPath.section
         let index = indexPath.row
         
-        ref.child("/journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(section+1)/\(index)/time").setValue(time)
+        ref.child("/journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(section+1)/places/\(index)/time").setValue(time)
         userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time
-        fetchJourneyDayByDayData {
+        fetchJourneyDayByDayData { [self] in
             journeyTableView.reloadRows(at: [indexPath], with: .automatic)
         }
         

@@ -65,30 +65,23 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByDay:[DayByDaySchedule] = []
-//        var dbdTimeArr = [TimeInterval]()
         var placeArr = [DayByDayPlace]()
         
-        let morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
+        var morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
         var dbdDateTimeInterval = morning8DateTimeInterval
         while dayByDay.count < Int(numberOfDaysTextField.text!)! {
             dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
-//            dbdTimeArr.append(dbdDateTimeInterval)
             placeArr.append(DayByDayPlace(time: dbdDateTimeInterval, place: ""))
             dbdDateTimeInterval += 86400
 
         }
-        
         createrUID = Auth.auth().currentUser!.uid
-//        newJourneyRef = self.ref.child("journeys").childByAutoId()
         
         // 自動產生一個唯一的 journeyID
         journeyID = self.ref.child("journeys").childByAutoId().key ?? ""
        
-        
         let newSchedule = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: schedultTitleTextField.text ?? "", destination: destinationTextField.text ?? "", departureDate: morning8DateTimeInterval, numberOfDays: Int(numberOfDaysTextField.text!)!, dayByDaySchedule: dayByDay)
-        
-//        let data = try! FirebaseEncoder().encode(placeArr)
         
         let newJourneyData = [
             "createrUID":createrUID,
@@ -98,12 +91,25 @@ class CreateScheduleViewController: UIViewController {
             "numberOfDays":Int(numberOfDaysTextField.text!)!
             ] as [String : Any]
 
-        ref.child("journeys").child("journeyID").child("\(journeyID)").child("info").setValue(newJourneyData)
+        ref.child("journeys/journeyID/\(journeyID)/info").setValue(newJourneyData)
+        for i in 1...Int(numberOfDaysTextField.text!)! {
+            
+            ref.child("journeys/journeyID/\(journeyID)/dayByDay/Day\(i)/date").setValue(morning8DateTimeInterval)
+            morning8DateTimeInterval += Double(86400)
+        }
         
         
-        concourseVC.userSchedules.append(newSchedule)
-        concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
-        concourseVC.scheduleTableView.reloadData()
+//        concourseVC.userSchedules.append(newSchedule)
+//        concourseVC.tableHeaderView.countLabel.text = "\(concourseVC.userSchedules.count)"
+        concourseVC.getUserJourneyCount { [weak self] journeyCount in
+            guard let self = self else { return }
+            self.concourseVC.tableHeaderView.countLabel.text = "\(journeyCount)"
+            concourseVC.getUserJourneyInfoData {
+                self.concourseVC.scheduleTableView.reloadData()
+            }
+        }
+       
+        
         
         self.dismiss(animated: true)
     }
