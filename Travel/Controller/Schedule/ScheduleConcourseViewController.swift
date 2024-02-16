@@ -29,9 +29,9 @@ class ScheduleConcourseViewController: UIViewController {
     lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
     var userSchedules = [UserSchedules]()
     let dateUtility = DateUtility()
-    let defaults = UserDefaults.standard
-    let encoder = JSONEncoder()
-    let decoder = JSONDecoder()
+//    let defaults = UserDefaults.standard
+//    let encoder = JSONEncoder()
+//    let decoder = JSONDecoder()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,7 +39,7 @@ class ScheduleConcourseViewController: UIViewController {
         setupNav()
         setupUI()
         setupTableView()
-  
+
     }
 
     func setupNav() {
@@ -47,8 +47,8 @@ class ScheduleConcourseViewController: UIViewController {
         let rightBarButton = UIBarButtonItem(title: "Create", style: .plain, target: self, action: #selector(showCreateScheduleVC))
         self.navigationItem.rightBarButtonItem = rightBarButton
         
-        let leftBarButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveUserScheduleData))
-        self.navigationItem.leftBarButtonItem = leftBarButton
+//        let leftBarButton = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveUserScheduleData))
+//        self.navigationItem.leftBarButtonItem = leftBarButton
     }
 
     func setupUI() {
@@ -128,8 +128,9 @@ class ScheduleConcourseViewController: UIViewController {
     }
     
     func getUserJourneyInfoData(completion: @escaping () -> Void) {
-        ref.removeAllObservers()
+//        ref.removeAllObservers()
         userSchedules.removeAll()
+        var journey = [UserSchedules]()
         ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] snapshot in
             guard let self = self else { return }
             for child in snapshot.children {
@@ -137,7 +138,7 @@ class ScheduleConcourseViewController: UIViewController {
                 if let childSnapShot = child as? DataSnapshot {
                     let journeyID = childSnapShot.key
                     let createrUID = childSnapShot.childSnapshot(forPath: "info/createrUID").value as! String
-                    let departureDate = childSnapShot.childSnapshot(forPath: "info/departureDate").value as! TimeInterval
+                    let departureDate = childSnapShot.childSnapshot(forPath: "info/departureDate").value as! Double
                     let destination = childSnapShot.childSnapshot(forPath: "info/destination").value as! String
                     let numberOfDays = childSnapShot.childSnapshot(forPath: "info/numberOfDays").value as! Int
                     let scheduleTitle
@@ -145,28 +146,33 @@ class ScheduleConcourseViewController: UIViewController {
                     var dbdArr = [DayByDaySchedule]()
                     for i in 1...numberOfDays {
                         let dbdDate = childSnapShot.childSnapshot(forPath: "dayByDay/Day\(i)/date").value as! Double
-//                        print("journeyID:\(journeyID), dbdDate:\(dbdDate)")
-                        dbdArr.append(DayByDaySchedule(date: dbdDate))
+                        journeyVC.fetchJourneyDayByDayData {
+                            <#code#>
+                        }
+                        journeyVC.fetchCurrentPlaces(indexPath: <#T##IndexPath#>, completion: <#T##(Result<[DayByDayPlace], Error>) -> Void#>)
+                        dbdArr.append(DayByDaySchedule(date: dbdDate,places: <#T##[DayByDayPlace]#>))
                     }
-//                    print("dbdArr:\(dbdArr)")
-                    self.userSchedules.append(UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr))
+                    
+                    journey = [UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr)]
+//                    self.userSchedules.append(UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr))
 
-                    completion()
+                   
                 }
-
+                self.userSchedules.append(journey[0])
+                ref.removeAllObservers()
+                completion()
             }
             
         }
         
+        
     }
  
-    @objc func saveUserScheduleData() {
-        
-        if let newScheduleData = try? encoder.encode(userSchedules.self) {
-            defaults.set(newScheduleData, forKey: "UserSchedule")
-        }
-        
-    }
+//    @objc func saveUserScheduleData() {
+//        if let newScheduleData = try? encoder.encode(userSchedules.self) {
+//            defaults.set(newScheduleData, forKey: "UserSchedule")
+//        }
+//    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -177,10 +183,11 @@ class ScheduleConcourseViewController: UIViewController {
             if journeyCount > 0 {
                 // 取得使用者行程info
                 getUserJourneyInfoData { [self] in
+                    print(userSchedules)
                     scheduleTableView.reloadData()
                 }
             }
-            
+           
         }
        
         
@@ -193,16 +200,16 @@ class ScheduleConcourseViewController: UIViewController {
 //        }
     }
     
-    func checkIfScheduleDataChanged(completion: () -> Void) {
-        if let defaultData = defaults.data(forKey: "UserSchedule") {
-            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
-                if !decodedData.elementsEqual(self.userSchedules) {
-                    print("資料改變 please save new data")
-                    completion()
-                }
-            }
-        }
-    }
+//    func checkIfScheduleDataChanged(completion: () -> Void) {
+//        if let defaultData = defaults.data(forKey: "UserSchedule") {
+//            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
+//                if !decodedData.elementsEqual(self.userSchedules) {
+//                    print("資料改變 please save new data")
+//                    completion()
+//                }
+//            }
+//        }
+//    }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(true)
@@ -272,7 +279,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
         let section = indexPath.section
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] action, view, completionHandler in
             guard let self = self else { return }
-//            self.userSchedules.remove(at: section)
+            self.userSchedules.remove(at: section)
             // realtime db
             self.ref.child("journeys/journeyID/\(userSchedules[section].journeyID)").removeValue()
             self.getUserJourneyInfoData {
@@ -296,11 +303,18 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = indexPath.section
-        if let nav = self.navigationController {
-//            journeyVC.scheduleIndex = section
-            journeyVC.userSchedules = [self.userSchedules[section]]
-            nav.pushViewController(journeyVC, animated: true)
+        getUserJourneyInfoData { [self] in
+            if let nav = self.navigationController {
+    //            journeyVC.scheduleIndex = section
+                journeyVC.userSchedules = [self.userSchedules[section]]
+                nav.pushViewController(journeyVC, animated: true)
+            }
         }
+//        if let nav = self.navigationController {
+////            journeyVC.scheduleIndex = section
+//            journeyVC.userSchedules = [self.userSchedules[section]]
+//            nav.pushViewController(journeyVC, animated: true)
+//        }
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

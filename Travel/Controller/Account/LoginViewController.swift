@@ -39,6 +39,10 @@ class LoginViewController: UIViewController {
 
         passwordTextField.delegate = self
         uiSettingUtility.textFieldSetting(passwordTextField, placeholder: "password", keyboard: .default, autoCapitalize: .none)
+        passwordTextField.isSecureTextEntry = true
+        // 方便測試
+        accountTextField.text = "qwer@qwe.wee"
+        passwordTextField.text = "qqqqqq"
     }
     
 
@@ -187,16 +191,16 @@ class LoginViewController: UIViewController {
             make.height.equalTo(50)
         }
         
-        view.addSubview(googleButton)
-        googleButton.snp.makeConstraints { make in
-            make.bottom.equalTo(loginButton.snp.top).offset(-20)
-            make.leading.equalToSuperview().offset(30)
-            make.trailing.equalToSuperview().offset(-30)
-            make.height.equalTo(50)
-        }
-        googleButton.setTitle("google", for: [])
-        googleButton.backgroundColor = .systemCyan
-        googleButton.addTarget(self, action: #selector(googleSignIn), for: .touchUpInside)
+//        view.addSubview(googleButton)
+//        googleButton.snp.makeConstraints { make in
+//            make.bottom.equalTo(loginButton.snp.top).offset(-20)
+//            make.leading.equalToSuperview().offset(30)
+//            make.trailing.equalToSuperview().offset(-30)
+//            make.height.equalTo(50)
+//        }
+//        googleButton.setTitle("google", for: [])
+//        googleButton.backgroundColor = .systemCyan
+//        googleButton.addTarget(self, action: #selector(googleSignIn), for: .touchUpInside)
 
     }
 

@@ -24,6 +24,7 @@ class CreateScheduleViewController: UIViewController {
 
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
+    
     // realtime database
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     var createrUID = ""
@@ -65,14 +66,14 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByDay:[DayByDaySchedule] = []
-        var placeArr = [DayByDayPlace]()
+//        var placeArr = [DayByDayPlace]()
         
         var morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
         var dbdDateTimeInterval = morning8DateTimeInterval
         while dayByDay.count < Int(numberOfDaysTextField.text!)! {
             dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
-            placeArr.append(DayByDayPlace(time: dbdDateTimeInterval, place: ""))
+//            placeArr.append(DayByDayPlace(time: dbdDateTimeInterval, place: ""))
             dbdDateTimeInterval += 86400
 
         }
@@ -108,9 +109,7 @@ class CreateScheduleViewController: UIViewController {
                 self.concourseVC.scheduleTableView.reloadData()
             }
         }
-       
-        
-        
+
         self.dismiss(animated: true)
     }
     
