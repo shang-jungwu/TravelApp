@@ -88,7 +88,7 @@ class JourneyTableViewCell: UITableViewCell {
             make.bottom.equalToSuperview().offset(-10)
         }
 
-        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .label, alignment: .left, numOfLines: 0)
+        uiSettingUtility.labelSettings(label: nameLabel, fontSize: 18, fontWeight: .regular, color: .black, alignment: .left, numOfLines: 0)
 
     }
     

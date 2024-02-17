@@ -132,11 +132,14 @@ class FavoriteViewController: UIViewController {
             switch result {
             case .success(let currentPlaces):
                 self.placeArr = currentPlaces + selectedPlacesArr
-                
                 let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
                 
                 let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places":placeUpdatedData]
                 ref.updateChildValues(childUpdates)
+                print("接續新增")
+                print("行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
+                
+                
                 
             case .failure(let error):
                 print(error)
@@ -144,8 +147,10 @@ class FavoriteViewController: UIViewController {
                 let placeUpdatedData = try! FirebaseEncoder().encode(selectedPlacesArr.self)
                 
                 ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").setValue(placeUpdatedData)
+                print("行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
             }
-            self.journeyVC.journeyTableView.reloadData()
+            
+//            self.journeyVC.journeyTableView.reloadData()
             self.dismiss(animated: true)
         }
  

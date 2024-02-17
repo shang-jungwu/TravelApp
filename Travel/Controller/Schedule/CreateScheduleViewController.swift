@@ -66,14 +66,13 @@ class CreateScheduleViewController: UIViewController {
             alertView.present(on: self.view)
             return }
         var dayByDay:[DayByDaySchedule] = []
-//        var placeArr = [DayByDayPlace]()
         
         var morning8DateTimeInterval = dateUtility.get8amDateTimeInterval(date: datePicker.date)
         
         var dbdDateTimeInterval = morning8DateTimeInterval
         while dayByDay.count < Int(numberOfDaysTextField.text!)! {
             dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
-//            placeArr.append(DayByDayPlace(time: dbdDateTimeInterval, place: ""))
+
             dbdDateTimeInterval += 86400
 
         }

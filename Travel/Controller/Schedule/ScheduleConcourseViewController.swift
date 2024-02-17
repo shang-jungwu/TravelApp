@@ -32,6 +32,8 @@ class ScheduleConcourseViewController: UIViewController {
 //    let defaults = UserDefaults.standard
 //    let encoder = JSONEncoder()
 //    let decoder = JSONDecoder()
+    
+    var goingToSend = [UserSchedules]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -116,21 +118,26 @@ class ScheduleConcourseViewController: UIViewController {
             // 取得行程筆數
             if !snapshot.hasChild("journeyID") {
                 self.tableHeaderView.countLabel.text = "0"
+                ref.removeAllObservers()
+                print("run no child")
                 completion(0)
             } else {
+//                let journeyIDSnap = snapshot.childSnapshot(forPath: "journeyID")
+//                print(journeyIDSnap)
                 let journeyCount = snapshot.childSnapshot(forPath: "journeyID").childrenCount
                 self.tableHeaderView.countLabel.text = "\(journeyCount)"
+                print("run has child,journeyCount:\(journeyCount)")
+                ref.removeAllObservers()
                 completion(Int(journeyCount))
             }
             
         }
-        
+        ref.removeAllObservers()
     }
     
     func getUserJourneyInfoData(completion: @escaping () -> Void) {
-//        ref.removeAllObservers()
         userSchedules.removeAll()
-        var journey = [UserSchedules]()
+        print("getUserJourneyInfoData")
         ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] snapshot in
             guard let self = self else { return }
             for child in snapshot.children {
@@ -146,26 +153,59 @@ class ScheduleConcourseViewController: UIViewController {
                     var dbdArr = [DayByDaySchedule]()
                     for i in 1...numberOfDays {
                         let dbdDate = childSnapShot.childSnapshot(forPath: "dayByDay/Day\(i)/date").value as! Double
-                        journeyVC.fetchJourneyDayByDayData {
-                            <#code#>
-                        }
-                        journeyVC.fetchCurrentPlaces(indexPath: <#T##IndexPath#>, completion: <#T##(Result<[DayByDayPlace], Error>) -> Void#>)
-                        dbdArr.append(DayByDaySchedule(date: dbdDate,places: <#T##[DayByDayPlace]#>))
+
+                        dbdArr.append(DayByDaySchedule(date: dbdDate))
                     }
                     
-                    journey = [UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr)]
-//                    self.userSchedules.append(UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr))
-
-                   
+                    let journey = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr)
+                    self.userSchedules.append(journey)
                 }
-                self.userSchedules.append(journey[0])
-                ref.removeAllObservers()
-                completion()
             }
-            
+            ref.removeAllObservers()
+            completion()
         }
-        
-        
+        ref.removeAllObservers()
+    }
+    
+    func getNumberOfDays(indexPath: IndexPath, completion: @escaping(Int) -> Void) {
+        var numberOfDays = 0
+        ref.child("journeys/journeyID/\(userSchedules[indexPath.section].journeyID)/info/numberOfDays").observe(.value) { snapshot in
+            numberOfDays = snapshot.value as! Int
+            completion(numberOfDays)
+        }
+    }
+    
+    func fetchJourneyDayByDayData(indexPath: IndexPath, completion: @escaping ((Int,[DayByDayPlace])) -> Void) {
+        getNumberOfDays(indexPath: indexPath) { [weak self] numberOfDays in
+            guard let self = self else { return }
+            self.ref.child("journeys/journeyID/\(self.userSchedules[indexPath.section].journeyID)/dayByDay").observe(.value) { [weak self] snapshot in
+                guard let self = self else { return }
+
+                for i in 1...numberOfDays {
+                    let daySnap = snapshot.childSnapshot(forPath: "Day\(i)")
+                    let placeSnap = daySnap.childSnapshot(forPath: "places")
+
+                    if let placeValue = placeSnap.value {
+                        do {
+                            let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: placeValue)
+                            ref.removeAllObservers()
+                            completion((i-1,model))
+                        } catch {
+                            // when沒有地點資料
+                            print("行程Day\(i)沒有已存地點")
+                            ref.removeAllObservers()
+                            completion((i-1,[DayByDayPlace(time: 0, place: "沒有已存地點")]))
+    //                        print(error)
+                        }
+                       
+                    }
+
+                }
+
+            }
+        }
+
+        ref.removeAllObservers()
     }
  
 //    @objc func saveUserScheduleData() {
@@ -180,18 +220,15 @@ class ScheduleConcourseViewController: UIViewController {
         // 取得使用者行程筆數
         getUserJourneyCount { [self] journeyCount in
             setupTableHeaderView(journeyCount: journeyCount)
-            if journeyCount > 0 {
-                // 取得使用者行程info
-                getUserJourneyInfoData { [self] in
-                    print(userSchedules)
-                    scheduleTableView.reloadData()
-                }
+            
+            // 取得使用者行程info
+            getUserJourneyInfoData { [self] in
+                scheduleTableView.reloadData()
+                
             }
-           
+
         }
-       
-        
-        
+
 //        getUserScheduleData {
 //            // 更新 header view
 //            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
@@ -279,43 +316,62 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
         let section = indexPath.section
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] action, view, completionHandler in
             guard let self = self else { return }
-            self.userSchedules.remove(at: section)
+            
             // realtime db
             self.ref.child("journeys/journeyID/\(userSchedules[section].journeyID)").removeValue()
-            self.getUserJourneyInfoData {
-                self.scheduleTableView.reloadData()
-//                self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+            // 刷新表格
+            self.userSchedules.remove(at: section)
+            self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+            self.getUserJourneyCount { count in
+                self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
             }
-            ///
-
-//            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
-//            self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
-            
             completionHandler(true)
-
         }
+        
         deleteAction.image = UIImage(systemName: "trash")
         let config = UISwipeActionsConfiguration(actions: [deleteAction])
         config.performsFirstActionWithFullSwipe = false // 滑到底直接刪除
         return config
+    }
+    
+    func preparingScheduleData(indexPath: IndexPath, completion: @escaping() -> Void) {
+
+        fetchJourneyDayByDayData(indexPath: indexPath) { [self]
+            index,dbdPlace in
+            print("\(index)~~fetchJourneyDayByDayData")
+            if dbdPlace[0].time != 0 {
+                for place in dbdPlace {
+                    userSchedules[indexPath.section].dayByDaySchedule[index].places.append(place)
+                }
+            }
+           
+            if index == userSchedules[indexPath.section].numberOfDays-1 {
+                // passing data
+//                journeyVC.userSchedules = [userSchedules[indexPath.section]]
+                journeyVC.journeyID = userSchedules[indexPath.section].journeyID
+                print("journeyVC.userSchedules:",journeyVC.userSchedules)
+                journeyVC.setupTableHeaderView()
+                completion()
+            }
+        }
 
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let section = indexPath.section
-        getUserJourneyInfoData { [self] in
+        preparingScheduleData(indexPath: indexPath) { [self] in
+            print("preparingScheduleData")
             if let nav = self.navigationController {
-    //            journeyVC.scheduleIndex = section
-                journeyVC.userSchedules = [self.userSchedules[section]]
-                nav.pushViewController(journeyVC, animated: true)
+                journeyVC.getUserJourneyInfoData{ [self] in
+                                
+                    nav.pushViewController(journeyVC, animated: true)
+                }
+                
             }
         }
-//        if let nav = self.navigationController {
-////            journeyVC.scheduleIndex = section
-//            journeyVC.userSchedules = [self.userSchedules[section]]
-//            nav.pushViewController(journeyVC, animated: true)
-//        }
+        
+
     }
+
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         100
