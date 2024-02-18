@@ -104,7 +104,7 @@ class CreateScheduleViewController: UIViewController {
         concourseVC.getUserJourneyCount { [weak self] journeyCount in
             guard let self = self else { return }
             self.concourseVC.tableHeaderView.countLabel.text = "\(journeyCount)"
-            concourseVC.getUserJourneyInfoData {
+            concourseVC.fetchAllJourneyList {
                 self.concourseVC.scheduleTableView.reloadData()
             }
         }
