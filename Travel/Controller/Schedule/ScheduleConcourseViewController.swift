@@ -135,7 +135,7 @@ class ScheduleConcourseViewController: UIViewController {
 
         userSchedules.removeAll()
 
-        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] snapshot in
+        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] (snapshot) in
             guard let self = self else { return }
             for child in snapshot.children {
                 // 把取得的 snapshot 轉換回 DataSnapshot 型別 -> 取得子節點的值 -> 將 value 填入 userSchedules
@@ -164,45 +164,42 @@ class ScheduleConcourseViewController: UIViewController {
 //        ref.removeAllObservers()
     }
     
-    func getNumberOfDaysOfSelectedJourney(indexPath: IndexPath, completion: @escaping(Int) -> Void) {
-        var numberOfDays = 0
-        ref.child("journeys/journeyID/\(userSchedules[indexPath.section].journeyID)/info/numberOfDays").observe(.value) { snapshot in
-            numberOfDays = snapshot.value as! Int
-            completion(numberOfDays)
-        }
-    }
+//    func getNumberOfDaysOfSelectedJourney(indexPath: IndexPath, completion: @escaping(Int) -> Void) {
+//        var numberOfDays = 0
+//        ref.child("journeys/journeyID/\(userSchedules[indexPath.section].journeyID)/info/numberOfDays").observe(.value) { snapshot in
+//            numberOfDays = snapshot.value as! Int
+//            completion(numberOfDays)
+//        }
+//    }
     
     func fetchDayByDayDataOfSelectedJourney(indexPath: IndexPath, completion: @escaping ((Int,[DayByDayPlace])) -> Void) {
-        getNumberOfDaysOfSelectedJourney(indexPath: indexPath) { [weak self] (numberOfDays) in
+        let journeyID = self.userSchedules[indexPath.section].journeyID
+        let numberOfDays = self.userSchedules[indexPath.section].numberOfDays
+        
+        self.ref.child("journeys/journeyID/\(journeyID)/dayByDay").observe(.value) { [weak self] (snapshot) in
             guard let self = self else { return }
-            self.ref.child("journeys/journeyID/\(self.userSchedules[indexPath.section].journeyID)/dayByDay").observe(.value) { (snapshot) in
-//                guard let self = self else { return }
-
-                for i in 1...numberOfDays {
-                    let daySnap = snapshot.childSnapshot(forPath: "Day\(i)")
-                    let placeSnap = daySnap.childSnapshot(forPath: "places")
-
-                    if let placeValue = placeSnap.value {
-                        do {
-                            let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: placeValue)
-                            self.ref.removeAllObservers()
-                            completion((i-1,model))
-                        } catch {
-                            // when 沒有地點資料，傳一個 timeInterval 為 0 的 fake data
-                            print("行程Day\(i)沒有已存地點")
-                            self.ref.removeAllObservers()
-                            completion((i-1,[DayByDayPlace(time: 0, place: "沒有已存地點")]))
-    //                        print(error)
-                        }
-                       
+            for i in 1...numberOfDays {
+                let daySnap = snapshot.childSnapshot(forPath: "Day\(i)")
+                let placeSnap = daySnap.childSnapshot(forPath: "places")
+                if let placeValue = placeSnap.value {
+                    do {
+                        let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: placeValue)
+                        self.ref.removeAllObservers()
+                        completion((i-1,model))
+                    } catch {
+                        // when 沒有地點資料，傳一個 timeInterval 為 0 的 fake data，之後用該 timeInterval 判斷何時發動 completion
+                        print("行程Day\(i)沒有已存地點")
+                        self.ref.removeAllObservers()
+                        completion((i-1,[DayByDayPlace(time: 0, place: "沒有已存地點")]))
+//                        print(error)
                     }
-
+                   
                 }
 
             }
+
         }
 
-//        ref.removeAllObservers()
     }
  
 //    @objc func saveUserScheduleData() {
@@ -213,7 +210,6 @@ class ScheduleConcourseViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        
         // 取得使用者行程筆數後，依照回傳 count 設定 table header view
         getUserJourneyCount { [weak self] journeyCount in
             guard let self = self else { return }
@@ -308,14 +304,19 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section = indexPath.section
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] action, view, completionHandler in
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
             guard let self = self else { return }
             
             // realtime db
             self.ref.child("journeys/journeyID/\(self.userSchedules[section].journeyID)").removeValue()
-            // 刷新表格
+            
+            // local
             self.userSchedules.remove(at: section)
+            
+            // table view
             self.scheduleTableView.deleteSections([indexPath.section], with: .automatic)
+            
+            // update header view
             self.getUserJourneyCount { count in
                 self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
             }
@@ -329,20 +330,22 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     }
     
     func prepareSelectedJourneyData(indexPath: IndexPath, completion: @escaping() -> Void) {
-        fetchDayByDayDataOfSelectedJourney(indexPath: indexPath) { [self]
+        print("indexPath.section:",indexPath.section)
+        fetchDayByDayDataOfSelectedJourney(indexPath: indexPath) { [weak self]
             (index,dbdPlace) in
+            guard let self = self else { return }
             print("\(index)~~fetchJourneyDayByDayData")
             if dbdPlace[0].time != 0 {
                 for place in dbdPlace {
-                    userSchedules[indexPath.section].dayByDaySchedule[index].places.append(place)
+                    self.userSchedules[indexPath.section].dayByDaySchedule[index].places.append(place)
                 }
             }
            
-            if index == userSchedules[indexPath.section].numberOfDays-1 {
-                // 這一步只將被點擊的行程 journeyID 傳給 journeyVC
-                journeyVC.journeyID = userSchedules[indexPath.section].journeyID
-                print("journeyVC.userSchedules:",journeyVC.userSchedules)
-                journeyVC.setupTableHeaderView()
+            // 傳入之 index = 行程最後一天時，發動 completion
+            if index == self.userSchedules[indexPath.section].numberOfDays-1 {
+                // passing data: 將被點擊的行程 journeyID 傳給 journeyVC，之後用於抓取 db 資料
+                self.journeyVC.journeyID = self.userSchedules[indexPath.section].journeyID
+
                 completion()
             }
         }
@@ -353,6 +356,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
         prepareSelectedJourneyData(indexPath: indexPath) { [weak self] in
             guard let self = self else { return }
             if let nav = self.navigationController {
+                // 還是要view will appear才發動??
                 self.journeyVC.getUserJourneyInfoData {
                     nav.pushViewController(self.journeyVC, animated: true)
                 }

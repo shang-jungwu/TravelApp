@@ -49,7 +49,7 @@ class JourneyViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-20)
             make.height.equalTo(120)
         }
-//        setupTableHeaderView()
+        setupTableHeaderView()
         
         view.addSubview(customTabBar)
         customTabBar.snp.makeConstraints { make in
@@ -103,15 +103,8 @@ class JourneyViewController: UIViewController {
     func setupTableHeaderView() {
         tableHeaderView.backgroundColor = .white
         tableHeaderView.layer.cornerRadius = 10
-
         tableHeaderView.userImageView.isHidden = true
         tableHeaderView.countStack.isHidden = true
-        
-//        tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
-//        tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
-//        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate))
-//        tableHeaderView.departureDayLabel.text = dateStr
-//        tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
         tableHeaderView.editButton.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
     }
     
@@ -131,6 +124,14 @@ class JourneyViewController: UIViewController {
         
     }
     
+    func updateTableHeaderViewInfo() {
+        tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
+        tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
+        let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate))
+        tableHeaderView.departureDayLabel.text = dateStr
+        tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
+    }
+    
 //    func saveUserScheduleData(completion: () -> Void) {
 //        if let newScheduleData = try? encoder.encode(userSchedules.self) {
 //            defaults.set(newScheduleData, forKey: "UserSchedule")
@@ -144,7 +145,6 @@ class JourneyViewController: UIViewController {
 
         // MARK: - realtime database
         fetchJourneyDayByDayData { [self] in
-            
             print("journeyVC",userSchedules)
             journeyTableView.reloadData()
         }
@@ -165,84 +165,77 @@ class JourneyViewController: UIViewController {
 
     }
     
-    func getNumberOfDays(completion: @escaping(Int) -> Void) {
-        var numberOfDays = 0
-        ref.child("journeys/journeyID/\(journeyID)/info/numberOfDays").observe(.value) { snapshot in
-            numberOfDays = snapshot.value as! Int
-            completion(numberOfDays)
-        }
-    }
+//    func getNumberOfDays(completion: @escaping(Int) -> Void) {
+//        var numberOfDays = 0
+//        ref.child("journeys/journeyID/\(journeyID)/info/numberOfDays").observe(.value) { snapshot in
+//            numberOfDays = snapshot.value as! Int
+//            completion(numberOfDays)
+//        }
+//    }
     
     func getUserJourneyInfoData(completion: @escaping () -> Void) {
         userSchedules.removeAll()
         print("getUserJourneyInfoData")
-        ref.child("journeys/journeyID").observeSingleEvent(of: .value) { [weak self] snapshot in
+        ref.child("journeys/journeyID/\(journeyID)").observeSingleEvent(of: .value) { [weak self] (snapshot) in
             guard let self = self else { return }
-            for child in snapshot.children {
-                // 把取得的snapshot轉換回DataSnapshot型別，再取得子節點的值
-                if let childSnapShot = child as? DataSnapshot {
-                    let journeyID = childSnapShot.key
-                    let createrUID = childSnapShot.childSnapshot(forPath: "info/createrUID").value as! String
-                    let departureDate = childSnapShot.childSnapshot(forPath: "info/departureDate").value as! Double
-                    let destination = childSnapShot.childSnapshot(forPath: "info/destination").value as! String
-                    let numberOfDays = childSnapShot.childSnapshot(forPath: "info/numberOfDays").value as! Int
-                    let scheduleTitle
- = childSnapShot.childSnapshot(forPath: "info/scheduleTitle").value as! String
-                    var dbdArr = [DayByDaySchedule]()
-                    for i in 1...numberOfDays {
-                        let dbdDate = childSnapShot.childSnapshot(forPath: "dayByDay/Day\(i)/date").value as! Double
-                        dbdArr.append(DayByDaySchedule(date: dbdDate))
-                    }
-                    
-                    let journey = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr)
-                    self.userSchedules.append(journey)
-                    
-                    // header view
-                    tableHeaderView.scheduleTitleLabel.text = userSchedules[scheduleIndex].scheduleTitle
-                    tableHeaderView.destinationLabel.text = userSchedules[scheduleIndex].destination
-                    let dateStr = dateUtility.convertDateToString(date: Date(timeIntervalSince1970: userSchedules[scheduleIndex].departureDate))
-                    tableHeaderView.departureDayLabel.text = dateStr
-                    tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
-                    
-                }
+            
+            let infoSnapshot = snapshot.childSnapshot(forPath: "info")
+            let createrUID = infoSnapshot.childSnapshot(forPath: "createrUID").value as! String
+            let departureDate = infoSnapshot.childSnapshot(forPath: "departureDate").value as! Double
+            let destination = infoSnapshot.childSnapshot(forPath: "destination").value as! String
+            let numberOfDays = infoSnapshot.childSnapshot(forPath: "numberOfDays").value as! Int
+            let scheduleTitle = infoSnapshot.childSnapshot(forPath: "scheduleTitle").value as! String
+            
+            let dbdSnapshot = snapshot.childSnapshot(forPath: "dayByDay")
+            var dbdDateArr = [DayByDaySchedule]()
+            for i in 1...numberOfDays {
+                let dbdDate = dbdSnapshot.childSnapshot(forPath: "Day\(i)/date").value as! Double
+                dbdDateArr.append(DayByDaySchedule(date: dbdDate))
             }
-            ref.removeAllObservers()
+
+            let journey = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdDateArr)
+            self.userSchedules.append(journey)
+
+            // update info in header view
+            updateTableHeaderViewInfo()
+            
+            self.ref.removeAllObservers()
             completion()
         }
-        ref.removeAllObservers()
+
     }
     
     func fetchJourneyDayByDayData(completion: @escaping() -> Void) {
         var currentPlaces = [DayByDayPlace]()
-        
-        getNumberOfDays { numberOfDays in
-            for i in 1...numberOfDays {
-                self.ref.child("journeys/journeyID/\(self.journeyID)/dayByDay/Day\(i)").observe(.value) { [weak self] snapshot in
-                    guard let self = self else { return }
-                    if snapshot.hasChild("places") {
-                        let childSnapShot = snapshot.childSnapshot(forPath: "places")
+        for i in 1...userSchedules[0].numberOfDays {
+            self.ref.child("journeys/journeyID/\(self.journeyID)/dayByDay/Day\(i)").observe(.value) { [weak self] snapshot in
+                guard let self = self else { return }
+                if snapshot.hasChild("places") {
+                    let childSnapShot = snapshot.childSnapshot(forPath: "places")
+                    if let childSnapShotValue = childSnapShot.value {
+                        do {
+                            let decodedData = try FirebaseDecoder().decode([DayByDayPlace].self, from: childSnapShotValue)
 
-                        if let childSnapShotValue = childSnapShot.value {
-                            do {
-                                let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: childSnapShotValue)
-
-                                currentPlaces = model
-                                self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = currentPlaces
-                                completion()
-                            } catch let error {
-                                print(error)
-                            }
+                            currentPlaces = decodedData
+                            self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = currentPlaces
+                            ref.removeAllObservers()
+                            completion()
+                        } catch let error {
+                            print(error)
                         }
-
                     }
+
+                } else {
+                    // no place saved
+                    print("no place saved")
+                    completion()
                 }
-              
             }
+          
         }
 
-        ref.removeAllObservers()
-
         
+//        ref.removeAllObservers()
 
     }
     
