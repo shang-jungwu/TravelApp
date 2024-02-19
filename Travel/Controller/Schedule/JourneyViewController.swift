@@ -98,6 +98,8 @@ class JourneyViewController: UIViewController {
         journeyTableView.register(JourneyTableViewCell.self, forCellReuseIdentifier: "JourneyTableViewCell")
         journeyTableView.isEditing = false
         journeyTableView.backgroundColor = TravelAppColor.lightGrayBackgroundColor
+        journeyTableView.rowHeight = UITableView.automaticDimension
+        journeyTableView.estimatedRowHeight = 100
     }
 
     func setupTableHeaderView() {
