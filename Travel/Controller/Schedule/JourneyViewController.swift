@@ -109,7 +109,7 @@ class JourneyViewController: UIViewController {
     }
     
     @objc func editScheduleInfo() {
-        createScheduleVC.caller = "schedule"
+        createScheduleVC.caller = "journeyVC"
         createScheduleVC.journeyVC = self
         
         // 設定為保留原資料的狀態方便修改
@@ -145,7 +145,8 @@ class JourneyViewController: UIViewController {
 
         // MARK: - realtime database
         fetchJourneyDayByDayData { [self] in
-            print("journeyVC",userSchedules)
+
+            updateTableHeaderViewInfo()
             journeyTableView.reloadData()
         }
         
@@ -165,17 +166,11 @@ class JourneyViewController: UIViewController {
 
     }
     
-//    func getNumberOfDays(completion: @escaping(Int) -> Void) {
-//        var numberOfDays = 0
-//        ref.child("journeys/journeyID/\(journeyID)/info/numberOfDays").observe(.value) { snapshot in
-//            numberOfDays = snapshot.value as! Int
-//            completion(numberOfDays)
-//        }
-//    }
     
     func getUserJourneyInfoData(completion: @escaping () -> Void) {
-        userSchedules.removeAll()
-        print("getUserJourneyInfoData")
+        ref.removeAllObservers()
+        userSchedules = []
+
         ref.child("journeys/journeyID/\(journeyID)").observeSingleEvent(of: .value) { [weak self] (snapshot) in
             guard let self = self else { return }
             
@@ -195,10 +190,7 @@ class JourneyViewController: UIViewController {
 
             let journey = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdDateArr)
             self.userSchedules.append(journey)
-
-            // update info in header view
-            updateTableHeaderViewInfo()
-            
+            print("journeyVC getUserJourneyInfoData:\(userSchedules)")
             self.ref.removeAllObservers()
             completion()
         }
@@ -207,6 +199,7 @@ class JourneyViewController: UIViewController {
     
     func fetchJourneyDayByDayData(completion: @escaping() -> Void) {
         var currentPlaces = [DayByDayPlace]()
+        ref.removeAllObservers()
         for i in 1...userSchedules[0].numberOfDays {
             self.ref.child("journeys/journeyID/\(self.journeyID)/dayByDay/Day\(i)").observe(.value) { [weak self] snapshot in
                 guard let self = self else { return }
@@ -218,9 +211,10 @@ class JourneyViewController: UIViewController {
 
                             currentPlaces = decodedData
                             self.userSchedules[scheduleIndex].dayByDaySchedule[i-1].places = currentPlaces
-                            ref.removeAllObservers()
+                            self.ref.removeAllObservers()
                             completion()
                         } catch let error {
+                            self.ref.removeAllObservers()
                             print(error)
                         }
                     }
@@ -228,14 +222,11 @@ class JourneyViewController: UIViewController {
                 } else {
                     // no place saved
                     print("no place saved")
+                    self.ref.removeAllObservers()
                     completion()
                 }
             }
-          
         }
-
-        
-//        ref.removeAllObservers()
 
     }
     
@@ -339,29 +330,35 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
                 var numberOfDays = self.userSchedules[scheduleIndex].numberOfDays
                 if numberOfDays > 1 {
                     numberOfDays -= 1
-                    // 更新資料
+                    
+                    // local
                     self.userSchedules[scheduleIndex].numberOfDays = numberOfDays
                     self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
 
                     // realtime db
-                    self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(sender.tag)").removeValue()
-                    
+                    self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(sender.tag+1)").removeValue()
+                    self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/info/numberOfDays").setValue(numberOfDays)
                     
                     // hope: 刪除時 後一天的時間自動替換成-1天
                     // try:
-                    let leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
-//                    print("left date", leftDays)
+                    // 刪掉某天之後剩下的幾天
+                    var leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
+                    
+                    // 處理遞補 to do
                     for i in sender.tag..<leftDays.count {
-                        let newDate = leftDays[i].date - 86400
-                        
+                        leftDays[i].date -= 86400
+                        let newDate = leftDays[i].date
                         self.userSchedules[scheduleIndex].dayByDaySchedule[i].date = newDate
-                        
-                        // realtime db
-                        self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(i)/date").setValue(newDate)
-                        
                     }
+                    var dbdUpdates = [DayByDaySchedule]()
+                    for i in 0..<leftDays.count {
+                        // realtime db
+                        self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(leftDays[i].date)
+
+                    }
+                    
                         self.journeyTableView.reloadData()
-                        self.setupTableHeaderView()
+                        self.updateTableHeaderViewInfo()
                         self.setupCustomTabBar()
 //                    self.saveUserScheduleData {
 //                        self.journeyTableView.reloadData()
@@ -471,8 +468,13 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         
         let deleteAction = UIContextualAction(style: .destructive, title: "刪除地點") { [weak self] action, view, completionHandler in
             guard let self = self else { return }
+            // local
+            userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places.remove(at: indexPath.row)
+            
             // realtime
             self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)/places/\(indexPath.row)").removeValue()
+            
+            // table view
             self.journeyTableView.deleteRows(at: [indexPath], with: .automatic)
 //            var placeArr = [DayByDayPlace]()
 //            fetchCurrentPlaces(indexPath: indexPath) { result in
@@ -521,10 +523,10 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
                 completion(.success(currentPlaces))
             } catch let error {
                 print("error:",error.localizedDescription)
+                ref.removeAllObservers()
                 completion(.failure(error))
             }
         }
-        ref.removeAllObservers()
     }
     
 } // ex table view end
