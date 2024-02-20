@@ -145,26 +145,14 @@ class JourneyViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
 
-        // MARK: - realtime database
+        journeyTableView.isEditing = false
+        setupCustomTabBar()
+        updateTableHeaderViewInfo()
+         
+        // MARK: - realtime database fetch data
         fetchJourneyDayByDayData { [self] in
-
-            updateTableHeaderViewInfo()
             journeyTableView.reloadData()
         }
-        
-//        fetchJourneyDayByDayData { [self] in
-//            journeyTableView.reloadData()
-//            setupTableHeaderView()
-//            journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
-//        }
-        ///
-        
-        
-        journeyTableView.isEditing = false
-//        journeyTableView.reloadData()
-//        journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: 0), at: .top, animated: false)
-//        setupTableHeaderView()
-        setupCustomTabBar()
 
     }
     

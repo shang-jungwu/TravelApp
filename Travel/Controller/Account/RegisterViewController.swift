@@ -8,10 +8,15 @@
 import UIKit
 import SnapKit
 import SPAlert
+import FirebaseDatabase
 import FirebaseAuth
+import CodableFirebase
 
 
 class RegisterViewController: UIViewController {
+    
+    // realtime database
+    let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
 
     let uiSettingUtility = UISettingUtility()
 
@@ -86,13 +91,13 @@ class RegisterViewController: UIViewController {
             make.height.equalTo(50)
         }
 
-        view.addSubview(dobStackView)
-        dobStackView.snp.makeConstraints { make in
-            make.top.equalTo(pwdDoubleCheckTextField.snp.bottom).offset(20)
-            make.leading.equalToSuperview().offset(30)
-            make.trailing.equalToSuperview().offset(-30)
-            make.height.equalTo(50)
-        }
+//        view.addSubview(dobStackView)
+//        dobStackView.snp.makeConstraints { make in
+//            make.top.equalTo(pwdDoubleCheckTextField.snp.bottom).offset(20)
+//            make.leading.equalToSuperview().offset(30)
+//            make.trailing.equalToSuperview().offset(-30)
+//            make.height.equalTo(50)
+//        }
         
         view.addSubview(registerButton)
         registerButton.snp.makeConstraints { make in
@@ -121,7 +126,15 @@ class RegisterViewController: UIViewController {
                 if pwd != pwdDoubleCheck {
                     showAlert(title: "註冊失敗", message: "密碼不一致", status: false)
                 } else {
-                    createUser(account: account, pwd: pwd) {
+                    createUser(account: account, pwd: pwd) { [weak self] (uid,userName) in
+                        guard let self = self else { return }
+                        print("createUser(account: \(account), pwd: \(pwd)")
+                        let userInfo = [
+                            "userName":userName,
+                            "registerTime":Date().timeIntervalSince1970,
+                            "journeys":[String]()
+                        ] as [String:Any]
+                        ref.child("users/\(uid)").setValue(userInfo)
                         if let nav = self.navigationController {
                             nav.popToRootViewController(animated: true)
                         }
@@ -135,7 +148,7 @@ class RegisterViewController: UIViewController {
         
     }
     
-    func createUser(account: String, pwd: String, completion: @escaping () -> Void) {
+    func createUser(account: String, pwd: String, completion: @escaping ((String,String)) -> Void) {
         Auth.auth().createUser(withEmail: account, password: pwd) {
             [weak self] result, error in
             guard let self = self else { return }
@@ -150,7 +163,8 @@ class RegisterViewController: UIViewController {
             }
             if let userName = self.userNameTextField.text {
                 self.changeUserProfile(displayName: userName)
-                completion()
+                let uid = user.uid
+                completion((uid,userName))
             }
             
             print("emai:\(user.email ?? ""), uid:\(user.uid)")
@@ -175,7 +189,7 @@ class RegisterViewController: UIViewController {
     
     func showAlert(title: String, message: String, status: Bool) {
         let alert = UIAlertController(title: title, message: message , preferredStyle: .alert)
-        let successAction = UIAlertAction(title: "OK", style: .cancel) { action in
+        let successAction = UIAlertAction(title: "OK", style: .cancel) { (action) in
             if let nav = self.navigationController {
                 nav.popViewController(animated: true)
             }

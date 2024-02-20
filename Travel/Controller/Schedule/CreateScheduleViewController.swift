@@ -15,8 +15,8 @@ import CodableFirebase
 class CreateScheduleViewController: UIViewController {
     
     enum InfoChangeStatus {
-        case depOrNumBothChange
-        case otherChange
+        case depOrNumDidChange
+        case depOrNumNotChange
         case none
     }
 
@@ -27,6 +27,7 @@ class CreateScheduleViewController: UIViewController {
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     var createrUID = ""
     var journeyID = ""
+    var userJourneyList = [String]()
     //
     var changeStatus = InfoChangeStatus.none
     var caller: String = ""
@@ -73,11 +74,16 @@ class CreateScheduleViewController: UIViewController {
             dbdDateTimeInterval += 86400
 
         }
+        // 取得使用者 uid
         createrUID = Auth.auth().currentUser!.uid
-        
+                
         // 自動產生一個唯一的 journeyID
         journeyID = ref.child("journeys").childByAutoId().key ?? ""
-        
+        userJourneyList.append(journeyID)
+        concourseVC.userJourneyList = userJourneyList
+        ref.child("users/\(createrUID)/journeys").setValue(userJourneyList)
+        concourseVC.tableHeaderView.countLabel.text =  "\(userJourneyList.count)"
+ 
         let newJourneyData = [
             "createrUID":createrUID,
             "scheduleTitle":schedultTitleTextField.text!,
@@ -92,17 +98,34 @@ class CreateScheduleViewController: UIViewController {
             am8DateTimeInterval += Double(86400)
         }
         
-        
-        concourseVC.getUserJourneyCount { [weak self] journeyCount in
-            guard let self = self else { return }
-            self.concourseVC.tableHeaderView.countLabel.text = "\(journeyCount)"
-            concourseVC.fetchAllJourneyList {
-                self.concourseVC.scheduleTableView.reloadData()
-            }
+        concourseVC.fetchAllJourneyList {
+            self.concourseVC.scheduleTableView.reloadData()
         }
+        
+//        concourseVC.getUserJourneyCount { [weak self] journeyCount in
+//            guard let self = self else { return }
+//            print("journeyCount:\(journeyCount)")
+////            concourseVC.fetchAllJourneyList {
+////                self.concourseVC.scheduleTableView.reloadData()
+////            }
+//        }
 
         self.dismiss(animated: true)
     }
+    
+    
+//    func fetchUserSavedJourneyList() {
+//        // 取得使用者所有已存行程 JourneyID
+//        ref.child("users/\(createrUID)").observeSingleEvent(of: .value) { snapshot in
+//            if snapshot.hasChild("journeys") {
+//                let journeyChildrenSnap = snapshot.childSnapshot(forPath: "journeys").children
+//                print("journeyChildrenSnap:\(journeyChildrenSnap)")
+//                
+//            }
+//        }
+//        
+////        userSavedJourneys.append("")
+//    }
     
     func prepareNewDBD(newNumberOfDays: Int) {
         // 準備新的dbd陣列，清空所有資訊
@@ -162,48 +185,54 @@ class CreateScheduleViewController: UIViewController {
         }
         
         if newDepDate != originDepartureDay || newNumberOfDays != originNumberOfDays {
-            changeStatus = .depOrNumBothChange
+            changeStatus = .depOrNumDidChange
         } else {
-            changeStatus = .otherChange
+            changeStatus = .depOrNumNotChange
         }
         
         switch changeStatus {
             
-        case .depOrNumBothChange:
-            print(".depOrNumBothChange")
+        case .depOrNumDidChange:
+            print(".depOrNumDidChange")
             // 只要出發日或天數有變化就重做dbd(＝行程全部重置)
             journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
             prepareNewDBD(newNumberOfDays: newNumberOfDays)
             
             // local
+            journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
+            journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
             journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays = newNumberOfDays
             journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate = newDepDate
+            
+            //  realtime - info
+            let infoDataUpdates = [
+                "scheduleTitle":newTitle!,
+                "destination":newDestination!,
+                "departureDate":newDepDate,
+                "createrUID":journeyVC.userSchedules[journeyVC.scheduleIndex].createrID,
+                "numberOfDays":newNumberOfDays
+            ] as [String : Any]
+            
+            let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info":infoDataUpdates]
+            ref.updateChildValues(childUpdates)
 
-
-            // realtime
-            ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info/departureDate").setValue(newDepDate)
-            ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info/numberOfDays").setValue(newNumberOfDays)
+            // realtime - day by day
             ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay").removeValue()
 
             for i in 0..<newNumberOfDays {
                 let newDate = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[i].date
-                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(newDate)
                 
-                print(i)
+                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(newDate)
             }
-            
-                   
-            
             completion()
            
-        case .otherChange:
-            // 除出發日/天數外的其他值改變的時候行程不動
+        case .depOrNumNotChange:
+            // 出發日/天數不變時，只更新 info
             // local
-            print(".otherChange")
             journeyVC.userSchedules[journeyVC.scheduleIndex].scheduleTitle = newTitle!
             journeyVC.userSchedules[journeyVC.scheduleIndex].destination = newDestination!
             
-            //  MARK: - realtime
+            //  realtime
             let infoDataUpdates = [
                 "scheduleTitle":newTitle!,
                 "destination":newDestination!,
@@ -377,7 +406,6 @@ class CreateScheduleViewController: UIViewController {
         }
 
         let addAction = UIAlertAction(title: "選擇日期", style: .default) { [self] _ in
-//            print("select Date")
             departureDateTextField.text = dateUtility.convertDateToString(date: datePicker.date)
         }
         let cancelAction = UIAlertAction(title: "取消", style: .cancel)
@@ -391,6 +419,8 @@ class CreateScheduleViewController: UIViewController {
    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
+        
+        print("userJourneyList",userJourneyList)
         switch caller {
         case  "journeyVC":
            break
