@@ -74,42 +74,33 @@ class FavoriteViewController: UIViewController {
     func fetchCurrentPlaces(completion: @escaping (Result<[DayByDayPlace],Error>) -> Void) {
         // MARK: - realtime database
         ref.removeAllObservers()
-//        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observe(.value) { [weak self] snapshot,Result  in
-//            guard let self = self else { return }
-//            if snapshot.hasChild("places") {
-//                let childSnapShot = snapshot.childSnapshot(forPath: "places")
-//                print("childSnapShot;\(childSnapShot)")
-//                if let childSnapShotValue = childSnapShot.value {
-//                    do {
-//                        let dbdPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: childSnapShotValue)
-//                        completion(.success(dbdPlaces))
-//                    } catch let error {
+        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)").observeSingleEvent(of: .value) { [weak self] (snapshot, Result) in
+            guard let self = self else { return }
+            if snapshot.hasChild("places") {
+                if let placesValue = snapshot.childSnapshot(forPath: "places").value {
+                    do {
+                        let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: placesValue)
+                        ref.removeAllObservers()
+                        completion(.success(currentPlaces))
+                    } catch let error {
+                        print("fetchCurrentPlaces error:",error.localizedDescription)
 //                        completion(.failure(error))
-//                    }
-//                }
-//                
-//            } else {
-//                print("snapshot has no Child")
-//
-//
-//            }
-//        }
-        ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").observeSingleEvent(of: .value) { snapshot, Result in
-            guard let value = snapshot.value else { return }
-            print(value)
-            do {
-                let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
+                    }
+                }
+
+            } else {
+                // no saved place
+                ref.removeAllObservers()
+                print("FavoriteVC Check: Day\(calledButtonTag+1) no saved place")
+                let currentPlaces = [DayByDayPlace]()
                 completion(.success(currentPlaces))
-            } catch let error {
-                print("fetchCurrentPlaces error:",error.localizedDescription)
-                completion(.failure(error))
             }
+
         }
     }
     
     @objc func addPlaceFromFavorite() {
         // 從雲端獲取已存地點後append新選的地點
-        // MARK: - weal self needed?
         fetchCurrentPlaces { [weak self] result in
             guard let self = self else { return }
             
@@ -132,25 +123,25 @@ class FavoriteViewController: UIViewController {
             switch result {
             case .success(let currentPlaces):
                 self.placeArr = currentPlaces + selectedPlacesArr
-                let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
-                
+                // realtime db
+                let placeUpdatedData = try! FirebaseEncoder().encode(placeArr)
                 let childUpdates = ["/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places":placeUpdatedData]
                 ref.updateChildValues(childUpdates)
-                print("接續新增")
-                print("行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
-                
-                
+
+                // local
+                journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag].places = placeArr
+                print("Day\(calledButtonTag+1)行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
                 
             case .failure(let error):
                 print(error)
                 // when nil
-                let placeUpdatedData = try! FirebaseEncoder().encode(selectedPlacesArr.self)
-                
-                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").setValue(placeUpdatedData)
-                print("行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
+//                let placeUpdatedData = try! FirebaseEncoder().encode(selectedPlacesArr.self)
+//                
+//                ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(calledButtonTag+1)/places").setValue(placeUpdatedData)
+//                print("行程：\(journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[calledButtonTag])")
             }
             
-//            self.journeyVC.journeyTableView.reloadData()
+            self.journeyVC.journeyTableView.reloadData()
             self.dismiss(animated: true)
         }
  
@@ -194,13 +185,13 @@ class FavoriteViewController: UIViewController {
     }
     
     
-    func saveUserScheduleData(completion: () -> Void) {
-        if let newScheduleData = try? encoder.encode(journeyVC.userSchedules.self) {
-            defaults.set(newScheduleData, forKey: "UserSchedule")
-            completion()
-        }
-        
-    }
+//    func saveUserScheduleData(completion: () -> Void) {
+//        if let newScheduleData = try? encoder.encode(journeyVC.userSchedules.self) {
+//            defaults.set(newScheduleData, forKey: "UserSchedule")
+//            completion()
+//        }
+//        
+//    }
     
     func setupUI() {
         view.addSubview(favoriteTableView)
@@ -225,7 +216,6 @@ class FavoriteViewController: UIViewController {
     
     
     func getUserFavoriteListData(completion: () -> Void) {
-
         if let defaultData = defaults.data(forKey: "UserFavoriteList") {
             if let decodedData = try? decoder.decode([TravelData].self, from: defaultData) {
                 // on main thread, no need escaping
@@ -275,32 +265,25 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let index = indexPath.row
-        
         if caller == "JourneyVC" {
-//            var selectedRows = self.favoriteTableView.indexPathsForSelectedRows
-//            print(selectedRows!)
-            
+            //
         } else {
             if let nav = self.navigationController {
                 // passing data
                 detailVC.placeInfoData = self.favoriteListData
                 detailVC.dataIndex = index // 被點擊的那一格index
-                
                 nav.pushViewController(detailVC, animated: true)
             }
         }
-        
-       
     }
 
     // 右側刪除按鈕
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let index = indexPath.row
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [unowned self] (action, view, completionHandler) in
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [unowned self] (action, view, completion) in
 
             favoriteListData.remove(at: index)
             
-            let encoder = JSONEncoder()
             if let newFavoriteListData = try? encoder.encode(favoriteListData) {
                 defaults.set(newFavoriteListData, forKey: "UserFavoriteList")
             } else {
@@ -309,7 +292,7 @@ extension FavoriteViewController: UITableViewDelegate, UITableViewDataSource {
             
             favoriteTableView.deleteRows(at: [indexPath], with: .automatic)
 
-            completionHandler(true) // 告訴vc動作結束了
+            completion(true) // 告訴vc動作結束了
         }
         deleteAction.image = UIImage(systemName: "trash")
         let config = UISwipeActionsConfiguration(actions: [deleteAction])

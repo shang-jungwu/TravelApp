@@ -162,13 +162,6 @@ class ScheduleConcourseViewController: UIViewController {
 
     }
     
-//    func getNumberOfDaysOfSelectedJourney(indexPath: IndexPath, completion: @escaping(Int) -> Void) {
-//        var numberOfDays = 0
-//        ref.child("journeys/journeyID/\(userSchedules[indexPath.section].journeyID)/info/numberOfDays").observe(.value) { snapshot in
-//            numberOfDays = snapshot.value as! Int
-//            completion(numberOfDays)
-//        }
-//    }
     
     func fetchDayByDayDataOfSelectedJourney(indexPath: IndexPath, completion: @escaping ((Int,[DayByDayPlace])) -> Void) {
         let journeyID = self.userSchedules[indexPath.section].journeyID
@@ -178,16 +171,17 @@ class ScheduleConcourseViewController: UIViewController {
             for i in 1...self.userSchedules[indexPath.section].numberOfDays {
                 let daySnap = snapshot.childSnapshot(forPath: "Day\(i)")
                 let placeSnap = daySnap.childSnapshot(forPath: "places")
+
                 if let placeValue = placeSnap.value {
                     do {
                         let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: placeValue)
                         self.ref.removeAllObservers()
                         completion((i-1,model))
                     } catch {
-                        // when 沒有地點資料，傳一個 timeInterval 為 0 的 fake data，之後用該 timeInterval 判斷何時發動 completion
+                        // if 沒有地點資料，傳一個 timeInterval 為 0 的 fake place data，用該 timeInterval 判斷何時發動 completion
                         print("行程Day\(i)沒有已存地點")
                         self.ref.removeAllObservers()
-                        completion((i-1,[DayByDayPlace(time: 0, place: "沒有已存地點")]))
+                        completion((i-1,[DayByDayPlace(time: 0, place: "")]))
 //                        print(error)
                     }
                    
@@ -235,22 +229,7 @@ class ScheduleConcourseViewController: UIViewController {
 //            }
 //        }
 //    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(true)
-
-//        checkIfScheduleDataChanged {
-//            // show alert and save data
-//            let alert = UIAlertController(title: "更動已儲存", message: nil, preferredStyle: .alert)
-//            let saveAction = UIAlertAction(title: "OK", style: .default) { action in
-//                self.saveUserScheduleData()
-//            }
-//            alert.addAction(saveAction)
-//            self.present(alert, animated: true)
-//        }
         
-    }
-    
    
 
 } // class end
@@ -302,7 +281,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section = indexPath.section
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completionHandler) in
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除") { [weak self] (action, view, completion) in
             guard let self = self else { return }
             
             // realtime db
@@ -318,7 +297,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
             self.getUserJourneyCount { count in
                 self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
             }
-            completionHandler(true)
+            completion(true)
         }
         
         deleteAction.image = UIImage(systemName: "trash")

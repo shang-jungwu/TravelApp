@@ -181,6 +181,7 @@ class CreateScheduleViewController: UIViewController {
 
 
             // realtime
+            ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info/departureDate").setValue(newDepDate)
             ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/info/numberOfDays").setValue(newNumberOfDays)
             ref.child("/journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay").removeValue()
 

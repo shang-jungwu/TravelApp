@@ -203,7 +203,7 @@ class JourneyViewController: UIViewController {
         var currentPlaces = [DayByDayPlace]()
         ref.removeAllObservers()
         for i in 1...userSchedules[0].numberOfDays {
-            self.ref.child("journeys/journeyID/\(self.journeyID)/dayByDay/Day\(i)").observe(.value) { [weak self] snapshot in
+            self.ref.child("journeys/journeyID/\(self.journeyID)/dayByDay/Day\(i)").observeSingleEvent(of: .value) { [weak self] snapshot in
                 guard let self = self else { return }
                 if snapshot.hasChild("places") {
                     let childSnapShot = snapshot.childSnapshot(forPath: "places")
@@ -223,7 +223,7 @@ class JourneyViewController: UIViewController {
 
                 } else {
                     // no place saved
-                    print("no place saved")
+                    print("journeyVC check: no place saved")
                     self.ref.removeAllObservers()
                     completion()
                 }
@@ -338,30 +338,38 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
                     self.userSchedules[scheduleIndex].dayByDaySchedule.remove(at: sender.tag)
 
                     // realtime db
-                    self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(sender.tag+1)").removeValue()
+                    // delete all days in dbd node
+                    self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay").removeValue()
+                    // update numberOfDays
                     self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/info/numberOfDays").setValue(numberOfDays)
                     
                     // hope: 刪除時 後一天的時間自動替換成-1天
                     // try:
                     // 刪掉某天之後剩下的幾天
                     var leftDays = self.userSchedules[scheduleIndex].dayByDaySchedule
-                    
                     // 處理遞補 to do
                     for i in sender.tag..<leftDays.count {
                         leftDays[i].date -= 86400
                         let newDate = leftDays[i].date
                         self.userSchedules[scheduleIndex].dayByDaySchedule[i].date = newDate
-                    }
-                    var dbdUpdates = [DayByDaySchedule]()
-                    for i in 0..<leftDays.count {
-                        // realtime db
-                        self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(leftDays[i].date)
-
+                        for j in 0..<self.userSchedules[scheduleIndex].dayByDaySchedule[i].places.count {
+                            self.userSchedules[scheduleIndex].dayByDaySchedule[i].places[j].time -= 86400
+                        }
                     }
                     
-                        self.journeyTableView.reloadData()
-                        self.updateTableHeaderViewInfo()
-                        self.setupCustomTabBar()
+                    let newDbdSchedule = self.userSchedules[scheduleIndex].dayByDaySchedule
+                    for (i,newDbd) in newDbdSchedule.enumerated() {
+                        self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(newDbd.date)
+                        if let newPlacesData = try? FirebaseEncoder().encode(newDbd.places) {
+                            self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/places").setValue(newPlacesData)
+                        } else {
+                            print("fail to encode")
+                        }
+                    }
+ 
+                    self.journeyTableView.reloadData()
+                    self.updateTableHeaderViewInfo()
+                    self.setupCustomTabBar()
 //                    self.saveUserScheduleData {
 //                        self.journeyTableView.reloadData()
 //                        self.setupTableHeaderView()
@@ -443,63 +451,54 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         let movedPlace = userSchedules[scheduleIndex].dayByDaySchedule[section].places[index]
         userSchedules[scheduleIndex].dayByDaySchedule[section].places.remove(at: index)
         userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places.insert(movedPlace, at: destinationIndex)
+        // 移動後調整時間
         userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places[destinationIndex].time += 86400 * numberOfDayChange
         
         // realtime db
-//        var dbdSource = userSchedules[scheduleIndex].dayByDaySchedule
-//        dbdSource[section].places.remove(at: index)
-//        dbdSource[destinationSection].places.insert(movedPlace, at: destinationIndex)
-//        dbdSource[destinationSection].places[destinationIndex].time += 86400 * numberOfDayChange
+        // source
+        let updatedSourceDbdPlaces = userSchedules[scheduleIndex].dayByDaySchedule[section].places
+        if let updatedSourceDbdPlacesData = try? FirebaseEncoder().encode(updatedSourceDbdPlaces) {
+            ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(section+1)/places").setValue(updatedSourceDbdPlacesData)
+        } else {
+            print("fail to encode")
+        }
         
-        // MARK: - 暫時鎖掉
-//        let dbdSourceUpdatedData = try! FirebaseEncoder().encode(userSchedules[scheduleIndex].dayByDaySchedule[section].places)
-//        let dbdDestinationUpdatedData = try! FirebaseEncoder().encode(userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places)
-//        
-//        ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(section+1)/places").setValue(dbdSourceUpdatedData)
-//        
-//        ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(destinationSection+1)/places").setValue(dbdDestinationUpdatedData)
         
-//        fetchJourneyDayByDayData {
-//            tableView.reloadData()
-//        }
-        
+        // destination
+        let updatedDestinationDbdPlaces = userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places
+        if let updatedDestinationDbdPlacesData = try? FirebaseEncoder().encode(updatedDestinationDbdPlaces) {
+            ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(destinationSection+1)/places").setValue(updatedDestinationDbdPlacesData)
+        } else {
+            print("fail to encode")
+        }
+    
+        tableView.reloadData()
 
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "刪除地點") { [weak self] action, view, completionHandler in
+        let deleteAction = UIContextualAction(style: .destructive, title: "刪除地點") { [weak self] (action, view, completion) in
             guard let self = self else { return }
             // local
             userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places.remove(at: indexPath.row)
-            
             // realtime
-            self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)/places/\(indexPath.row)").removeValue()
-            
+            let updatedPlaces = userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places
+            if let updatedPlacesData = try? FirebaseEncoder().encode(updatedPlaces) {
+                // 刪掉當筆地點資料後，覆寫 Day\(indexPath.section+1)/places
+                self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)/places/\(indexPath.row)").removeValue()
+                self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)/places").setValue(updatedPlacesData)
+            } else {
+                print("fail to encode")
+            }
+
             // table view
-            self.journeyTableView.deleteRows(at: [indexPath], with: .automatic)
-//            var placeArr = [DayByDayPlace]()
-//            fetchCurrentPlaces(indexPath: indexPath) { result in
-//                switch result {
-//                case .success(let currentPlaces):
-//                    placeArr = currentPlaces
-//                    print(placeArr)
-//                    placeArr.remove(at: indexPath.row)
-//                    print("update:",placeArr)
-//                case .failure(_):
-//                    break
-//                }
-//                
-//                let placeUpdatedData = try! FirebaseEncoder().encode(placeArr.self)
-//                self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)").setValue(placeUpdatedData)
-//            }
-           
-            ///
-//            self.userSchedules[scheduleIndex].dayByDaySchedule[indexPath.section].places.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .automatic)
+
 //            self.saveUserScheduleData {
 //                self.journeyTableView.deleteRows(at: [indexPath], with: .automatic)
 //            }
-            completionHandler(true)
+            completion(true)
         }
         deleteAction.image = UIImage(systemName: "trash")
        
@@ -512,33 +511,12 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         cell.timePicker.date = Date(timeIntervalSince1970: time)
     }
     
-    
-    
-    func fetchCurrentPlaces(indexPath: IndexPath, completion: @escaping (Result<[DayByDayPlace],Error>) -> Void) {
-        // MARK: - realtime database
-        ref.removeAllObservers()
-        ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(indexPath.section+1)").observeSingleEvent(of: .value) { [self] snapshot, result in
-            guard let value = snapshot.value else { return }
-            do {
-                let currentPlaces = try FirebaseDecoder().decode([DayByDayPlace].self, from: value)
-                ref.removeAllObservers()
-                completion(.success(currentPlaces))
-            } catch let error {
-                print("error:",error.localizedDescription)
-                ref.removeAllObservers()
-                completion(.failure(error))
-            }
-        }
-    }
-    
 } // ex table view end
 
 extension JourneyViewController: CustomPageTabBarDelegate {
     
     func clickTab(index: Int) {
-        
         customTabBar.setSelectedTab(index: index)
-        
         var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
             print("滾動到Day\(index+1)")
@@ -547,10 +525,12 @@ extension JourneyViewController: CustomPageTabBarDelegate {
         } else if index == count {
             print("加一天")
             count += 1
+            // local
             userSchedules[scheduleIndex].numberOfDays = count
             
             if var currentLastDayDate =  userSchedules[scheduleIndex].dayByDaySchedule.last?.date {
                 
+                // local
                 let newDate = currentLastDayDate + 86400
                 userSchedules[scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
                 currentLastDayDate = newDate
@@ -567,13 +547,11 @@ extension JourneyViewController: CustomPageTabBarDelegate {
             
             // realtime db
             ref.child("journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/info/numberOfDays").setValue(count)
-           
-            ///
             
             customTabBar.setSelectedTab(index: index)
             journeyTableView.reloadData()
             journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
-            setupTableHeaderView()
+            updateTableHeaderViewInfo()
             
 //            saveUserScheduleData {
 //                customTabBar.setSelectedTab(index: index)
@@ -592,15 +570,14 @@ extension JourneyViewController: JourneyTableViewCellTableViewCellDelegate {
     func timeChange(indexPath: IndexPath, time: TimeInterval) {
         let section = indexPath.section
         let index = indexPath.row
-        
+        // realtime db
         ref.child("/journeys/journeyID/\(userSchedules[scheduleIndex].journeyID)/dayByDay/Day\(section+1)/places/\(index)/time").setValue(time)
+        // local
         userSchedules[scheduleIndex].dayByDaySchedule[section].places[index].time = time
-        
-        fetchJourneyDayByDayData { [self] in
-            journeyTableView.reloadRows(at: [indexPath], with: .automatic)
-        }
-        
+        // table view
+        journeyTableView.reloadRows(at: [indexPath], with: .automatic)
 
+        
 //        saveUserScheduleData {
 //            print("new data saved")
 //            self.journeyTableView.reloadRows(at: [indexPath], with: .automatic)
