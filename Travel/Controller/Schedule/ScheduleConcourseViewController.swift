@@ -24,9 +24,6 @@ class ScheduleConcourseViewController: UIViewController {
     lazy var scheduleTableView = UITableView(frame: .zero, style: .insetGrouped)
     var userSchedules = [UserSchedules]()
     let dateUtility = DateUtility()
-//    let defaults = UserDefaults.standard
-//    let encoder = JSONEncoder()
-//    let decoder = JSONDecoder()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -160,30 +157,31 @@ class ScheduleConcourseViewController: UIViewController {
                                     scheduleTitle = journeySnapshot.childSnapshot(forPath: "scheduleTitle").value as! String
   
                                 case "dayByDay":
-                                    self.getJourneyNumberOfDays(journeyID: journeyID) { num in
-                                        for i in 1...num {
-                                            if let date = journeySnapshot.childSnapshot(forPath: "Day\(i)/date").value as? Double {
-                                                dbdArr.append(DayByDaySchedule(date: date))
-                                                
-                                            }
-                                        }
-                                    }
+                                    // 先給一個空白日程，cell被點擊的時候再抓取每日地點資料
+                                    break
+//                                    self.getJourneyNumberOfDays(journeyID: journeyID) { num in
+//                                        print("num:\(num)")
+//                                        for i in 1...num {
+//                                            if let date = journeySnapshot.childSnapshot(forPath: "Day\(i)/date").value as? Double {
+//                                                dbdArr.append(DayByDaySchedule(date: date))
+//                                            }
+//                                        }
+//                                    }
 
                                 default:
                                    break
                                 }
                             }
                         }
-                        print("dbdArr:\(dbdArr)")
                         userSchedule = UserSchedules(createrID: createrUID, journeyID: journeyID, scheduleTitle: scheduleTitle, destination: destination, departureDate: departureDate, numberOfDays: numberOfDays, dayByDaySchedule: dbdArr)
-
+                        print("@concourse fetchAllJourneyList ~~~ journeyID:\(journeyID), userSchedule:\(userSchedule)")
                         self.userSchedules.append(userSchedule)
                         self.ref.removeAllObservers()
                         completion()
                     }
                 }
             } else {
-                print("user dont have anu journey yet")
+                print("user dont have any journey yet")
                 ref.removeAllObservers()
                 completion()
             }
@@ -193,7 +191,7 @@ class ScheduleConcourseViewController: UIViewController {
     
     
     func fetchDayByDayDataOfSelectedJourney(indexPath: IndexPath, completion: @escaping ((Int,[DayByDayPlace])) -> Void) {
-        let journeyID = userJourneyList[indexPath.section]//self.userSchedules[indexPath.section].journeyID
+        let journeyID = userSchedules[indexPath.section].journeyID //userJourneyList[indexPath.section]
 
         ref.child("journeys/journeyID/\(journeyID)/dayByDay").observeSingleEvent(of: .value) { [weak self] (snapshot) in
             guard let self = self else { return }
@@ -204,12 +202,12 @@ class ScheduleConcourseViewController: UIViewController {
                 if let placeValue = placeSnap.value {
                     do {
                         let model = try FirebaseDecoder().decode([DayByDayPlace].self, from: placeValue)
-                        print("here")
+                        print("存在已儲存的地點資料")
                         self.ref.removeAllObservers()
                         completion((i-1,model))
                     } catch {
                         // if 沒有地點資料，傳一個 timeInterval 為 0 的 fake place data，用該 timeInterval 判斷何時發動 completion
-                        print("行程Day\(i)沒有已存地點")
+                        print("行程\(userSchedules[indexPath.section].scheduleTitle), Day\(i)沒有已存地點")
                         self.ref.removeAllObservers()
                         completion((i-1,[DayByDayPlace(time: 0, place: "")]))
 //                        print(error)
@@ -224,11 +222,6 @@ class ScheduleConcourseViewController: UIViewController {
 
     }
  
-//    @objc func saveUserScheduleData() {
-//        if let newScheduleData = try? encoder.encode(userSchedules.self) {
-//            defaults.set(newScheduleData, forKey: "UserSchedule")
-//        }
-//    }
     
     func fetchUserSavedJourneyList(completion: @escaping ([String]) -> Void) {
         // 取得使用者所有已存行程 JourneyID
@@ -271,34 +264,7 @@ class ScheduleConcourseViewController: UIViewController {
             guard let self = self else { return }
             self.setupTableHeaderView(journeyCount: journeyCount)
         }
-        
-        
-        // 取得各行程 info
-//        self.fetchAllJourneyList {
-//            self.scheduleTableView.reloadData()
-//        }
-        
-        
-//        getUserScheduleData {
-//            // 更新 header view
-//            self.tableHeaderView.countLabel.text = "\(self.userSchedules.count)"
-//            // 更新 table view
-//            self.scheduleTableView.reloadData()
-//        }
     }
-    
-//    func checkIfScheduleDataChanged(completion: () -> Void) {
-//        if let defaultData = defaults.data(forKey: "UserSchedule") {
-//            if let decodedData = try? decoder.decode([UserSchedules].self, from: defaultData) {
-//                if !decodedData.elementsEqual(self.userSchedules) {
-//                    print("資料改變 please save new data")
-//                    completion()
-//                }
-//            }
-//        }
-//    }
-        
-   
 
 } // class end
 
@@ -385,7 +351,7 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
             guard let self = self else { return }
             print("self.userSchedules[indexPath.section].dayByDaySchedule[index].places",self.userSchedules[indexPath.section].dayByDaySchedule)
             if dbdPlace[0].time != 0 {
-                print(dbdPlace)
+                print("@concourse  prepareSelectedJourneyData dbdPlace:",dbdPlace)
 //                for place in dbdPlace {
 //                    self.userSchedules[indexPath.section].dayByDaySchedule[index].places.append(place)
 //                }
@@ -409,7 +375,6 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
             guard let self = self else { return }
 
             if let nav = self.navigationController {
-                // 還是要view will appear才發動??
                 self.journeyVC.getUserJourneyInfoData {
                     self.journeyVC.updateTableHeaderViewInfo()
                     self.journeyVC.journeyTableView.reloadData()
@@ -422,6 +387,5 @@ extension ScheduleConcourseViewController: UITableViewDelegate, UITableViewDataS
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         100
-
     }
 }

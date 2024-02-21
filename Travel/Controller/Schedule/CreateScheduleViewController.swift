@@ -19,7 +19,8 @@ class CreateScheduleViewController: UIViewController {
         case depOrNumNotChange
         case none
     }
-
+    var changeStatus = InfoChangeStatus.none
+    
     let uiSettingUtility = UISettingUtility()
     let dateUtility = DateUtility()
     
@@ -29,8 +30,9 @@ class CreateScheduleViewController: UIViewController {
     var journeyID = ""
     var userJourneyList = [String]()
     //
-    var changeStatus = InfoChangeStatus.none
+
     var caller: String = ""
+    
     weak var journeyVC: JourneyViewController!
     weak var concourseVC: ScheduleConcourseViewController!
     lazy var schedultTitleTextField = TravelCustomTextField()
@@ -38,17 +40,16 @@ class CreateScheduleViewController: UIViewController {
     lazy var departureDateTextField = TravelCustomTextField()
     lazy var numberOfDaysTextField = TravelCustomTextField()
 
-    
     lazy var datePicker = UIDatePicker()
     lazy var transluctentPickDateButton = UIButton(type: .custom)
-    lazy var addScheduleButton: UIButton = {
+    lazy var createEditJourneyButton: UIButton = {
         let button = UIButton()
         if caller == "journeyVC" {
-            button.setTitle("Edit", for: [])
+            button.setTitle("編輯", for: [])
             button.addTarget(self, action: #selector(editScheduleInfo), for: .touchUpInside)
         } else {
             button.setTitle("創建", for: [])
-            button.addTarget(self, action: #selector(createSchedule), for: .touchUpInside)
+            button.addTarget(self, action: #selector(createNewJourney), for: .touchUpInside)
         }
         button.setTitleColor(.systemRed, for: [])
         button.layer.cornerRadius = 25
@@ -58,8 +59,7 @@ class CreateScheduleViewController: UIViewController {
         return button
     }()
 
-    @objc func createSchedule() {
-        print("創建行程")
+    @objc func createNewJourney() {
         guard Int(numberOfDaysTextField.text!)! > 0 else {
             let alertView = AlertAppleMusic16View(title: "天數必須大於0", subtitle: nil, icon: .error)
             alertView.present(on: self.view)
@@ -72,7 +72,6 @@ class CreateScheduleViewController: UIViewController {
         while dayByDay.count < Int(numberOfDaysTextField.text!)! {
             dayByDay.append(DayByDaySchedule(date: dbdDateTimeInterval))
             dbdDateTimeInterval += 86400
-
         }
         // 取得使用者 uid
         createrUID = Auth.auth().currentUser!.uid
@@ -101,31 +100,9 @@ class CreateScheduleViewController: UIViewController {
         concourseVC.fetchAllJourneyList {
             self.concourseVC.scheduleTableView.reloadData()
         }
-        
-//        concourseVC.getUserJourneyCount { [weak self] journeyCount in
-//            guard let self = self else { return }
-//            print("journeyCount:\(journeyCount)")
-////            concourseVC.fetchAllJourneyList {
-////                self.concourseVC.scheduleTableView.reloadData()
-////            }
-//        }
-
+        print("創建行程")
         self.dismiss(animated: true)
     }
-    
-    
-//    func fetchUserSavedJourneyList() {
-//        // 取得使用者所有已存行程 JourneyID
-//        ref.child("users/\(createrUID)").observeSingleEvent(of: .value) { snapshot in
-//            if snapshot.hasChild("journeys") {
-//                let journeyChildrenSnap = snapshot.childSnapshot(forPath: "journeys").children
-//                print("journeyChildrenSnap:\(journeyChildrenSnap)")
-//                
-//            }
-//        }
-//        
-////        userSavedJourneys.append("")
-//    }
     
     func prepareNewDBD(newNumberOfDays: Int) {
         // 準備新的dbd陣列，清空所有資訊
@@ -136,33 +113,31 @@ class CreateScheduleViewController: UIViewController {
             dayByday.append(DayByDaySchedule(date: date))
             date += 86400
         }
-        
-        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
-    }
-    func updateOriginDBD() {
-        // 更新原有的dbd陣列時間，保留地點
-        var dayByday:[DayByDaySchedule] = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule
-        
-        let morning8DateTimeInterval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
-        
-        var date = morning8DateTimeInterval
-        
-        for i in 0...dayByday.count-1 {
-            dayByday[i].date = date
-            if !dayByday[i].places.isEmpty {
-                for j in 0...dayByday[i].places.count-1 {
-                    // 每一天的細節也同時更新，但已調整的時間會重置
-                    dayByday[i].places[j].time = date
-                }
-            }
-            
-            date += 86400
-        }
-        
         journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
     }
     
-    
+//    func updateOriginDBD() {
+//        // 更新原有的dbd陣列時間，保留地點
+//        var dayByday:[DayByDaySchedule] = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule
+//        
+//        let morning8DateTimeInterval = self.journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
+//        
+//        var date = morning8DateTimeInterval
+//        
+//        for i in 0...dayByday.count-1 {
+//            dayByday[i].date = date
+//            if !dayByday[i].places.isEmpty {
+//                for j in 0...dayByday[i].places.count-1 {
+//                    // 每一天的細節也同時更新，但已調整的時間會重置
+//                    dayByday[i].places[j].time = date
+//                }
+//            }
+//            
+//            date += 86400
+//        }
+//        
+//        journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule = dayByday
+//    }
     
     func updateInfoStatus(completion: () -> Void) {
         // 新資料
@@ -170,8 +145,8 @@ class CreateScheduleViewController: UIViewController {
         let newDestination = destinationTextField.text
         let newDepartureDay = dateUtility.convertStringToDate(string: departureDateTextField.text!)
         let newNumberOfDays = Int(numberOfDaysTextField.text!)!
-        
         let newDepDate = dateUtility.get8amDateTimeInterval(date: newDepartureDay)
+        
         // 原始資料
         let originDepartureDay = journeyVC.userSchedules[journeyVC.scheduleIndex].departureDate
         let originNumberOfDays = journeyVC.userSchedules[journeyVC.scheduleIndex].numberOfDays
@@ -221,7 +196,6 @@ class CreateScheduleViewController: UIViewController {
 
             for i in 0..<newNumberOfDays {
                 let newDate = journeyVC.userSchedules[journeyVC.scheduleIndex].dayByDaySchedule[i].date
-                
                 ref.child("journeys/journeyID/\(journeyVC.userSchedules[journeyVC.scheduleIndex].journeyID)/dayByDay/Day\(i+1)/date").setValue(newDate)
             }
             completion()
@@ -255,38 +229,13 @@ class CreateScheduleViewController: UIViewController {
     
     @objc func editScheduleInfo() {
         updateInfoStatus { [self] in
-            print("journeyVC new data:\(journeyVC.userSchedules)")
             journeyVC.journeyTableView.reloadData()
             journeyVC.updateTableHeaderViewInfo() // 更新 header view
             journeyVC.setupCustomTabBar() // 更新 custom tabbar
             dismiss(animated: true)
-            
-            
-            // 更新 user defaults
-//            saveUserScheduleData {
-//                journeyVC.journeyTableView.reloadData()
-//                journeyVC.setupTableHeaderView() // 更新 header view
-//                journeyVC.setupCustomTabBar() // 更新 custom tabbar
-//                dismiss(animated: true)
-//            }
         }
     
     }
-    
-
-    
-    func saveUserScheduleData(completion: () -> Void) {
-        let defaults = UserDefaults.standard
-        let encoder = JSONEncoder()
-        if let newScheduleData = try? encoder.encode(journeyVC.userSchedules.self) {
-            defaults.set(newScheduleData, forKey: "UserSchedule")
-            completion()
-        } else {
-            print("Edit encode 失敗")
-        }
-        
-    }
-    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -356,8 +305,8 @@ class CreateScheduleViewController: UIViewController {
             make.height.equalTo(50)
         }
 
-        view.addSubview(addScheduleButton)
-        addScheduleButton.snp.makeConstraints { make in
+        view.addSubview(createEditJourneyButton)
+        createEditJourneyButton.snp.makeConstraints { make in
             make.top.equalTo(numberOfDaysTextField.snp.bottom).offset(80)
             make.leading.equalToSuperview().offset(20)
             make.trailing.equalToSuperview().offset(-20)
@@ -420,22 +369,22 @@ class CreateScheduleViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
         
-        print("userJourneyList",userJourneyList)
+        print("@createVC viewWillAppear userJourneyList:",userJourneyList)
         switch caller {
         case  "journeyVC":
            break
         case "concourse":
-//            schedultTitleTextField.text = ""
-//            departureDateTextField.text = ""
-//            destinationTextField.text = ""
-//            numberOfDaysTextField.text = ""
+            schedultTitleTextField.text = ""
+            departureDateTextField.text = ""
+            destinationTextField.text = ""
+            numberOfDaysTextField.text = ""
             
             // 方便測試
-            schedultTitleTextField.text = "台南Go"
-            departureDateTextField.text = "\( dateUtility.convertDateToString(date: Date()))"
-            destinationTextField.text = "台南"
-            numberOfDaysTextField.text = "3"
-            ///
+//            schedultTitleTextField.text = "台南Go"
+//            departureDateTextField.text = "\(dateUtility.convertDateToString(date: Date()))"
+//            destinationTextField.text = "台南"
+//            numberOfDaysTextField.text = "3"
+
         default:
             print("break")
             break

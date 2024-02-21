@@ -15,23 +15,20 @@ class JourneyViewController: UIViewController {
 
     let ref: DatabaseReference = Database.database(url: "https://travel-1f72e-default-rtdb.asia-southeast1.firebasedatabase.app").reference()
     var journeyID = ""
+    let uiSettingUtility = UISettingUtility()
+    let dateUtility = DateUtility()
     
-    // 整包資料 & 要顯示第幾筆的index
+    // userSchedules array 只存被點擊的那一筆資料
     var userSchedules = [UserSchedules]()
     var scheduleIndex = 0
     //
-//    let defaults = UserDefaults.standard
-//    let encoder = JSONEncoder()
+
     lazy var favoriteVC = FavoriteViewController()
     lazy var createScheduleVC = CreateScheduleViewController()
     lazy var detailVC = DetailViewController()
     lazy var tableHeaderView = ScheduleTableHeaderView()
     lazy var customTabBar = CustomGroupTabBar(tabNames: [""], style: .init())
-   
     lazy var journeyTableView = UITableView(frame: .zero, style: .insetGrouped)
-
-    let uiSettingUtility = UISettingUtility()
-    let dateUtility = DateUtility()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,7 +64,6 @@ class JourneyViewController: UIViewController {
             make.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-
     }
     
     func prepareTabBarButton() {
@@ -81,7 +77,6 @@ class JourneyViewController: UIViewController {
             count += 1
         }
         customTabBar.tabNames.append("+")
-
     }
     
     func setupCustomTabBar() {
@@ -134,13 +129,6 @@ class JourneyViewController: UIViewController {
         tableHeaderView.numberOfDaysLabel.text = "為期 \(userSchedules[scheduleIndex].numberOfDays) 天"
     }
     
-//    func saveUserScheduleData(completion: () -> Void) {
-//        if let newScheduleData = try? encoder.encode(userSchedules.self) {
-//            defaults.set(newScheduleData, forKey: "UserSchedule")
-//            completion()
-//        }
-//        
-//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
@@ -220,16 +208,7 @@ class JourneyViewController: UIViewController {
 
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(true)
-//        
-//        saveUserScheduleData {
-//            print("Schedule has been saved")
-//        }
-//    }
-
-    
-}
+} // class end
 
 extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -358,20 +337,12 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
                     self.journeyTableView.reloadData()
                     self.updateTableHeaderViewInfo()
                     self.setupCustomTabBar()
-//                    self.saveUserScheduleData {
-//                        self.journeyTableView.reloadData()
-//                        self.setupTableHeaderView()
-//                        self.setupCustomTabBar()
-//                    }
 
                 } else {
                     // 天數為1時，僅清空單日行程
                     self.userSchedules[scheduleIndex].dayByDaySchedule[0].places.removeAll()
                     self.ref.child("journeys/journeyID/\(self.userSchedules[self.scheduleIndex].journeyID)/dayByDay/Day1/places").removeValue()
                     self.journeyTableView.reloadData()
-//                    self.saveUserScheduleData {
-//                        self.journeyTableView.reloadData()
-//                    }
                 }
 
             }
@@ -403,6 +374,7 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        // 資料結構調整，目前關閉 journeyVC -> detailVC 的功能
 //        let section = indexPath.section
 //        let index = indexPath.row
 //        if let nav = self.navigationController {
@@ -451,7 +423,6 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
             print("fail to encode")
         }
         
-        
         // destination
         let updatedDestinationDbdPlaces = userSchedules[scheduleIndex].dayByDaySchedule[destinationSection].places
         if let updatedDestinationDbdPlacesData = try? FirebaseEncoder().encode(updatedDestinationDbdPlaces) {
@@ -461,7 +432,6 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
         }
     
         tableView.reloadData()
-
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -482,10 +452,6 @@ extension JourneyViewController: UITableViewDelegate, UITableViewDataSource {
 
             // table view
             tableView.deleteRows(at: [indexPath], with: .automatic)
-
-//            self.saveUserScheduleData {
-//                self.journeyTableView.deleteRows(at: [indexPath], with: .automatic)
-//            }
             completion(true)
         }
         deleteAction.image = UIImage(systemName: "trash")
@@ -507,7 +473,6 @@ extension JourneyViewController: CustomPageTabBarDelegate {
         customTabBar.setSelectedTab(index: index)
         var count = userSchedules[scheduleIndex].numberOfDays
         if index < count {
-            print("滾動到Day\(index+1)")
             journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
 
         } else if index == count {
@@ -517,7 +482,6 @@ extension JourneyViewController: CustomPageTabBarDelegate {
             userSchedules[scheduleIndex].numberOfDays = count
             
             if var currentLastDayDate =  userSchedules[scheduleIndex].dayByDaySchedule.last?.date {
-                
                 // local
                 let newDate = currentLastDayDate + 86400
                 userSchedules[scheduleIndex].dayByDaySchedule.append(DayByDaySchedule(date: newDate))
@@ -540,14 +504,6 @@ extension JourneyViewController: CustomPageTabBarDelegate {
             journeyTableView.reloadData()
             journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
             updateTableHeaderViewInfo()
-            
-//            saveUserScheduleData {
-//                customTabBar.setSelectedTab(index: index)
-//                journeyTableView.reloadData()
-//                journeyTableView.scrollToRow(at: IndexPath(row: NSNotFound, section: index), at: .top, animated: true)
-//                setupTableHeaderView()
-//            }
-            
         }
 
     }
@@ -565,11 +521,6 @@ extension JourneyViewController: JourneyTableViewCellTableViewCellDelegate {
         // table view
         journeyTableView.reloadRows(at: [indexPath], with: .automatic)
 
-        
-//        saveUserScheduleData {
-//            print("new data saved")
-//            self.journeyTableView.reloadRows(at: [indexPath], with: .automatic)
-//        }
     }
     
     
